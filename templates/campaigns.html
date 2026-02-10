@@ -3,6 +3,26 @@
 {% endif %}
 <button id="backToAllBtn" class="cta" style="display: none;">{{ translate("Back to All Categories") }}</button>
 
+<!-- Trending Section -->
+{% if trending_events and not viewyourevents %}
+<div class="trending-section" style="margin-bottom: 3rem;">
+    <h3>🔥 {{ translate("Trending Now") }}</h3>
+    <div class="campaign-grid">
+        {% for e in trending_events %}
+            <div class="campaign-card" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05);">
+                <div style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">TOP RATED</div>
+                <h4>{{ translate(e.eventname) }}</h4>
+                <p>{{ translate(e.description[:100], save_file=False) }}...</p>
+                <div class="card-footer">
+                     <span>❤️ {{ e.likes }} {{ translate("Likes") }}</span>
+                     <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})" style="margin-left: auto;">{{ translate("Join Chat") }}</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 {% for category_name, events in allevents.items() %}
     {% set viewevents = [] %}
     {% if viewyourevents %}
@@ -59,7 +79,13 @@
                         {% set eventstartdate = e.eventdate|datetimeformat %}
                         {% set eventenddate = e.enddate|datetimeformat %}
                         <p><b>{{ translate("From Date and Time:") }}</b> {{ translate(eventstartdate) }} | {{ e.starttime }}<br><b>{{ translate("Till Date and Time:") }}</b> {{ translate(eventenddate) }} | {{ e.endtime }}</p>
-                        <p><b>{{ translate("Location:") }}</b> {{ translate(e.location) }}</p>
+
+                        <!-- Smart Map Link -->
+                        <p><b>{{ translate("Location:") }}</b>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+                                📍 {{ translate(e.location) }} ↗
+                            </a>
+                        </p>
 
                         <div class="card-footer">
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -90,25 +116,27 @@
                             </div>
 
                             <div style="display: flex; gap: 8px; margin-left: 10px;">
-                                <a href="https://wa.me/?text={{ translate('Check out this event:') }} {{ e.eventname }} - {{ e.description[:100] }}..." target="_blank" class="share-btn whatsapp" style="color: #25D366; text-decoration: none;">
+                                <!-- Enhanced Share Trigger -->
+                                <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.starttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}" style="background:none; border:none; color: var(--text-muted); cursor: pointer;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z"/>
+                                      <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
                                     </svg>
-                                </a>
-                                <a href="https://twitter.com/intent/tweet?text={{ translate('Join this event on EcoCamp:') }} {{ e.eventname }}&hashtags=EcoCamp,Environment" target="_blank" class="share-btn twitter" style="color: #1DA1F2; text-decoration: none;">
+                                </button>
+                                <!-- Calendar Download -->
+                                <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}" style="color: var(--text-muted);">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+                                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                                     </svg>
                                 </a>
                             </div>
 
                             <div style="flex-grow: 1;"></div>
 
-                            <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Open chat for this event') }}</button>
-                            <button class="campaign-tag" onclick="window.location.href='/user/{{ e.username }}'">{{ translate('Open Profile') }}</button>
+                            <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
+                            <button class="campaign-tag" onclick="window.location.href='/user/{{ e.username }}'">{{ translate('Profile') }}</button>
 
                             {% if e.username == c_user or isadmin %}
-                                <button onclick="asktodelete({{ e.eventid }})" class="delete-btn">{{ translate("Delete Event") }}</button>
+                                <button onclick="asktodelete({{ e.eventid }})" class="delete-btn">✕</button>
                             {% endif %}
                         </div>
                     </div>

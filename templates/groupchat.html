@@ -21,7 +21,8 @@
     #grp-msgs::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     .msg-wrapper { display: flex; max-width: 85%; animation: fadeIn 0.3s ease; gap: 10px; }
     .msg-content-stack { display: flex; flex-direction: column; max-width: 100%; }
-    .profile-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: white; flex-shrink: 0; text-transform: uppercase; background: #64748b; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    /* New Avatar */
+    .profile-avatar-img { width: 36px; height: 36px; border-radius: 50%; background: #64748b; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 2px solid var(--border-color); }
     .msg-bubble { padding: 8px 12px; border-radius: var(--radius); font-size: 0.9rem; line-height: 1.5; position: relative; word-wrap: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-width: 100px; }
     .msg-footer { font-size: 0.65rem; margin-top: 4px; align-self: flex-end; opacity: 0.8; white-space: nowrap; }
     .msg-username { font-size: 0.75rem; color: var(--primary-color); margin-bottom: 2px; text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; align-self: flex-start; }
@@ -65,9 +66,8 @@
         {% else %}
             <div class="msg-wrapper other">
                 <a href="/user/{{ u }}" target="_top">
-                <div class="profile-avatar" data-username="{{ u }}">
-                    {{ u[0] }}
-                </div> </a>
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ u }}" alt="{{ u }}" class="profile-avatar-img">
+                </a>
                 <div class="msg-content-stack">
                     <a href="/user/{{ u }}" class="msg-username" target="_top">{{ u }}</a>
                     <div class="msg-bubble">
@@ -106,27 +106,8 @@
     const currentUser = "{{ currentuname }}";
     const msgContainer = document.getElementById('grp-msgs');
 
-    function getAvatarColor(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const hue = Math.abs(hash % 360);
-        return `hsl(${hue}, 70%, 50%)`;
-    }
-
-    function colorizeAvatars() {
-        document.querySelectorAll('.profile-avatar').forEach(avatar => {
-            const username = avatar.getAttribute('data-username');
-            if (username) {
-                avatar.style.backgroundColor = getAvatarColor(username);
-            }
-        });
-    }
-
     window.onload = () => {
         msgContainer.scrollTop = msgContainer.scrollHeight;
-        colorizeAvatars();
     }
 
     socket.on("new_message", function(data) {
@@ -134,7 +115,7 @@
             const isSelf = data.username === currentUser;
             const wrapper = document.createElement('div');
             wrapper.className = isSelf ? "msg-wrapper self" : "msg-wrapper other";
-            
+
             if (isSelf) {
                 wrapper.innerHTML = `
                     <div class="msg-bubble">
@@ -143,11 +124,10 @@
                     </div>
                 `;
             } else {
-                const color = getAvatarColor(data.username);
                 wrapper.innerHTML = `
-                    <div class="profile-avatar" style="background-color: ${color}">
-                        ${data.username.charAt(0).toUpperCase()}
-                    </div>
+                    <a href="/user/${data.username}" target="_top">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}" class="profile-avatar-img">
+                    </a>
                     <div class="msg-content-stack">
                         <a href="/user/${data.username}" class="msg-username" target="_top">${data.username}</a>
                         <div class="msg-bubble">
@@ -157,7 +137,7 @@
                     </div>
                 `;
             }
-            
+
             msgContainer.appendChild(wrapper);
             msgContainer.scrollTop = msgContainer.scrollHeight;
         }
@@ -171,7 +151,7 @@
         if (!message.trim()) return;
 
         socket.emit("add_grp_msg", { eventid: eventid, message: message, username: currentUser });
-        input.value = ""; 
+        input.value = "";
         input.focus();
     }
 </script>

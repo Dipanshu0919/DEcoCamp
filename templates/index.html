@@ -4,8 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>DEcoCamp — A Greener Tommorow!</title>
+
+<!-- Libraries for Share Feature -->
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -171,6 +175,29 @@
     .fc .fc-button-primary:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
     .fc-daygrid-day-number { color: var(--text-muted); text-decoration: none; }
     .fc-col-header-cell-cushion { color: var(--text-color); text-decoration: none; }
+
+    /* Stats & Leaderboard */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .dash-card { background: var(--bg-light); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border-color); }
+    .leaderboard-list { list-style: none; padding: 0; margin-top: 1rem; }
+    .leaderboard-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+    .leaderboard-rank { font-weight: bold; color: var(--primary-color); width: 25px; }
+    .leaderboard-avatar { width: 30px; height: 30px; border-radius: 50%; }
+
+    /* Share Modal */
+    .share-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2500; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .share-modal.show { display: flex; }
+    .share-content { background: var(--bg-light); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border-color); max-width: 400px; width: 90%; position: relative; }
+    .share-header { margin-bottom: 1.5rem; text-align: center; }
+    .share-options { display: grid; gap: 1rem; }
+    .share-btn-opt { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+    .share-btn-opt:hover { border-color: var(--primary-color); background: rgba(59,130,246,0.1); }
+    .share-btn-opt svg { width: 20px; height: 20px; }
+    .wa-btn { color: #22c55e; } .pdf-btn { color: #ef4444; } .img-btn { color: #f59e0b; }
+    .close-share { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+
+    /* Screenshot helper */
+    #capture-area { position: fixed; left: -9999px; width: 600px; background: var(--bg-dark); padding: 40px; border-radius: 12px; color: var(--text-color); border: 2px solid var(--primary-color); }
 </style>
 </head>
 <body>
@@ -229,6 +256,52 @@
     <button class="alert-close" id="alertCloseBtn" onclick="closeAlert()" title="{{ translate('Close') }}">✕</button>
 </div>
 
+<!-- Share Modal -->
+<div id="shareModal" class="share-modal">
+    <div class="share-content">
+        <button class="close-share" onclick="closeShareModal()">×</button>
+        <div class="share-header">
+            <h3>{{ translate("Share Event") }}</h3>
+            <p id="share-event-name" style="color:var(--primary-color)"></p>
+        </div>
+        <div class="share-options">
+            <button class="share-btn-opt" onclick="copyEventLink()">
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/></svg>
+                {{ translate("Copy Link") }}
+            </button>
+            <div style="border-top: 1px solid var(--border-color); margin: 5px 0;"></div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: 0;">{{ translate("Share on WhatsApp as:") }}</p>
+
+            <button class="share-btn-opt wa-btn" onclick="shareWhatsApp('text')">
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z"/></svg>
+                {{ translate("Text Message") }}
+            </button>
+            <button class="share-btn-opt pdf-btn" onclick="shareWhatsApp('pdf')">
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/><path d="M4.603 14.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.771.08-1.177.313-.607.746-1.196 1.14-1.638.196-.219.397-.419.587-.589.513-.454 1.15-.845 1.764-1.107l.115-.05c.42-.178.682-.373.665-.67-.01-.178-.145-.295-.34-.316-.296-.032-.705.195-1.066.657-.225.29-.414.63-.53 1.026a7.7 7.7 0 0 1-.295 1.265c-.065.206-.134.407-.208.6-.26.68-.616 1.258-1.01 1.634-.282.268-.528.375-.72.375-.164 0-.294-.078-.344-.19z"/></svg>
+                {{ translate("PDF Document") }}
+            </button>
+            <button class="share-btn-opt img-btn" onclick="shareWhatsApp('image')">
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/><path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/></svg>
+                {{ translate("Image Card") }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden area for generating image/pdf -->
+<div id="capture-area">
+    <h2 style="color: #3b82f6; margin-bottom: 10px;" id="cap-title">Event Title</h2>
+    <p style="color: #94a3b8; font-size: 0.9em;">Join this campaign on DEcoCamp!</p>
+    <div style="border-top: 1px solid #334155; margin: 15px 0;"></div>
+    <p><strong>📅 Date:</strong> <span id="cap-date"></span></p>
+    <p><strong>🕒 Time:</strong> <span id="cap-time"></span></p>
+    <p><strong>📍 Location:</strong> <span id="cap-loc"></span></p>
+    <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-top: 15px;">
+        <p id="cap-desc" style="font-style: italic;"></p>
+    </div>
+    <p style="margin-top: 20px; font-size: 0.8em; text-align: center; color: #64748b;">Visit decocamp.com for more details</p>
+</div>
+
 <div id="sideChatDrawer" class="chat-drawer">
     <div class="chat-header">
         <h3>{{ translate("Event Chat") }}</h3>
@@ -257,6 +330,23 @@
                     }; setQuote(); setInterval(setQuote, 6000); });
                 </script>
 
+                {% if top_organizers %}
+                <div class="dash-card" style="margin-top: 2rem;">
+                    <h4>🏆 {{ translate("Top Organizers") }}</h4>
+                    <ul class="leaderboard-list">
+                        {% for org in top_organizers %}
+                        <li class="leaderboard-item">
+                            <span class="leaderboard-rank">#{{ loop.index }}</span>
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ org.username }}" class="leaderboard-avatar">
+                            <div style="flex-grow: 1;">
+                                <div style="font-weight: 600; font-size: 0.9rem;">{{ org.name }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ org.count }} {{ translate("Events") }}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
 
             <div class="account-container">
@@ -303,11 +393,36 @@
                     <p>{{ translate("Events: Total") }} {{ userdetails['events'].split(",") | length }} {{ translate("Events added by you.") }} </p> <button class="otp-btn" onclick="viewyourevents('{{ c_user }}')">{{ translate("Click Here To View Your Events") }}</button>
                     {% else %} <p>{{ translate("Events by you: No event added by you yet.") }}</p> {% endif %}
                     <div class="form-buttons">
+                        <button onclick="window.location.href='/user/{{ c_user }}'" class="submit-btn">{{ translate("View Profile") }}</button>
                         <button onclick="window.location.href='/clearsession';" class="delete-btn">{{ translate("Logout") }}</button>
                     </div>
                 {% endif %}
             </div>
         </div>
+
+        {% if isadmin %}
+        <div style="margin-top: 3rem;">
+            <h2>🛠️ System Health (Admin)</h2>
+            <div class="dashboard-grid">
+                <div class="dash-card">
+                    <h3>{{ admin_stats['total_users'] }}</h3>
+                    <p>Total Users</p>
+                </div>
+                <div class="dash-card">
+                    <h3>{{ admin_stats['total_events'] }}</h3>
+                    <p>Total Events</p>
+                </div>
+                <div class="dash-card">
+                    <h3>{{ admin_stats['pending_requests'] }}</h3>
+                    <p>Pending Requests</p>
+                </div>
+                <div class="dash-card">
+                    <h3>{{ admin_stats['active_threads'] }}</h3>
+                    <p>Active Threads</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         </section>
 
         <section id="campaigns">
@@ -412,6 +527,138 @@
     }
 
     const closeAlert = () => $('#alertBar')?.classList.remove('show');
+
+    // ============================================
+    // SHARE SYSTEM
+    // ============================================
+    let currentShareEvent = {};
+
+    function openShareModal(name, id, date, time, location, desc) {
+        currentShareEvent = { name, id, date, time, location, desc };
+        $('#share-event-name').textContent = name;
+        $('#shareModal').classList.add('show');
+    }
+
+    function closeShareModal() {
+        $('#shareModal').classList.remove('show');
+    }
+
+    // Fixed: Copy to clipboard function
+    function copyEventLink() {
+        const link = `${window.location.origin}/group-chat/from-event/${currentShareEvent.id}`;
+        const text = `Check out this event on EcoCamp: ${currentShareEvent.name}\n${link}`;
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('{{ translate("Link copied to clipboard!") }}', 'success');
+                closeShareModal();
+            }).catch(err => {
+                console.error("Clipboard API failed, trying fallback", err);
+                fallbackCopyText(text);
+            });
+        } else {
+            fallbackCopyText(text);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        let textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showAlert('{{ translate("Link copied to clipboard!") }}', 'success');
+        } catch (err) {
+            showAlert('{{ translate("Failed to copy link.") }}', 'error');
+        }
+        document.body.removeChild(textArea);
+        closeShareModal();
+    }
+
+    function shareWhatsApp(type) {
+        const link = `${window.location.origin}/group-chat/from-event/${currentShareEvent.id}`;
+        const text = `Hey! I found this cool event on EcoCamp: *${currentShareEvent.name}*\n📅 ${currentShareEvent.date} at ${currentShareEvent.time}\n📍 ${currentShareEvent.location}\n\nJoin here: ${link}`;
+
+        if (type === 'text') {
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            closeShareModal();
+        } else if (type === 'pdf') {
+            generatePDF();
+        } else if (type === 'image') {
+            generateImage();
+        }
+    }
+
+    function populateCaptureArea() {
+        $('#cap-title').textContent = currentShareEvent.name;
+        $('#cap-date').textContent = currentShareEvent.date;
+        $('#cap-time').textContent = currentShareEvent.time;
+        $('#cap-loc').textContent = currentShareEvent.location;
+        $('#cap-desc').textContent = currentShareEvent.desc.substring(0, 150) + (currentShareEvent.desc.length > 150 ? "..." : "");
+    }
+
+    function generatePDF() {
+        showAlert('{{ translate("Generating PDF, please wait...") }}', 'info');
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(22);
+        doc.setTextColor(59, 130, 246); // Primary color
+        doc.text(currentShareEvent.name, 20, 20);
+
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text("Join this campaign on DEcoCamp!", 20, 30);
+        doc.line(20, 35, 190, 35);
+
+        doc.setFontSize(14);
+        doc.text(`Date: ${currentShareEvent.date}`, 20, 50);
+        doc.text(`Time: ${currentShareEvent.time}`, 20, 60);
+        doc.text(`Location: ${currentShareEvent.location}`, 20, 70);
+
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        const splitDesc = doc.splitTextToSize(currentShareEvent.desc, 170);
+        doc.text(splitDesc, 20, 90);
+
+        doc.setFontSize(10);
+        doc.setTextColor(59, 130, 246);
+        const link = `${window.location.origin}/group-chat/from-event/${currentShareEvent.id}`;
+        doc.textWithLink("Click here to join the event", 20, 150, { url: link });
+
+        doc.save(`${currentShareEvent.name}_details.pdf`);
+
+        setTimeout(() => {
+            if(confirm("PDF Downloaded! Do you want to open WhatsApp to send it?")) {
+                window.open(`https://wa.me/?text=${encodeURIComponent("Check out this event PDF! " + currentShareEvent.name)}`, '_blank');
+            }
+        }, 1000);
+        closeShareModal();
+    }
+
+    function generateImage() {
+        showAlert('{{ translate("Generating Image, please wait...") }}', 'info');
+        populateCaptureArea();
+        const node = document.getElementById('capture-area');
+
+        html2canvas(node).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `${currentShareEvent.name}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+
+            setTimeout(() => {
+                if(confirm("Image Saved! Do you want to open WhatsApp to send it?")) {
+                    window.open(`https://wa.me/?text=${encodeURIComponent("Check out this event image! " + currentShareEvent.name)}`, '_blank');
+                }
+            }, 1000);
+        });
+        closeShareModal();
+    }
 
     // ============================================
     // SOCKET.IO - LIKES & CHAT
@@ -582,7 +829,11 @@
     };
 
     async function loadContent(type, url, loadingId, contentId, retryFn) {
-        if (contentLoaders[type].loaded) return;
+        // Force reload if viewyourevents is set (simple hack to ensure fresh content)
+        if (contentLoaders[type].loaded && !window.location.hash.includes('campaigns')) return;
+
+        // Always reset loaded for campaigns to support dynamic updates
+        if(type === 'campaigns') contentLoaders[type].loaded = false;
 
         const loadingState = $(loadingId);
         const content = $(contentId);
@@ -902,7 +1153,11 @@
             }
         });
 
-        showSection(location.hash.slice(1));
+        if (location.hash) {
+            showSection(location.hash.slice(1));
+        } else {
+            showSection('home');
+        }
         window.addEventListener('hashchange', () => showSection(location.hash.slice(1)));
 
         // Auth forms

@@ -7,14 +7,17 @@ import threading
 import zoneinfo
 import requests
 import sqlitecloud as sq
+import csv
+import io
 from contextlib import asynccontextmanager
 from typing import Optional, Dict, Any
 
-from fastapi import FastAPI, Request, Form, Depends, Response, BackgroundTasks
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi import FastAPI, Request, Form, Depends, Response, BackgroundTasks, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 import socketio
 from dotenv import load_dotenv
 from googletrans import Translator
@@ -32,6 +35,9 @@ active_events = 0
 
 all_translations = {}
 non_file_translations = {}
+
+# --- In-Memory Stores ---
+rate_limit_store = {} # {ip: timestamp}
 
 # --- Helper Functions (Threads & Utils) ---
 
@@ -72,7 +78,6 @@ def translate_thread(text, lang, save_file):
     global non_file_translations
     try:
         t = Translator()
-        # googletrans is blocking, but running in thread is fine
         translated = t.translate(text, dest=lang).text
         print(f"Translated '{text}' to '{translated}' in language '{lang}'")
     except Exception as e:
@@ -89,10 +94,6 @@ def checkevent():
     while True:
         time.sleep(30 + random.randint(0,10))
         try:
-            # In FastAPI dev mode, port is usually 8000 or defined by uvicorn
-            # We will just call the logic directly or use a self-request if strictly needed
-            # But here we can't easily self-request without knowing domain.
-            # We'll rely on the logic being called or an external pinger.
             pass
         except Exception as e:
             print(f"Check event loop error: {e}")
@@ -112,17 +113,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Session Middleware (Replaces Flask signed cookies)
+# Session Middleware
 app.add_middleware(SessionMiddleware, secret_key=os.environ.get("FLASK_SECRET", "supersecretkey"))
 
 # SocketIO Setup
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 socket_app = socketio.ASGIApp(sio, app)
-# Note: To run this, pass 'app:socket_app' to uvicorn, or mount it if separate paths were possible,
-# but wrapping is standard for python-socketio + fastapi.
-# However, to keep 'app' as the main entry point for routes, we usually do:
-app.mount("/socket.io", socketio.ASGIApp(sio)) # Mount for socket path
-# But standard is wrapping. We will modify the entry point at bottom.
+app.mount("/socket.io", socketio.ASGIApp(sio))
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -151,37 +148,34 @@ def datetimeformat(value):
 templates.env.filters["datetimeformat"] = datetimeformat
 
 def translate_text(text, lang=None, save_file=True):
-    # We need a way to get session lang inside template.
-    # In FastAPI jinja, we can pass context, but here we are registering a global function.
-    # We will pass lang explicitly from template or use a default.
-    # NOTE: In the Flask app, it used session.get("lang").
-    # To support this in FastAPI templates, we will inject 'user_language' into context
-    # and pass it to this function, or the function acts on the text.
-    # The original function signature in template is {{ translate("Text") }} without lang.
-    # We'll rely on the context processor to partial this function or just handle it.
-
-    # Since we can't easily access request.session inside a global jinja function without passing context,
-    # we will rely on the "user_language" variable passed to the template context.
-
     global all_translations
     global non_file_translations
-
-    # If lang is not provided, we return text (client-side logic or context processor logic needed)
-    # But strictly following Python logic:
     if not lang or lang == "en":
         return text
-
     combined_translations = {**all_translations, **non_file_translations}
-
     if not combined_translations.get(text) or not combined_translations.get(text).get(lang):
         thread = threading.Thread(target=translate_thread, args=(text, lang, save_file))
         thread.start()
-
     translationss = all_translations if save_file else non_file_translations
     return translationss.get(text, {}).get(lang, text)
 
-# We need to wrap translate_text to accept the language from the request context
-# We will do this via a custom context processor in the route handler or inject it.
+# --- Exception Handlers ---
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request, exc):
+    return templates.TemplateResponse("error.html", {
+        "request": request,
+        "status_code": exc.status_code,
+        "detail": exc.detail
+    }, status_code=exc.status_code)
+
+@app.exception_handler(500)
+async def internal_exception_handler(request, exc):
+    return templates.TemplateResponse("error.html", {
+        "request": request,
+        "status_code": 500,
+        "detail": "Internal Server Error"
+    }, status_code=500)
 
 # --- Routes ---
 
@@ -190,26 +184,46 @@ def home(request: Request, c = Depends(get_db)):
     session = request.session
     currentuser = session.get("name", "User")
     currentuname = session.get("username")
-    print("Welcome", currentuser)
 
-    # Update active_events count logic
-    # In flask this was calculated in show_campaigns mostly, here we just read global
-    # or recalculate. To be safe, let's recalculate quickly or use global.
     global active_events
 
     isadmin = False
     userdetails = {}
+    top_organizers = []
+    admin_stats = {}
+
     if currentuname:
         ud = c.execute("SELECT * FROM userdetails WHERE username=?", (currentuname, )).fetchone()
         if ud:
             if ud["role"] == "admin":
                 isadmin = True
-            userdetails = dict(ud) # Convert Row to dict
+                # Admin Stats Logic
+                users_count = c.execute("SELECT COUNT(*) as count FROM userdetails").fetchone()["count"]
+                req_count = c.execute("SELECT COUNT(*) as count FROM eventreq").fetchone()["count"]
+                total_events_db = c.execute("SELECT COUNT(*) as count FROM eventdetail").fetchone()["count"]
+                admin_stats = {
+                    "total_users": users_count,
+                    "pending_requests": req_count,
+                    "active_threads": threading.active_count(),
+                    "total_events": total_events_db
+                }
+
+            userdetails = dict(ud)
+
+    # Leaderboard Logic (Top 5 Organizers)
+    all_users = c.execute("SELECT name, username, events FROM userdetails").fetchall()
+    organizers = []
+    for u in all_users:
+        event_count = len(u["events"].split(",")) if u["events"] else 0
+        if event_count > 0:
+            organizers.append({"name": u["name"], "username": u["username"], "count": event_count})
+
+    organizers.sort(key=lambda x: x["count"], reverse=True)
+    top_organizers = organizers[:5]
 
     template_name = session.get("template", "index.html")
-
-    # Helper for template translation
     user_lang = session.get("lang", "en")
+
     def bound_translate(text, save_file=True):
         return translate_text(text, lang=user_lang, save_file=save_file)
 
@@ -221,11 +235,19 @@ def home(request: Request, c = Depends(get_db)):
         "userdetails": userdetails,
         "translate": bound_translate,
         "user_language": user_lang,
-        "fvalues": {} # Just in case index needs it
+        "fvalues": {},
+        "top_organizers": top_organizers,
+        "admin_stats": admin_stats
     })
 
 @app.post("/sendsignupotp")
 async def sendotp(request: Request, email: str = Form(...), c = Depends(get_db)):
+    # Rate Limiting
+    client_ip = request.client.host
+    if client_ip in rate_limit_store and time.time() - rate_limit_store[client_ip] < 30: # 30s limit
+        return Response(content="Please wait 30 seconds before requesting another OTP.", media_type="text/plain", status_code=429)
+    rate_limit_store[client_ip] = time.time()
+
     otp = random.randint(1111,9999)
     request.session["signupotp"] = otp
     checkexists = c.execute("SELECT * FROM userdetails where email=?", (email,)).fetchone()
@@ -242,17 +264,26 @@ def setlanguage(request: Request, lang: str):
 
 @app.post("/generate_ai_description")
 async def generate_ai_description(request: Request):
+    # Rate Limiting
+    client_ip = request.client.host
+    if client_ip in rate_limit_store and time.time() - rate_limit_store[client_ip] < 10:
+        return Response(content="Please wait a moment before generating again.", media_type="text/plain", status_code=429)
+    rate_limit_store[client_ip] = time.time()
+
     try:
         form_data = await request.form()
         field = ["eventname", "starttime", "endtime", "eventdate", "enddate", "location", "category"]
         values = [[x, form_data.get(x)] for x in field if form_data.get(x)]
         u_lang = request.session.get("lang", "en")
 
-        content = f"""Generate a description based on following details in pure '{u_lang}' language all words shold be in this language only and its content also in pure '{u_lang}' language:
-        Details of event is as followes: {values}
-        Generate total 4x descriptions, each description should be within 500 words. Include hastags in it. And reply me in a json format as below:
-        {{"desc1": "description1 in formal tone", "desc2": "description2 in informal tone", "desc3": "description3 in promotional tone", "desc4": "description4 in entertaining tone"}}
-        dont include any other text other than json format in your response. dont even include any word count or anything else dont even include category name in it. Just pure description in json format."""
+        # Contextual AI
+        current_month = datetime.datetime.now().strftime("%B")
+
+        content = f"""Generate a description based on following details in pure '{u_lang}' language.
+        Context: The current month is {current_month}, so mention appropriate weather/preparations if needed.
+        Details of event: {values}
+        Generate total 4x descriptions (max 500 words each). Include hashtags. Reply strictly in JSON:
+        {{"desc1": "Formal tone", "desc2": "Informal tone", "desc3": "Promotional tone", "desc4": "Entertaining/Fun tone"}}"""
 
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
@@ -264,8 +295,11 @@ async def generate_ai_description(request: Request):
                 "messages": [{"role": "user", "content": content}]
             }))
         data = response.json()
-        print(data)
         output = data["choices"][0]["message"]["content"]
+        # Basic cleanup if AI adds markdown
+        if "```json" in output:
+            output = output.replace("```json", "").replace("```", "")
+
         to_json = json.loads(output)
         return JSONResponse(content=to_json)
     except Exception as e:
@@ -281,7 +315,6 @@ def group_chat_from_event(request: Request, eventid: int, c = Depends(get_db)):
 
     all_msgs = c.execute("SELECT * FROM messages WHERE eventid=? ORDER BY time ASC", (eventid,)).fetchall()
 
-    # Construct message list manually since we don't zip directly in template easily usually
     messages = []
     if all_msgs:
         for x in all_msgs:
@@ -298,16 +331,19 @@ def group_chat_from_event(request: Request, eventid: int, c = Depends(get_db)):
 def user_profile(request: Request, username: str, c = Depends(get_db)):
     userfulldetails = c.execute("SELECT * FROM userdetails WHERE username=?", (username,)).fetchone()
     if not userfulldetails:
-        return Response(content="User not found.", media_type="text/plain")
+        raise HTTPException(status_code=404, detail="User not found")
 
-    # Inject translation helper
     user_lang = request.session.get("lang", "en")
     def bound_translate(text, save_file=True):
         return translate_text(text, lang=user_lang, save_file=save_file)
 
+    current_user = request.session.get("username")
+    is_own_profile = (current_user == username)
+
     return templates.TemplateResponse(request, "userprofile.html", {
         "userdetails": dict(userfulldetails),
-        "translate": bound_translate
+        "translate": bound_translate,
+        "is_own_profile": is_own_profile
     })
 
 @app.get("/changetemplate")
@@ -340,6 +376,9 @@ def show_campaigns(request: Request, c = Depends(get_db)):
     currentuname = request.session.get("username")
     c.execute("SELECT * FROM eventdetail")
     edetailslist = [dict(row) for row in c.fetchall()]
+
+    # Trending Logic (Top 4 by likes)
+    trending_events = sorted(edetailslist, key=lambda x: x['likes'], reverse=True)[:4]
 
     alleventscat = []
     for x in edetailslist:
@@ -386,7 +425,8 @@ def show_campaigns(request: Request, c = Depends(get_db)):
         "isadmin": bool(isadmin),
         "c_user": str(currentuname).strip(),
         "viewuserevent": viewuserevent,
-        "translate": bound_translate
+        "translate": bound_translate,
+        "trending_events": trending_events
     })
 
 @app.post("/viewyourevents/{username}")
@@ -453,14 +493,12 @@ async def login(request: Request, c = Depends(get_db)):
 async def addnewevent(request: Request, c = Depends(get_db)):
     form_data = await request.form()
     username = request.session.get("username")
-    # addevent_mod expects form_data dict and a username for validation
     res = add_event_mod.addevent(c, dict(form_data), username)
     return Response(content=res, media_type="text/plain")
 
 @app.post("/addeventreq")
 async def addeventreq(request: Request, c = Depends(get_db)):
     form_data = await request.form()
-    # addeventrequest modifies session in-place in Flask, here we pass the session object (dict-like)
     res = add_event_mod.addeventrequest(c, dict(form_data), request.session)
     return Response(content=res, media_type="text/plain")
 
@@ -533,7 +571,7 @@ def dummyevent(request: Request):
     request.session["description"] = "Join us for a community tree plantation drive to make our neighborhood greener and healthier!"
     request.session["location"] = random.choice(["Central Park", "Community Center", "City Hall", "Riverside Park", "Downtown Square"])
     request.session["category"] = random.choice(["Tree Plantation", "Blood Donation", "Cleanliness Drive"])
-    request.session["eventdate"] = f"{random.randint(2025,2028)}-{random.randint(10,12):02d}-{random.randint(10,28):02d}" # Fixed fmt for date input
+    request.session["eventdate"] = f"{random.randint(2025,2028)}-{random.randint(10,12):02d}-{random.randint(10,28):02d}"
     request.session["enddate"] = f"{random.randint(2025,2028)}-{random.randint(10,12):02d}-{random.randint(10,28):02d}"
     request.session["starttime"] = f"{random.randint(10,12)}:{random.randint(10,59)}"
     request.session["endtime"] = f"{random.randint(10,12)}:{random.randint(10,59)}"
@@ -554,9 +592,7 @@ def api(request: Request, c = Depends(get_db)):
 def checkeventloop(c = Depends(get_db)):
     try:
         ch = c.execute("SELECT * FROM eventdetail").fetchall()
-        hour24 = datetime.timedelta(hours=24)
         for x in ch:
-            # Note: format matching relies on input validation.
             try:
                 etime = datetime.datetime.strptime(f"{x['enddate']} {x['endtime']}", "%Y-%m-%d %H:%M").replace(tzinfo=ist)
                 if etime <= datetime.datetime.now(ist):
@@ -571,12 +607,76 @@ def checkeventloop(c = Depends(get_db)):
     except Exception as e:
         text = f"Checkk event loop error: {e}"
         sendlog(text)
-        print(text)
         return Response(content=text, media_type="text/plain")
+
+# --- New Routes (Features) ---
+
+@app.get("/download_ics/{eventid}")
+def download_ics(eventid: int, c = Depends(get_db)):
+    event = c.execute("SELECT * FROM eventdetail WHERE eventid=?", (eventid,)).fetchone()
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    # Format dates for iCal (YYYYMMDDTHHMMSS)
+    try:
+        start_dt = f"{event['eventdate'].replace('-', '')}T{event['starttime'].replace(':', '')}00"
+        end_dt = f"{event['enddate'].replace('-', '')}T{event['endtime'].replace(':', '')}00"
+    except:
+        start_dt = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+        end_dt = start_dt
+
+    ics_content = f"""BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//DEcoCamp//Events//EN
+BEGIN:VEVENT
+UID:decocamp-{eventid}
+DTSTAMP:{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}
+DTSTART:{start_dt}
+DTEND:{end_dt}
+SUMMARY:{event['eventname']}
+DESCRIPTION:{event['description']}
+LOCATION:{event['location']}
+END:VEVENT
+END:VCALENDAR"""
+
+    return Response(content=ics_content, media_type="text/calendar", headers={"Content-Disposition": f"attachment; filename=event_{eventid}.ics"})
+
+@app.get("/export_data")
+def export_data(request: Request, c = Depends(get_db)):
+    username = request.session.get("username")
+    if not username:
+        raise HTTPException(status_code=401, detail="Please login first")
+
+    ud = c.execute("SELECT * FROM userdetails WHERE username=?", (username,)).fetchone()
+    if not ud:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow(["--- USER PROFILE ---"])
+    writer.writerow(["Name", "Username", "Email", "Role", "Events IDs"])
+    writer.writerow([ud["name"], ud["username"], ud["email"], ud["role"], ud["events"]])
+
+    writer.writerow([])
+    writer.writerow(["--- CREATED EVENTS ---"])
+    if ud["events"]:
+        event_ids = ud["events"].split(",")
+        writer.writerow(["Event ID", "Name", "Location", "Category", "Date", "Description"])
+        for eid in event_ids:
+            ev = c.execute("SELECT * FROM eventdetail WHERE eventid=?", (eid,)).fetchone()
+            if ev:
+                writer.writerow([ev["eventid"], ev["eventname"], ev["location"], ev["category"], ev["eventdate"], ev["description"]])
+
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=decocamp_data_{username}.csv"}
+    )
 
 # --- SocketIO Events ---
 
-# Helper to get DB connection manually inside socket events
 def get_socket_db():
     db = sq.connect(os.environ.get("SQLITECLOUD"))
     db.row_factory = sq.Row
@@ -625,7 +725,6 @@ async def add_like(sid, data):
         new_likes_str = ",".join(liked_events)
         c.execute("UPDATE userdetails SET likes=? WHERE username=?", (new_likes_str, byuser))
 
-        # Re-fetch for updated count
         new_likes = c.execute("SELECT likes FROM eventdetail WHERE eventid=?", (eventid,)).fetchone()["likes"]
         db.commit()
     finally:
@@ -633,7 +732,6 @@ async def add_like(sid, data):
 
     await sio.emit("update_like", {"eventid": eventid, "likes": new_likes})
 
-# Wrap app at the end for uvicorn
 app = socketio.ASGIApp(sio, app)
 
 if __name__ == "__main__":
