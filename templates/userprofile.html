@@ -69,7 +69,8 @@
             <div class="profile-banner"></div>
 
             <div class="profile-content">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ userdetails['username'] }}" alt="Avatar" class="profile-avatar-img">
+                <!-- Using UI Avatars with Initials -->
+                <img src="https://ui-avatars.com/api/?name={{ userdetails['username'] }}&background=random&color=fff&size=256" alt="Avatar" class="profile-avatar-img">
 
                 <h1 class="profile-name">{{ translate(userdetails['name']) }}</h1>
                 <div class="profile-username">@{{ userdetails['username'] }}</div>

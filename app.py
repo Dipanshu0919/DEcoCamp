@@ -245,7 +245,7 @@ async def sendotp(request: Request, email: str = Form(...), c = Depends(get_db))
     # Rate Limiting
     client_ip = request.client.host
     if client_ip in rate_limit_store and time.time() - rate_limit_store[client_ip] < 30: # 30s limit
-        return Response(content="Please wait 30 seconds before requesting another OTP.", media_type="text/plain", status_code=429)
+        return Response(content=f"Please wait {int(30 - (time.time() - rate_limit_store[client_ip]))} seconds before requesting another OTP.", media_type="text/plain", status_code=429)
     rate_limit_store[client_ip] = time.time()
 
     otp = random.randint(1111,9999)
@@ -492,8 +492,27 @@ async def login(request: Request, c = Depends(get_db)):
 @app.post("/addevent")
 async def addnewevent(request: Request, c = Depends(get_db)):
     form_data = await request.form()
-    username = request.session.get("username")
-    res = add_event_mod.addevent(c, dict(form_data), username)
+    session_username = request.session.get("username")
+
+    # Logic: Default to session user
+    target_username = session_username
+
+    if session_username:
+        user_row = c.execute("SELECT role FROM userdetails WHERE username=?", (session_username,)).fetchone()
+        if user_row and user_row["role"] == "admin":
+            # Admin approving an event:
+            # Check for the username field passed from the pending events form
+            if form_data.get("username"):
+                target_username = form_data.get("username")
+
+                # Cleanup eventreq based on name and username
+                try:
+                    c.execute("DELETE FROM eventreq WHERE eventname=? AND username=?", (form_data.get("eventname"), target_username))
+                except Exception as e:
+                    print(f"Error cleaning up eventreq: {e}")
+
+    # Pass the resolved username to the module
+    res = add_event_mod.addevent(c, dict(form_data), target_username)
     return Response(content=res, media_type="text/plain")
 
 @app.post("/addeventreq")

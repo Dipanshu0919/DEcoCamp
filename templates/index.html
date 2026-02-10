@@ -337,7 +337,8 @@
                         {% for org in top_organizers %}
                         <li class="leaderboard-item">
                             <span class="leaderboard-rank">#{{ loop.index }}</span>
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ org.username }}" class="leaderboard-avatar">
+                            <!-- Using UI Avatars with Initials -->
+                            <img src="https://ui-avatars.com/api/?name={{ org.username }}&background=random&color=fff&size=128" class="leaderboard-avatar">
                             <div style="flex-grow: 1;">
                                 <div style="font-weight: 600; font-size: 0.9rem;">{{ org.name }}</div>
                                 <div style="font-size: 0.8rem; color: var(--text-muted);">{{ org.count }} {{ translate("Events") }}</div>

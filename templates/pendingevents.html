@@ -4,7 +4,7 @@
     <table class="pending-events-table">
         <thead>
             <tr>
-                <th>Event ID</th>
+                <th>Action</th>
                 <th>Name, Location, Category</th>
                 <th>Dates & Times</th>
                 <th>Description</th>
@@ -13,48 +13,57 @@
         </thead>
         <tbody>
             {% for event in pendingevents %}
-            <tr class="event-row" data-event-id="{{ event.eventid }}">
-                <td>
-                    <input type="number" name="eventid" readonly value="{{ event.eventid }}"><br><br>
-                    <button type="button" class="action-btn approve-btn">Approve</button>
-                    <button type="button" class="action-btn decline-btn" onclick="declineEvent('{{ event.eventid }}')">Decline</button>
+            <tr class="event-row">
+                <td style="vertical-align: top; text-align: center;">
+                    <!-- We use hidden ID for tracking, but visible inputs for data -->
+                    <button type="button" class="action-btn approve-btn" style="margin-bottom: 8px; width: 100%;">Approve</button>
+                    <button type="button" class="action-btn decline-btn" style="width: 100%;" onclick="declineEvent('{{ event.eventid }}')">Decline</button>
                 </td>
-                <td>
-                    <p style="text-align: center; font-weight: bolder;">Event Name</p>
-                    <input type="text" name="eventname" value="{{ event.eventname }}" maxlength="50" required><br><br>
-                    <p style="text-align: center; font-weight: bolder;">Location</p>
-                    <input type="text" name="location" value="{{ event.location }}" maxlength="30" required><br><br>
-                    <p style="text-align: center; font-weight: bolder;">Category</p>
-                    <select name="category" required>
+                <td style="vertical-align: top;">
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Event Name</label>
+                    <input type="text" name="eventname" value="{{ event.eventname }}" maxlength="50" required style="width: 100%; margin-bottom: 8px;">
+
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Location</label>
+                    <input type="text" name="location" value="{{ event.location }}" maxlength="30" required style="width: 100%; margin-bottom: 8px;">
+
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Category</label>
+                    <select name="category" required style="width: 100%;">
                         <option value="Tree Plantation" {% if event.category == 'Tree Plantation' %}selected{% endif %}>Tree Plantation</option>
                         <option value="Blood Donation" {% if event.category == 'Blood Donation' %}selected{% endif %}>Blood Donation</option>
-                        <option value="Cleanlines Drive" {% if event.category == 'Cleanlines Drive' %}selected{% endif %}>Cleanlines Drive</option>
+                        <option value="Cleanliness Drive" {% if event.category == 'Cleanliness Drive' %}selected{% endif %}>Cleanliness Drive</option>
+                        <option value="Awareness Campaign" {% if event.category == 'Awareness Campaign' %}selected{% endif %}>Awareness Campaign</option>
+                        <option value="Other" {% if event.category == 'Other' %}selected{% endif %}>Other</option>
                     </select>
                 </td>
-                <td>
-                    <br>
-                    <p style="text-align: center; font-weight: bolder;">Start</p>
-                    <input type="date" name="eventdate" value="{{ event.eventdate }}" required><br>
-                    <input type="time" name="starttime" value="{{ event.starttime }}" required>
-                    <br><br>
-                    <p style="text-align: center; font-weight: bolder;">End</p>
-                    <input type="date" name="enddate" value="{{ event.enddate }}" required><br>
-                    <input type="time" name="endtime" value="{{ event.endtime }}" required>
+                <td style="vertical-align: top;">
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Start</label>
+                    <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                        <input type="date" name="eventdate" value="{{ event.eventdate }}" required style="width: 130px;">
+                        <input type="time" name="starttime" value="{{ event.starttime }}" required>
+                    </div>
+
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">End</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="date" name="enddate" value="{{ event.enddate }}" required style="width: 130px;">
+                        <input type="time" name="endtime" value="{{ event.endtime }}" required>
+                    </div>
                 </td>
-                <td>
-                    <textarea rows="15" cols="30" name="description" placeholder="Description (Max 500)" maxlength="500" required>{{ event.description }}</textarea>
+                <td style="vertical-align: top;">
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Description</label>
+                    <textarea name="description" rows="6" maxlength="500" required style="width: 100%; resize: vertical;">{{ event.description }}</textarea>
                 </td>
-                <td>
-                    <p style="text-align: center; font-weight: bolder;">Username</p>
-                    <input type="text" name="username" value="{{ event.username }}" required readonly><br><br>
-                    <p style="text-align: center; font-weight: bolder;">Email</p>
-                    <input type="text" name="email" required readonly value="{{ event.email }}">
+                <td style="vertical-align: top;">
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Username</label>
+                    <input type="text" name="username" value="{{ event.username }}" required readonly style="width: 100%; margin-bottom: 8px; background-color: rgba(0,0,0,0.2);">
+
+                    <label style="font-weight: bold; font-size: 0.8em; display:block;">Email</label>
+                    <input type="text" name="email" value="{{ event.email }}" required readonly style="width: 100%; background-color: rgba(0,0,0,0.2);">
                 </td>
-                </tr>
+            </tr>
             {% else %}
             <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                    There are currently no pending events to approve.
+                <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    No pending events to approve.
                 </td>
             </tr>
             {% endfor %}

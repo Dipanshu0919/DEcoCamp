@@ -1,72 +1,106 @@
 from . import sendlog, sendmail, detailsformat
 
-def addevent(c, form_data: dict, session_username: str):
+def addevent(c, form_data: dict, owner_username: str):
+    # List of expected fields
     field = ["eventname", "email", "starttime", "endtime", "eventdate", "enddate", "location", "category", "description", "username"]
 
-    # Extract values from the dict (form_data)
-    # The last field is username, which we get from the session passed in
-    event_values = [form_data.get(y) for y in field[:-1]]
-    event_values.append(session_username)
+    # Construct event_values.
+    # Logic: iterate through 'field'. If key is 'username', use owner_username. Else get from form_data.
+    event_values = []
+    for f in field:
+        if f == "username":
+            event_values.append(owner_username)
+        else:
+            event_values.append(form_data.get(f))
 
-    check = c.execute("SELECT * FROM eventdetail WHERE eventname=(?)", (event_values[0],))
+    # Check if event already exists
+    check = c.execute("SELECT * FROM eventdetail WHERE eventname=?", (event_values[0],))
     fetchall = check.fetchall()
     for ab in fetchall:
-        # Compare fields. field[:-1] because 'username' is not in form_data usually or handled separately
-        if all(str(ab[x]) == str(y) for x, y in zip(field, event_values)):
+        # Strict check: if all fields match, it's a duplicate
+        is_duplicate = True
+        for i, f in enumerate(field):
+            if str(ab[f]) != str(event_values[i]):
+                is_duplicate = False
+                break
+        if is_duplicate:
             return "Event Already Exists"
 
     tuple_all = ", ".join(field)
-    # Create placeholders
     vals = ", ".join(["?"] * len(event_values))
 
-    c.execute(f"INSERT INTO eventdetail({tuple_all}) VALUES ({vals})", tuple(event_values))
-    lastid = c.execute("SELECT eventid FROM eventdetail ORDER BY eventid DESC LIMIT 1").fetchone()
-    c.execute("DELETE FROM eventreq WHERE eventid=(?)", (lastid["eventid"], ))
+    try:
+        c.execute(f"INSERT INTO eventdetail({tuple_all}) VALUES ({vals})", tuple(event_values))
 
-    uud = c.execute("SELECT events FROM userdetails WHERE username=?", (event_values[-1], )).fetchone()
-    if not uud or not uud["events"]:
-        fe = []
-    else:
-        fe = uud["events"].split(",")
-    fe.append(str(lastid["eventid"]))
-    joint = ",".join(fe)
-    c.execute("UPDATE userdetails SET events=? WHERE username=?", (joint, event_values[-1]))
+        lastid = c.execute("SELECT eventid FROM eventdetail ORDER BY eventid DESC LIMIT 1").fetchone()
 
-    eventdetails = c.execute("SELECT * FROM eventdetail WHERE eventid=?", (lastid["eventid"], )).fetchone()
-    details = detailsformat(eventdetails)
-    sendmail(event_values[1], "Event Approved", f'Congragulations\n\nYour Event is approved and now visible on Campaigns Page.\n\nEvent Details:\n\n{details}\n\nThank You!')
-    sendlog(f"#EventAdd \nNew Event Added:\n{details}")
-    return "Event added!"
+        # We don't need to delete from eventreq here because app.py does it,
+        # but leaving it as a safeguard doesn't hurt.
+        try:
+             c.execute("DELETE FROM eventreq WHERE eventname=? AND username=?", (event_values[0], owner_username))
+        except:
+             pass
+
+        # Update userdetails 'events' column
+        uud = c.execute("SELECT events FROM userdetails WHERE username=?", (owner_username, )).fetchone()
+        if not uud or not uud["events"]:
+            fe = []
+        else:
+            fe = uud["events"].split(",")
+
+        fe.append(str(lastid["eventid"]))
+        joint = ",".join(fe)
+        c.execute("UPDATE userdetails SET events=? WHERE username=?", (joint, owner_username))
+
+        # Fetch details for email
+        eventdetails = c.execute("SELECT * FROM eventdetail WHERE eventid=?", (lastid["eventid"], )).fetchone()
+        details = detailsformat(eventdetails)
+
+        try:
+            sendmail(event_values[1], "Event Approved", f'Congragulations\n\nYour Event is approved and now visible on Campaigns Page.\n\nEvent Details:\n\n{details}\n\nThank You!')
+        except Exception as e:
+            print(f"Mail error: {e}")
+
+        sendlog(f"#EventAdd \nNew Event Added:\n{details}")
+        return "Event added!"
+
+    except Exception as e:
+        print(f"Error adding event: {e}")
+        return f"Error adding event: {str(e)}"
 
 
 def addeventrequest(c, form_data: dict, session: dict):
     uuname, uemail = session.get("username"), session.get("email")
-    field = ["eventname", "email", "starttime", "endtime", "eventdate", "enddate", "location", "category", "description", "username"]
-
-    # Construct values
-    event_values = [form_data.get(y) for y in field]
-    # Overwrite username and email from session
-    event_values[-1], event_values[1] = uuname, uemail
-
-    check = c.execute("SELECT * FROM eventdetail WHERE eventname=(?)", (event_values[0],))
-    fetchall = check.fetchall()
-    for ab in fetchall:
-            if all(str(ab[x]) == str(y) for x, y in zip(field, event_values)):
-                return "Event Already Exists"
-
-    fetchall2 = c.execute("SELECT * FROM eventreq WHERE eventname=(?)", (event_values[0],)).fetchall()
-    for ab in fetchall2:
-            if all(str(ab[x]) == str(y) for x, y in zip(field, event_values)):
-                return "Event Already Submitted! Please Wait For Approval"
-
-    efields = ", ".join(field)
-    vals = ", ".join(["?"] * len(event_values))
     if not uuname:
         return "Please Login First To Add Event."
 
+    field = ["eventname", "email", "starttime", "endtime", "eventdate", "enddate", "location", "category", "description", "username"]
+
+    event_values = []
+    for f in field:
+        if f == "username":
+            event_values.append(uuname)
+        elif f == "email":
+            event_values.append(uemail)
+        else:
+            event_values.append(form_data.get(f))
+
+    # Check if exists in active events
+    check = c.execute("SELECT * FROM eventdetail WHERE eventname=?", (event_values[0],)).fetchone()
+    if check:
+         return "Event Already Exists"
+
+    # Check if exists in pending requests
+    check_req = c.execute("SELECT * FROM eventreq WHERE eventname=?", (event_values[0],)).fetchone()
+    if check_req:
+         return "Event Already Submitted! Please Wait For Approval"
+
+    efields = ", ".join(field)
+    vals = ", ".join(["?"] * len(event_values))
+
     c.execute(f"INSERT INTO eventreq({efields}) VALUES ({vals})", tuple(event_values))
 
-    # In Flask we popped session here, in FastAPI we modify the session dict passed to us
+    # Clear draft from session (except email/username)
     for x in field:
         if x not in ("email", "username"):
             session.pop(x, None)
