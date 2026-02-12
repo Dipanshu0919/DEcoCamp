@@ -49,7 +49,7 @@
 <div class="chat-header">
     <div class="status-dot"></div>
     <div class="header-info">
-        <h2>{{ eventname }}</h2>
+        <h2>{{ eventname }} <span id="total_msgs">( {{ messages|length }} )</span></h2>
         <p>ID: {{ eventid }}</p>
     </div>
 </div>
@@ -139,6 +139,9 @@
             }
 
             msgContainer.appendChild(wrapper);
+            const totalMsgs = document.getElementById("total_msgs");
+            let currentCount = parseInt(totalMsgs.innerText.replace(/[^\d]/g, ""));
+            totalMsgs.innerText = `( ${currentCount + 1} )`;
             msgContainer.scrollTop = msgContainer.scrollHeight;
         }
     });

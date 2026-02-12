@@ -1,21 +1,258 @@
+<style>
+    /* Global Search Styling */
+    .global-search-container {
+        margin-bottom: 1rem;
+    }
+
+    .global-search-input {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color, #ccc);
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+        background-color: #fff;
+        color: #1f2937;
+    }
+
+    .global-search-input:focus {
+        border-color: var(--primary-color, #007bff);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    /* Container for the filter section */
+    .filter-container {
+        margin: 1rem 0 2rem 0;
+        padding: 0 5px;
+    }
+
+    /* Mobile Toggle Header */
+    .filter-header-mobile {
+        display: none; /* Hidden on desktop */
+        width: 100%;
+        padding: 12px 15px;
+        background-color: #ffffff; /* Force white background for visibility */
+        color: #1f2937; /* Force dark text for contrast */
+        border: 1px solid var(--border-color, #ccc);
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        user-select: none;
+        transition: background-color 0.2s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .filter-header-mobile:active {
+        background-color: #f5f5f5;
+    }
+    .filter-header-mobile::after {
+        content: '▼';
+        font-size: 0.8em;
+        margin-left: 10px;
+        color: #6b7280;
+    }
+    .filter-header-mobile.open::after {
+        content: '▲';
+    }
+
+    /* Wrapper for the buttons */
+    .filter-buttons-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Individual Button Styling */
+    .filter-btn {
+        padding: 8px 16px;
+        background-color: #f3f4f6; /* Light grey background */
+        color: #1f2937; /* Dark text */
+        border: 1px solid #d1d5db;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    .filter-btn:hover {
+        background-color: #e5e7eb;
+        border-color: #9ca3af;
+    }
+
+    .filter-btn.active {
+        background-color: var(--primary-color, #007bff);
+        color: #ffffff; /* White text on active */
+        border-color: var(--primary-color, #007bff);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Distinct style for the 'All/Clear' button */
+    .filter-btn.clear-btn {
+        font-weight: 600;
+    }
+
+    /* Responsive Logic */
+    @media (max-width: 768px) {
+        .filter-header-mobile {
+            display: flex;
+        }
+
+        /* On mobile, buttons are hidden until toggled */
+        .filter-buttons-wrapper {
+            display: none;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05); /* Slight tint for container */
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .filter-buttons-wrapper.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
 {% if viewyourevents %}
     <button class="cta" onclick="location.reload();" style="width:100%">{{ translate("View All Events") }}</button><br><br>
 {% endif %}
 <button id="backToAllBtn" class="cta" style="display: none;">{{ translate("Back to All Categories") }}</button>
 
+<!-- GLOBAL SEARCH & FILTER SECTION -->
+{% if not viewyourevents %}
+    <!-- 1. Global Search Input -->
+    <div class="search-wrapper">
+        <input type="text"
+               class="global-search-input"
+               placeholder="{{ translate('Search all events (title, location, description)...') }}"
+               onkeyup="handleGlobalSearch(this.value)">
+    </div>
+
+    <!-- 2. Category Filters -->
+    <div class="filter-container">
+        <!-- Mobile Toggle Header -->
+        <div class="filter-header-mobile" onclick="toggleMobileFilterMenu()" id="mobileFilterHeader">
+            <span id="mobileFilterText">{{ translate("Filter Categories") }}</span>
+        </div>
+
+        <!-- Buttons Container -->
+        <div class="filter-buttons-wrapper" id="filterButtonsContainer">
+            <!-- 'All' button acts as Clear Filter -->
+            <button class="filter-btn clear-btn active" data-cat="all" onclick="toggleCategory('all', this)">
+                {{ translate("All Categories") }}
+            </button>
+
+            {% for category_name in allevents.keys() %}
+                <button class="filter-btn" data-cat="{{ category_name|replace(' ', '-')|lower }}" onclick="toggleCategory('{{ category_name|replace(' ', '-')|lower }}', this)">
+                    {{ translate(category_name) }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<!-- END FILTER SECTION -->
+
+
 <!-- Trending Section -->
 {% if trending_events and not viewyourevents %}
-<div class="trending-section" style="margin-bottom: 3rem;">
+<div class="trending-section" id="trending-section-wrapper" style="margin-bottom: 3rem;">
     <h3>🔥 {{ translate("Trending Now") }}</h3>
     <div class="campaign-grid">
         {% for e in trending_events %}
             <div class="campaign-card" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05);">
+                <!-- Top Rated Badge -->
                 <div style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">TOP RATED</div>
+
+                <span class="campaign-id">#{{ e.eventid }}</span>
                 <h4>{{ translate(e.eventname) }}</h4>
-                <p>{{ translate(e.description[:100], save_file=False) }}...</p>
+
+                <!-- Description with Toggle (using prefix 'trending-' to avoid ID conflicts) -->
+                {% set eventdesc = translate(e.description, save_file=False) %}
+                <p id="event-desc-wrapper-trending-{{e.eventid}}">
+                    {% if e.description|length > 100 %}
+                        <span id="desc-short-trending-{{e.eventid}}">{{ eventdesc[:100] }}...</span>
+                        <span id="desc-full-trending-{{e.eventid}}" style="display:none">{{ eventdesc }}</span>
+                        <button id="read-more-btn-trending-{{e.eventid}}" class="read-more-btn" onclick="toggleDescription('trending-{{e.eventid}}', 'more')">{{ translate("Read More") }}</button>
+                        <button id="read-less-btn-trending-{{e.eventid}}" class="read-more-btn" style="display:none" onclick="toggleDescription('trending-{{e.eventid}}', 'less')">{{ translate("Read Less") }}</button>
+                    {% else %}
+                        {{ eventdesc }}
+                    {% endif %}
+                </p>
+
+                <!-- Date and Time -->
+                {% set eventstartdate = e.eventstartdate|datetimeformat %}
+                {% set eventeventenddate = e.eventenddate|datetimeformat %}
+                <p><b>{{ translate("From Date and Time:") }}</b> {{ translate(eventstartdate) }} | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> {{ translate(eventeventenddate) }} | {{ e.eventendtime }}</p>
+
+                <!-- Smart Map Link -->
+                <p><b>{{ translate("Location:") }}</b>
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+                        📍 {{ translate(e.location) }} ↗
+                    </a>
+                </p>
+
+                <!-- Full Action Footer -->
                 <div class="card-footer">
-                     <span>❤️ {{ e.likes }} {{ translate("Likes") }}</span>
-                     <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})" style="margin-left: auto;">{{ translate("Join Chat") }}</button>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        {% if c_user == "None" %}
+                            {% set loginalertmsg = translate("Login to like this event.") %}
+                            <button id="likeevent-trending-{{e.eventid}}" class="like-btn" onclick="showAlert('{{ loginalertmsg }}', 'warning')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </button>
+                        {% else %}
+                            {% set userliked = userdetails['likes'].split(",") if userdetails['likes'] else [] %}
+                            {% if e.eventid|string in userliked %}
+                                <button id="likeevent-trending-{{e.eventid}}" class="like-btn liked" onclick="changelike({{e.eventid}}, 'remove')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                </button>
+                            {% else %}
+                                <button id="likeevent-trending-{{e.eventid}}" class="like-btn" onclick="changelike({{e.eventid}}, 'add')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                        <span id="eventlike-{{e.eventid}}" class="like-count">{{ e.likes }}</span>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-left: 10px;">
+                        <!-- Share Trigger -->
+                        <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}" style="background:none; border:none; color: var(--text-muted); cursor: pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                            </svg>
+                        </button>
+                        <!-- Calendar Download -->
+                        <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}" style="color: var(--text-muted);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div style="flex-grow: 1;"></div>
+
+                    <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
+                    <button class="campaign-tag" onclick="window.location.href='/user/{{ e.username }}'">{{ translate('Profile') }}</button>
+
+                    {% if e.username == c_user or isadmin %}
+                        <button onclick="asktodelete({{ e.eventid }})" class="delete-btn">✕</button>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
@@ -36,7 +273,8 @@
     {% endif %}
 
     {% if viewevents %}
-        <div class="campaign-category-wrapper" data-category-id="{{ category_name|replace(' ', '-')|lower }}">
+        <!-- Added ID to the wrapper for easier JS selection -->
+        <div class="campaign-category-wrapper category-section" id="cat-{{ category_name|replace(' ', '-')|lower }}" data-category-id="{{ category_name|replace(' ', '-')|lower }}">
             <h3>{{ translate(category_name) }} ( {{ viewevents|length }} )</h3>
 
             <div class="controls-container">
@@ -60,7 +298,7 @@
 
             <div class="campaign-grid">
                 {% for e in viewevents|sort(attribute=sortby) %}
-                    <div class="campaign-card {% if not viewyourevents and loop.index > 3 %}hidden{% endif %}">
+                    <div class="campaign-card {% if not viewyourevents and loop.index > 4 %}hidden{% endif %}">
                         <span class="campaign-id">#{{ e.eventid }}</span>
                         <h4>{{ translate(e.eventname) }}</h4>
                         {% set eventdesc = translate(e.description, save_file=False) %}
@@ -143,7 +381,7 @@
                 {% endfor %}
             </div>
 
-            {% if not viewyourevents and viewevents|length > 3 %}
+            {% if not viewyourevents and viewevents|length > 4 %}
                 <button class="cta view-all-btn" data-category-id="{{ category_name|replace(' ', '-')|lower }}">{{ translate("View All") }}</button>
             {% endif %}
         </div>
@@ -153,3 +391,144 @@
 {% if viewyourevents %}
     <button class="cta" onclick="location.reload();" style="width:100%">{{ translate("View All Events") }}</button>
 {% endif %}
+
+<!-- Javascript to Handle Multi-Select Filtering & Global Search -->
+<script>
+// State to hold selected categories and search term.
+let selectedCategories = new Set(['all']);
+let globalSearchTerm = '';
+
+// --- Filter UI Toggle (Mobile) ---
+function toggleMobileFilterMenu() {
+    const container = document.getElementById('filterButtonsContainer');
+    const header = document.getElementById('mobileFilterHeader');
+
+    container.classList.toggle('show');
+    header.classList.toggle('open');
+}
+
+// --- Category Selection Logic ---
+function toggleCategory(catId, btnElement) {
+    // 1. Logic for "All Categories" (Reset)
+    if (catId === 'all') {
+        selectedCategories.clear();
+        selectedCategories.add('all');
+
+        // Visual Reset
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        updateMobileHeaderText();
+        applyFilters();
+        return;
+    }
+
+    // 2. Logic for Specific Categories
+    // If 'all' is currently selected, remove it first
+    if (selectedCategories.has('all')) {
+        selectedCategories.delete('all');
+        const allBtn = document.querySelector('.filter-btn[data-cat="all"]');
+        if(allBtn) allBtn.classList.remove('active');
+    }
+
+    // Toggle the clicked category
+    if (selectedCategories.has(catId)) {
+        selectedCategories.delete(catId);
+        btnElement.classList.remove('active');
+    } else {
+        selectedCategories.add(catId);
+        btnElement.classList.add('active');
+    }
+
+    // 3. Fail-safe: If user deselects everything, revert to "All"
+    if (selectedCategories.size === 0) {
+        selectedCategories.add('all');
+        const allBtn = document.querySelector('.filter-btn[data-cat="all"]');
+        if(allBtn) allBtn.classList.add('active');
+    }
+
+    updateMobileHeaderText();
+    applyFilters();
+}
+
+function updateMobileHeaderText() {
+    const headerText = document.getElementById('mobileFilterText');
+    if (!headerText) return;
+
+    if (selectedCategories.has('all')) {
+        headerText.innerText = "{{ translate('Filter Categories') }}";
+    } else {
+        const count = selectedCategories.size;
+        headerText.innerText = `Filters (${count} selected)`;
+    }
+}
+
+// --- Global Search Logic ---
+function handleGlobalSearch(term) {
+    globalSearchTerm = term.toLowerCase();
+    applyFilters();
+}
+
+// --- Main Filter & Search Function ---
+function applyFilters() {
+    // 1. Handle Trending Section
+    const trendingSection = document.getElementById('trending-section-wrapper');
+
+    // Check trending cards
+    if (trendingSection) {
+        let trendingHasVisible = false;
+        const trendingCards = trendingSection.querySelectorAll('.campaign-card');
+
+        trendingCards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const matchesSearch = !globalSearchTerm || text.includes(globalSearchTerm);
+
+            // Only show trending if 'all' is selected (default behavior) AND it matches search
+            if (selectedCategories.has('all') && matchesSearch) {
+                card.style.display = '';
+                trendingHasVisible = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Hide entire trending section if no cards match
+        if (trendingHasVisible) {
+            trendingSection.style.display = 'block';
+        } else {
+            trendingSection.style.display = 'none';
+        }
+    }
+
+    // 2. Handle All Category Sections
+    const allSections = document.querySelectorAll('.campaign-category-wrapper');
+
+    allSections.forEach(section => {
+        const catId = section.getAttribute('data-category-id');
+        const isCatActive = selectedCategories.has('all') || selectedCategories.has(catId);
+
+        let sectionHasVisibleCards = false;
+
+        const cards = section.querySelectorAll('.campaign-card');
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const matchesSearch = !globalSearchTerm || text.includes(globalSearchTerm);
+
+            if (isCatActive && matchesSearch) {
+                card.style.display = ''; // Reset display to default
+                card.classList.remove('hidden'); // Remove 'hidden' class if present
+                sectionHasVisibleCards = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Hide entire category section if no cards match
+        if (sectionHasVisibleCards) {
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+}
+</script>
