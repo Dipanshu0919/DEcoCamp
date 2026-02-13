@@ -304,7 +304,8 @@
                 <p>{{ translate("Join hands to protect our green planet. Start a campaign, plant hope for a brighter, cleaner tomorrow.") }}</p>
                 <div id="ndhome"></div>
                 <script>
-                fetch("{{ url_for('static', path='/quotes.json') }}").then(r=>r.json()).then(data=>{
+                // FIX: Use relative path to avoid Mixed Content error
+                fetch("/static/quotes.json").then(r=>r.json()).then(data=>{
                     const userLanguage = "{{ user_language }}" || "en";
                     const quoteEl = document.getElementById('ndhome');
                     const setQuote = () => {

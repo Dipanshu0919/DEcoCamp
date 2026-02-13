@@ -395,8 +395,9 @@
 <!-- Javascript to Handle Multi-Select Filtering & Global Search -->
 <script>
 // State to hold selected categories and search term.
-let selectedCategories = new Set(['all']);
-let globalSearchTerm = '';
+// Use 'var' to allow re-declaration without errors when script re-runs in global scope.
+var selectedCategories = new Set(['all']);
+var globalSearchTerm = '';
 
 // --- Filter UI Toggle (Mobile) ---
 function toggleMobileFilterMenu() {
