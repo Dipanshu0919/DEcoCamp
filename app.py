@@ -951,9 +951,9 @@ async def add_like(sid, data):
 # --- Final ASGI App: Single SocketIO mount ---
 app = socketio.ASGIApp(sio, app)
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     import os
-#     port = int(os.environ.get("PORT", 8000))
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.environ.get("PORT", 8000))
 
-#     uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
