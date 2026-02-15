@@ -1,5 +1,4 @@
 <style>
-    /* Global Search Styling */
     .global-search-container {
         margin-bottom: 1rem;
     }
@@ -21,19 +20,17 @@
         box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
     }
 
-    /* Container for the filter section */
     .filter-container {
         margin: 1rem 0 2rem 0;
         padding: 0 5px;
     }
 
-    /* Mobile Toggle Header */
     .filter-header-mobile {
-        display: none; /* Hidden on desktop */
+        display: none;
         width: 100%;
         padding: 12px 15px;
-        background-color: #ffffff; /* Force white background for visibility */
-        color: #1f2937; /* Force dark text for contrast */
+        background-color: #ffffff;
+        color: #1f2937;
         border: 1px solid var(--border-color, #ccc);
         border-radius: 8px;
         font-weight: 600;
@@ -58,18 +55,16 @@
         content: '▲';
     }
 
-    /* Wrapper for the buttons */
     .filter-buttons-wrapper {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
     }
 
-    /* Individual Button Styling */
     .filter-btn {
         padding: 8px 16px;
-        background-color: #f3f4f6; /* Light grey background */
-        color: #1f2937; /* Dark text */
+        background-color: #f3f4f6;
+        color: #1f2937;
         border: 1px solid #d1d5db;
         border-radius: 20px;
         cursor: pointer;
@@ -86,27 +81,113 @@
 
     .filter-btn.active {
         background-color: var(--primary-color, #007bff);
-        color: #ffffff; /* White text on active */
+        color: #ffffff;
         border-color: var(--primary-color, #007bff);
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    /* Distinct style for the 'All/Clear' button */
     .filter-btn.clear-btn {
         font-weight: 600;
     }
 
-    /* Responsive Logic */
+    .sort-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sort-direction-btn {
+        background: transparent;
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        height: 40px;
+        width: 40px;
+        min-width: 40px;
+        border-radius: 6px;
+    }
+
+
+    .sort-direction-btn svg {
+        transition: transform 0.3s ease;
+        display: block;
+        width: 22px;
+        height: 22px;
+    }
+
+    .sort-direction-btn.descending svg {
+        transform: rotate(180deg);
+    }
+
+    /* Better icon styling */
+    .like-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .like-btn svg {
+        fill: none;
+        stroke: #9ca3af;
+        stroke-width: 2;
+        transition: all 0.2s ease;
+        width: 22px;
+        height: 22px;
+    }
+
+    .like-btn:hover svg {
+        stroke: #ef4444;
+        transform: scale(1.15);
+    }
+
+    .like-btn.liked svg {
+        fill: #ef4444;
+        stroke: #ef4444;
+    }
+
+    .share-btn {
+        background: transparent;
+        border: none;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        color: #9ca3af;
+    }
+
+    .share-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: scale(1.15);
+        color: #6b7280;
+    }
+
+    .share-btn svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+    }
+
     @media (max-width: 768px) {
         .filter-header-mobile {
             display: flex;
         }
 
-        /* On mobile, buttons are hidden until toggled */
         .filter-buttons-wrapper {
             display: none;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.05); /* Slight tint for container */
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             margin-top: 5px;
         }
@@ -128,9 +209,7 @@
 {% endif %}
 <button id="backToAllBtn" class="cta" style="display: none;">{{ translate("Back to All Categories") }}</button>
 
-<!-- GLOBAL SEARCH & FILTER SECTION -->
 {% if not viewyourevents %}
-    <!-- 1. Global Search Input -->
     <div class="search-wrapper">
         <input type="text"
                class="global-search-input"
@@ -138,16 +217,12 @@
                onkeyup="handleGlobalSearch(this.value)">
     </div>
 
-    <!-- 2. Category Filters -->
     <div class="filter-container">
-        <!-- Mobile Toggle Header -->
         <div class="filter-header-mobile" onclick="toggleMobileFilterMenu()" id="mobileFilterHeader">
             <span id="mobileFilterText">{{ translate("Filter Categories") }}</span>
         </div>
 
-        <!-- Buttons Container -->
         <div class="filter-buttons-wrapper" id="filterButtonsContainer">
-            <!-- 'All' button acts as Clear Filter -->
             <button class="filter-btn clear-btn active" data-cat="all" onclick="toggleCategory('all', this)">
                 {{ translate("All Categories") }}
             </button>
@@ -160,23 +235,18 @@
         </div>
     </div>
 {% endif %}
-<!-- END FILTER SECTION -->
 
-
-<!-- Trending Section -->
 {% if trending_events and not viewyourevents %}
 <div class="trending-section" id="trending-section-wrapper" style="margin-bottom: 3rem;">
     <h3>🔥 {{ translate("Trending Now") }}</h3>
     <div class="campaign-grid">
         {% for e in trending_events %}
-            <div class="campaign-card" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05);">
-                <!-- Top Rated Badge -->
+            <div class="campaign-card trending-card" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05);">
                 <div style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">TOP RATED</div>
 
                 <span class="campaign-id">#{{ e.eventid }}</span>
                 <h4>{{ translate(e.eventname) }}</h4>
 
-                <!-- Description with Toggle (using prefix 'trending-' to avoid ID conflicts) -->
                 {% set eventdesc = translate(e.description, save_file=False) %}
                 <p id="event-desc-wrapper-trending-{{e.eventid}}">
                     {% if e.description|length > 100 %}
@@ -189,40 +259,37 @@
                     {% endif %}
                 </p>
 
-                <!-- Date and Time -->
                 {% set eventstartdate = e.eventstartdate|datetimeformat %}
                 {% set eventeventenddate = e.eventenddate|datetimeformat %}
                 <p><b>{{ translate("From Date and Time:") }}</b> {{ translate(eventstartdate) }} | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> {{ translate(eventeventenddate) }} | {{ e.eventendtime }}</p>
 
-                <!-- Smart Map Link -->
                 <p><b>{{ translate("Location:") }}</b>
                     <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
                         📍 {{ translate(e.location) }} ↗
                     </a>
                 </p>
 
-                <!-- Full Action Footer -->
                 <div class="card-footer">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         {% if c_user == "None" %}
                             {% set loginalertmsg = translate("Login to like this event.") %}
                             <button id="likeevent-trending-{{e.eventid}}" class="like-btn" onclick="showAlert('{{ loginalertmsg }}', 'warning')">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                 </svg>
                             </button>
                         {% else %}
                             {% set userliked = userdetails['likes'].split(",") if userdetails['likes'] else [] %}
                             {% if e.eventid|string in userliked %}
                                 <button id="likeevent-trending-{{e.eventid}}" class="like-btn liked" onclick="changelike({{e.eventid}}, 'remove')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                     </svg>
                                 </button>
                             {% else %}
                                 <button id="likeevent-trending-{{e.eventid}}" class="like-btn" onclick="changelike({{e.eventid}}, 'add')">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                     </svg>
                                 </button>
                             {% endif %}
@@ -231,16 +298,19 @@
                     </div>
 
                     <div style="display: flex; gap: 8px; margin-left: 10px;">
-                        <!-- Share Trigger -->
-                        <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}" style="background:none; border:none; color: var(--text-muted); cursor: pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                        <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16 6 12 2 8 6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
                             </svg>
                         </button>
-                        <!-- Calendar Download -->
-                        <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}" style="color: var(--text-muted);">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                        <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
                         </a>
                     </div>
@@ -273,7 +343,6 @@
     {% endif %}
 
     {% if viewevents %}
-        <!-- Added ID to the wrapper for easier JS selection -->
         <div class="campaign-category-wrapper category-section" id="cat-{{ category_name|replace(' ', '-')|lower }}" data-category-id="{{ category_name|replace(' ', '-')|lower }}">
             <h3>{{ translate(category_name) }} ( {{ viewevents|length }} )</h3>
 
@@ -287,12 +356,18 @@
                             <option value="eventenddate" {% if sortby=="eventenddate" %} selected {% endif %}>{{ translate("Sort by End Date") }}</option>
                             <option value="eventstartdate" {% if sortby=="eventstartdate" %} selected {% endif %}>{{ translate("Sort by Start Date") }}</option>
                             <option value="eventname" {% if sortby=="eventname" %} selected {% endif %}>{{ translate("Sort by Name") }}</option>
+                            <option value="likes" {% if sortby=="likes" %} selected {% endif %}>{{ translate("Sort by Likes") }}</option>
                             <option value="eventid" {% if sortby=="eventid" %} selected {% endif %}>{{ translate("Sort by Event ID") }}</option>
                             <option value="location" {% if sortby=="location" %} selected {% endif %}>{{ translate("Sort by Location") }}</option>
                             <option value="eventstarttime" {% if sortby=="eventstarttime" %} selected {% endif %}>{{ translate("Sort by Start Time") }}</option>
                             <option value="eventendtime" {% if sortby=="eventendtime" %} selected {% endif %}>{{ translate("Sort by End Time") }}</option>
                         </select>
                     </form>
+                    <button type="button" class="sort-direction-btn" onclick="toggleSortDirection(this)" title="{{ translate('Reverse Order') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -318,7 +393,6 @@
                         {% set eventeventenddate = e.eventenddate|datetimeformat %}
                         <p><b>{{ translate("From Date and Time:") }}</b> {{ translate(eventstartdate) }} | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> {{ translate(eventeventenddate) }} | {{ e.eventendtime }}</p>
 
-                        <!-- Smart Map Link -->
                         <p><b>{{ translate("Location:") }}</b>
                             <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
                                 📍 {{ translate(e.location) }} ↗
@@ -330,22 +404,22 @@
                                 {% if c_user == "None" %}
                                     {% set loginalertmsg = translate("Login to like this event.") %}
                                     <button id="likeevent-{{e.eventid}}" class="like-btn" onclick="showAlert('{{ loginalertmsg }}', 'warning')">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                     </button>
                                 {% else %}
                                     {% set userliked = userdetails['likes'].split(",") if userdetails['likes'] else [] %}
                                     {% if e.eventid|string in userliked %}
                                         <button id="likeevent-{{e.eventid}}" class="like-btn liked" onclick="changelike({{e.eventid}}, 'remove')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                             </svg>
                                         </button>
                                     {% else %}
                                         <button id="likeevent-{{e.eventid}}" class="like-btn" onclick="changelike({{e.eventid}}, 'add')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                             </svg>
                                         </button>
                                     {% endif %}
@@ -354,16 +428,21 @@
                             </div>
 
                             <div style="display: flex; gap: 8px; margin-left: 10px;">
-                                <!-- Enhanced Share Trigger -->
-                                <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}" style="background:none; border:none; color: var(--text-muted); cursor: pointer;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                      <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                                <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="18" cy="5" r="3"></circle>
+                                        <circle cx="6" cy="12" r="3"></circle>
+                                        <circle cx="18" cy="19" r="3"></circle>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                                     </svg>
                                 </button>
-                                <!-- Calendar Download -->
-                                <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}" style="color: var(--text-muted);">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                                <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
                                     </svg>
                                 </a>
                             </div>
@@ -392,14 +471,10 @@
     <button class="cta" onclick="location.reload();" style="width:100%">{{ translate("View All Events") }}</button>
 {% endif %}
 
-<!-- Javascript to Handle Multi-Select Filtering & Global Search -->
 <script>
-// State to hold selected categories and search term.
-// Use 'var' to allow re-declaration without errors when script re-runs in global scope.
 var selectedCategories = new Set(['all']);
 var globalSearchTerm = '';
 
-// --- Filter UI Toggle (Mobile) ---
 function toggleMobileFilterMenu() {
     const container = document.getElementById('filterButtonsContainer');
     const header = document.getElementById('mobileFilterHeader');
@@ -408,14 +483,11 @@ function toggleMobileFilterMenu() {
     header.classList.toggle('open');
 }
 
-// --- Category Selection Logic ---
 function toggleCategory(catId, btnElement) {
-    // 1. Logic for "All Categories" (Reset)
     if (catId === 'all') {
         selectedCategories.clear();
         selectedCategories.add('all');
 
-        // Visual Reset
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
 
@@ -424,15 +496,12 @@ function toggleCategory(catId, btnElement) {
         return;
     }
 
-    // 2. Logic for Specific Categories
-    // If 'all' is currently selected, remove it first
     if (selectedCategories.has('all')) {
         selectedCategories.delete('all');
         const allBtn = document.querySelector('.filter-btn[data-cat="all"]');
         if(allBtn) allBtn.classList.remove('active');
     }
 
-    // Toggle the clicked category
     if (selectedCategories.has(catId)) {
         selectedCategories.delete(catId);
         btnElement.classList.remove('active');
@@ -441,7 +510,6 @@ function toggleCategory(catId, btnElement) {
         btnElement.classList.add('active');
     }
 
-    // 3. Fail-safe: If user deselects everything, revert to "All"
     if (selectedCategories.size === 0) {
         selectedCategories.add('all');
         const allBtn = document.querySelector('.filter-btn[data-cat="all"]');
@@ -464,44 +532,29 @@ function updateMobileHeaderText() {
     }
 }
 
-// --- Global Search Logic ---
 function handleGlobalSearch(term) {
-    globalSearchTerm = term.toLowerCase();
+    globalSearchTerm = term.toLowerCase().trim();
     applyFilters();
 }
 
-// --- Main Filter & Search Function ---
 function applyFilters() {
-    // 1. Handle Trending Section
     const trendingSection = document.getElementById('trending-section-wrapper');
+    const hasGlobalSearch = globalSearchTerm.length > 0;
 
-    // Check trending cards
+    // Hide trending section when global search is active
     if (trendingSection) {
-        let trendingHasVisible = false;
-        const trendingCards = trendingSection.querySelectorAll('.campaign-card');
-
-        trendingCards.forEach(card => {
-            const text = card.textContent.toLowerCase();
-            const matchesSearch = !globalSearchTerm || text.includes(globalSearchTerm);
-
-            // Only show trending if 'all' is selected (default behavior) AND it matches search
-            if (selectedCategories.has('all') && matchesSearch) {
-                card.style.display = '';
-                trendingHasVisible = true;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Hide entire trending section if no cards match
-        if (trendingHasVisible) {
-            trendingSection.style.display = 'block';
-        } else {
+        if (hasGlobalSearch) {
             trendingSection.style.display = 'none';
+        } else {
+            // Only show trending if "All Categories" is selected
+            if (selectedCategories.has('all')) {
+                trendingSection.style.display = 'block';
+            } else {
+                trendingSection.style.display = 'none';
+            }
         }
     }
 
-    // 2. Handle All Category Sections
     const allSections = document.querySelectorAll('.campaign-category-wrapper');
 
     allSections.forEach(section => {
@@ -516,20 +569,28 @@ function applyFilters() {
             const matchesSearch = !globalSearchTerm || text.includes(globalSearchTerm);
 
             if (isCatActive && matchesSearch) {
-                card.style.display = ''; // Reset display to default
-                card.classList.remove('hidden'); // Remove 'hidden' class if present
+                card.style.display = '';
+                card.classList.remove('hidden');
                 sectionHasVisibleCards = true;
             } else {
                 card.style.display = 'none';
             }
         });
 
-        // Hide entire category section if no cards match
         if (sectionHasVisibleCards) {
             section.style.display = 'block';
         } else {
             section.style.display = 'none';
         }
     });
+}
+
+function toggleSortDirection(btn) {
+    btn.classList.toggle('descending');
+    const section = btn.closest('.campaign-category-wrapper');
+    const grid = section.querySelector('.campaign-grid');
+    const cards = Array.from(grid.children);
+    cards.reverse();
+    cards.forEach(card => grid.appendChild(card));
 }
 </script>

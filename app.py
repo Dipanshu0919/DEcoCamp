@@ -57,7 +57,6 @@ def load_translations():
             with open("translations.json", "r", encoding="utf-8") as f:
                 all_translations = json.load(f)
                 print("Translations loaded successfully.")
-                sendlog(f"Translations file loaded successfully with {len(all_translations)} texts.")
     except Exception as e:
         print(f"Translation file error: {e}")
         sendlog(f"Translation file error: {e}")
