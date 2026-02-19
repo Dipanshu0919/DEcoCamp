@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Language - Sahyog Sutra</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .language-select-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem; background: var(--bg-dark); }
+        .language-select-wrapper { width: 100%; max-width: 98%; text-align: center; }
+        .language-select-header { margin-bottom: 3rem; margin-top: 2rem; }
+        .language-select-header h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(90deg, #d76a1e, #f0c84b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .language-select-header p { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0; }
+        .languages-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+        .language-card { background: var(--bg-light); border: 2px solid var(--border-color); border-radius: var(--radius); padding: 2rem 1.5rem; cursor: pointer; transition: all 0.3s var(--ease); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; position: relative; }
+        .language-card:hover { border-color: var(--primary-color); background: rgba(224, 123, 42, 0.08); transform: translateY(-4px); box-shadow: 0 12px 24px rgba(224, 123, 42, 0.15); }
+        .language-card.selected { border-color: var(--primary-color); background: rgba(224, 123, 42, 0.12); box-shadow: 0 0 20px rgba(224, 123, 42, 0.3); transform: translateY(0); cursor: default; }
+        .language-card.selected::after { content: '✓'; position: absolute; top: 10px; right: 15px; width: 28px; height: 28px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; }
+        .language-native { font-size: 1.5rem; font-weight: 700; color: var(--text-color); margin-bottom: 0.8rem; }
+        .language-code-english { display: flex; align-items: center; justify-content: center; gap: 0.3rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+        .language-english { font-size: 0.95rem; color: var(--text-muted); }
+        .language-code { font-size: 0.85rem; color: var(--primary-color); font-weight: 600; }
+        .language-example { font-size: 0.9rem; color: var(--text-color); font-style: italic; line-height: 1.4; }
+
+        .card-submit-btn { display: none; margin-top: 1.2rem; padding: 10px 0; width: 100%; background: var(--primary-color); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
+        .card-submit-btn:hover { background: var(--primary-hover); }
+        .language-card.selected .card-submit-btn { display: block; }
+
+        @media (max-width: 768px) { .language-select-container { padding: 1rem; } .language-select-header { margin-bottom: 2rem; margin-top: 1rem; } .language-select-header h1 { font-size: 2rem; } .languages-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .language-card { padding: 1.5rem 1rem; min-height: 220px; } .language-native { font-size: 1.2rem; margin-bottom: 0.6rem; } .language-example { font-size: 0.85rem; } }
+        @media (max-width: 480px) { .language-select-header h1 { font-size: 1.5rem; } .language-select-header p { font-size: 0.95rem; } .languages-grid { grid-template-columns: repeat(3, 1fr); gap: 0.8rem; } .language-card { padding: 1.2rem 0.8rem; min-height: 190px; } .language-native { font-size: 1rem; margin-bottom: 0.5rem; } .language-english { font-size: 0.85rem; } .language-example { font-size: 0.78rem; } .card-submit-btn { font-size: 0.85rem; padding: 8px 0; } }
+    </style>
+</head>
+<body>
+    <div class="language-select-container">
+        <div class="language-select-wrapper">
+            <div class="language-select-header">
+                <h1>Select Your Language</h1>
+                <p>Choose a language to continue with Sahyog Sutra</p>
+            </div>
+
+            <div class="languages-grid" id="languagesGrid">
+                <div class="language-card" data-lang="en" data-name="English">
+                    <div class="language-native">English</div>
+                    <div class="language-code-english"><span class="language-english">English</span><span class="language-code">(en)</span></div>
+                    <div class="language-example">This is the example of English language</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="hi" data-name="हिंदी">
+                    <div class="language-native">हिंदी</div>
+                    <div class="language-code-english"><span class="language-english">Hindi</span><span class="language-code">(hi)</span></div>
+                    <div class="language-example">यह हिंदी भाषा का उदाहरण है</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="te" data-name="తెలుగు">
+                    <div class="language-native">తెలుగు</div>
+                    <div class="language-code-english"><span class="language-english">Telugu</span><span class="language-code">(te)</span></div>
+                    <div class="language-example">ఇది తెలుగు భాష యొక్క ఉదాహరణ</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="kn" data-name="ಕನ್ನಡ">
+                    <div class="language-native">ಕನ್ನಡ</div>
+                    <div class="language-code-english"><span class="language-english">Kannada</span><span class="language-code">(kn)</span></div>
+                    <div class="language-example">ಇದು ಕನ್ನಡ ಭಾಷೆಯ ಉದಾಹರಣೆಯಾಗಿದೆ</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="ml" data-name="മലയാളം">
+                    <div class="language-native">മലയാളം</div>
+                    <div class="language-code-english"><span class="language-english">Malayalam</span><span class="language-code">(ml)</span></div>
+                    <div class="language-example">ഇത് മലയാളം ഭാഷയുടെ ഉദാഹരണമാണ്</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="gu" data-name="ગુજરાતી">
+                    <div class="language-native">ગુજરાતી</div>
+                    <div class="language-code-english"><span class="language-english">Gujarati</span><span class="language-code">(gu)</span></div>
+                    <div class="language-example">આ ગુજરાતી ભાષાનું ઉદાહરણ છે</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="bn" data-name="বাংলা">
+                    <div class="language-native">বাংলা</div>
+                    <div class="language-code-english"><span class="language-english">Bengali</span><span class="language-code">(bn)</span></div>
+                    <div class="language-example">এটি বাংলা ভাষার একটি উদাহরণ</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="pa" data-name="ਪੰਜਾਬੀ">
+                    <div class="language-native">ਪੰਜਾਬੀ</div>
+                    <div class="language-code-english"><span class="language-english">Punjabi</span><span class="language-code">(pa)</span></div>
+                    <div class="language-example">ਇਹ ਪੰਜਾਬੀ ਭਾਸ਼ਾ ਦੀ ਉਦਾਹਰਣ ਹੈ</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="mr" data-name="मराठी">
+                    <div class="language-native">मराठी</div>
+                    <div class="language-code-english"><span class="language-english">Marathi</span><span class="language-code">(mr)</span></div>
+                    <div class="language-example">हे मराठी भाषेचे उदाहरण आहे</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+
+                <div class="language-card" data-lang="or" data-name="ଓଡ଼ିଆ">
+                    <div class="language-native">ଓଡ଼ିଆ</div>
+                    <div class="language-code-english"><span class="language-english">Odia</span><span class="language-code">(or)</span></div>
+                    <div class="language-example">ଏହା ଓଡ଼ିଆ ଭାଷାର ଉଦାହରଣ</div>
+                    <button class="card-submit-btn">Select Language</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedLanguage = null;
+
+        const languageCards = document.querySelectorAll('.language-card');
+
+        languageCards.forEach((card) => {
+            card.addEventListener('click', function(e) {
+                // Don't re-select if clicking the button inside the already-selected card
+                if (e.target.classList.contains('card-submit-btn')) return;
+
+                languageCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedLanguage = this.dataset.lang;
+            });
+
+            // Handle the button click inside this card
+            const btn = card.querySelector('.card-submit-btn');
+            btn.addEventListener('click', async function(e) {
+                e.stopPropagation();
+                const lang = card.dataset.lang;
+                if (!lang) return;
+
+                try {
+                    const response = await fetch(`/setlanguage/${lang}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Error selecting language. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

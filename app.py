@@ -271,17 +271,14 @@ def translate_text(text, lang=None, save_file=True):
 async def translate_event(request: Request):
     data = await request.json()
     lang = request.session.get("lang", "en")
-
-    print(data.items())
-
     output = {}
+    threads = []
 
     def transl(text, lang, key):
         t = Translator()
         translated = t.translate(text, dest=lang).text
         output[key] = translated
 
-    threads = []
     for field, value in data.items():
         threads.append(threading.Thread(target=transl, args=(value, lang, field)))
 
@@ -317,6 +314,9 @@ async def home(request: Request, db: AsyncDB = Depends(get_db)):
     session = request.session
     currentuser = session.get("name", "User")
     currentuname = session.get("username")
+
+    if not session.get("lang"):
+        return templates.TemplateResponse(request, "selectlanguage.html")
 
     global active_events
 
@@ -376,6 +376,30 @@ async def home(request: Request, db: AsyncDB = Depends(get_db)):
         "admin_stats": admin_stats
     })
 
+@app.get("/event/{eventid}")
+async def eventfromeventid(request: Request, eventid: int, db: AsyncDB = Depends(get_db)):
+    session = request.session
+    await db.execute("SELECT * FROM eventdetails WHERE eventid=(?)", (eventid, ))
+    getevent = await db.fetchone()
+    isadmin = False
+    currentuname = session.get("username")
+    user_lang = session.get("lang", "en")
+
+    if currentuname:
+        await db.execute("SELECT * FROM userdetails WHERE username=?", (currentuname,))
+        ud = await db.fetchone()
+        if ud:
+            if ud["role"] == "admin":
+                isadmin = True
+
+    def bound_translate(text, save_file=True):
+        return translate_text(text, lang=user_lang, save_file=save_file)
+
+    return templates.TemplateResponse(request, "viewevent.html", {
+        "isadmin": bool(isadmin),
+        "c_user": str(currentuname).strip(),
+        "eventdetails": getevent,
+    })
 
 @app.post("/forgetpassword")
 async def forgetpassword(request: Request, db: AsyncDB = Depends(get_db)):
@@ -389,7 +413,7 @@ async def forgetpassword(request: Request, db: AsyncDB = Depends(get_db)):
 
     splited = otp.split("_")
 
-    user_mail = await db.execute("SELECT email FROM userdetails WHERE email=(?) OR username=(?)", (formemail,formemail))
+    await db.execute("SELECT email FROM userdetails WHERE email=(?) OR username=(?)", (formemail,formemail))
     email = await db.fetchone()
     email = email["email"]
 
@@ -424,7 +448,6 @@ async def sendforgetotp(request: Request, email: str = Form(...), db: AsyncDB = 
     email = getemail["email"]
     otp = random.randint(1111,9999)
     request.session["forgetotp"] = f"{otp}_{email}"
-    print(request.session["forgetotp"])
     sendmailthread(email, "Reset Password OTP For Sahyog Sutra", f"Use this OTP to reset your password in the Sahyog Setu!\n\nOTP: {otp}")
     return Response(content=f"OTP Sent to {email}! Please check spam folder if can't find it.", media_type="text/plain")
 
@@ -455,6 +478,7 @@ async def sendotp(request: Request, email: str = Form(...), db: AsyncDB = Depend
 async def setlanguage(request: Request, lang: str):
     request.session["lang"] = lang
     return Response(content="Language Set", media_type="text/plain")
+
 
 @app.post("/generate_ai_description")
 async def generate_ai_description(request: Request):

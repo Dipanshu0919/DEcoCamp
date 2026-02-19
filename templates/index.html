@@ -8,10 +8,10 @@
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
+<link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
 </head>
 <body>
 
@@ -76,7 +76,7 @@
     <section id="home" class="active">
         <div class="home-layout">
             <div class="home-hero">
-                <h1>{{ translate("Hey") }} {{ translate(fullname.split()[0], save_file=False) }}, {{ translate("Welcome to") }} <span class="brand-highlight">Sahyog Sutra!</span></h1>
+                <h1>{{ translate("Hey") }} {{ translate(fullname.split()[0], save_file=False) }}, {{ translate("Welcome to") }} <span class="brand-highlight">{{ translate("Sahyog Sutra") }} !</span></h1>
                 <p>{{ translate("Unite, act, and create change. Join a campaign, volunteer your time, or start a movement — every effort weaves a stronger community.") }}</p>
                 <div class="sutra-divider"><span>सहयोग सूत्र</span></div>
                 <div id="ndhome"></div>
@@ -253,552 +253,59 @@
 </main>
 
 <script>
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-const toggleDisplay = (el, show) => el && (el.style.display = show ? 'inline' : 'none');
-const toggleElements = (showEls, hideEls) => {
-    showEls.forEach(el => toggleDisplay(el, true));
-    hideEls.forEach(el => toggleDisplay(el, false));
-};
+    window.SAHYOG_CONFIG = {
+        currentUser: "{{ c_user }}",
+        userLanguage: "{{ user_language }}",
+        activeEventsLength: "{{ active_events_length }}",
+        trans: {
+            declineReason: "{{ translate('A reason is required to decline this event:') }}",
+            declineCancelled: "{{ translate('Decline action cancelled.') }}",
+            areYouSure: "{{ translate('Are you sure?') }}",
+            loginForAI: "{{ translate('To avoid spam, we recommend you to please login before generating AI description.') }}",
+            fillFieldsAI: "{{ translate('Please fill in ALL fields (Name, Location, Category, Dates, Times) before generating.') }}",
+            generating: "{{ translate('Generating the descriptions please wait some seconds...') }}",
+            formal: "{{ translate('Formal') }}",
+            informal: "{{ translate('Informal') }}",
+            promotional: "{{ translate('Promotional') }}",
+            entertaining: "{{ translate('Entertaining') }}",
+            descUpdated: "{{ translate('Description updated!') }}",
+            aiFailed: "{{ translate('Failed to generate descriptions. Please try again.') }}",
+            loadFailed: "{{ translate('Failed to load content. Please try again.') }}",
+            retry: "{{ translate('Retry') }}",
+            processing: "{{ translate('Processing...') }}",
+            errorOccurred: "{{ translate('An error occurred.') }}",
+            enterValidEmail: "{{ translate('Please enter a valid email address.') }}",
+            sending: "{{ translate('Sending...') }}",
+            sendOtp: "{{ translate('Send OTP') }}",
+            fillAllFields: "{{ translate('Please fill in all fields.') }}",
+            passwordMismatch: "{{ translate('Passwords do not match.') }}",
+            changingLangTo: "{{ translate('Please wait changing language to ') }}",
+            langChangedTo: "{{ translate('Language changed to ') }}",
+            reloadMsg: "{{ translate('If not changed please try to reload the page or click the button below to reload!') }}",
+            langChangeError: "{{ translate('Could not change language right now. Please try again.') }}"
+        }
+    };
 
-function showAlert(message, type = 'info', duration = 5000, showButtons = false) {
-    const alertBar = $('#alertBar');
-    const alertText = $('#alertText');
-    const alertButtons = $('#alertButtons');
-    const alertCloseBtn = $('#alertCloseBtn');
-    alertText.textContent = message;
-    alertBar.classList.remove('success', 'info', 'warning', 'error');
-    if (type !== 'info') alertBar.classList.add(type);
-    if (type === 'success' && showButtons) {
-        alertButtons.style.display = 'flex';
-        alertCloseBtn.style.display = 'none';
-        duration = 0;
-    } else {
-        alertButtons.style.display = 'none';
-        alertCloseBtn.style.display = 'block';
-    }
-    alertBar.classList.add('show');
-    if (duration > 0) setTimeout(closeAlert, duration);
-}
+    // --- Specific Jinja-Dependent Logic (Keep here or move to a separate partial) ---
+    // This logic is too tightly coupled to Jinja loops/logic to easily move without complex refactoring
 
-const closeAlert = () => $('#alertBar')?.classList.remove('show');
-
-function openeventchat(eventid) {
-    const drawer = $('#sideChatDrawer');
-    const iframe = $('#globalChatIframe');
-    iframe.src = `/group-chat/from-event/${eventid}`;
-    drawer.classList.add('open');
-}
-
-function closeEventChat() {
-    $('#sideChatDrawer').classList.remove('open');
-    setTimeout(() => $('#globalChatIframe').src = '', 400);
-}
-
-function toggleDescription(id, action) {
-    const shortDesc = $(`#desc-short-${id}`);
-    const fullDesc = $(`#desc-full-${id}`);
-    const moreBtn = $(`#read-more-btn-${id}`);
-    const lessBtn = $(`#read-less-btn-${id}`);
-    if (action === 'more') { toggleElements([fullDesc, lessBtn], [shortDesc, moreBtn]); }
-    else { toggleElements([shortDesc, moreBtn], [fullDesc, lessBtn]); }
-}
-
-function filterCampaigns(searchInput) {
-    const filter = searchInput.value.toLowerCase();
-    const categoryWrapper = searchInput.closest('.campaign-category-wrapper');
-    if (!categoryWrapper) return;
-    categoryWrapper.querySelectorAll('.campaign-card').forEach(card => {
-        card.classList.toggle('search-hidden', !card.innerText.toLowerCase().includes(filter));
-    });
-}
-
-function declineEvent(eventId) {
-    let reason = null;
-    while (!reason || reason.trim() === "") {
-        reason = prompt("{{ translate('A reason is required to decline this event:') }}");
-        if (reason === null) { showAlert("{{ translate('Decline action cancelled.') }}", 'info'); return; }
-    }
-    window.location.href = `/decline_event/${eventId}/${encodeURIComponent(reason)}`;
-}
-
-window.asktodelete = id => {
-    if (confirm("{{ translate('Are you sure?') }}")) { window.location.href = `deleteevent/${id}`; }
-};
-
-async function generateDescription() {
-    {% if c_user == "None" %}
-        showAlert("{{ translate('To avoid spam, we recommend you to please login before generating AI description.') }}", 'warning');
-        return;
-    {% endif %}
-    const form = $('#addEventForm');
-    const formData = new FormData(form);
-    const requiredFields = ['eventname', 'location', 'category', 'eventstartdate', 'eventenddate', 'eventstarttime', 'eventendtime'];
-    const missing = requiredFields.filter(key => !formData.get(key));
-    if (missing.length > 0) {
-        showAlert("{{ translate('Please fill in ALL fields (Name, Location, Category, Dates, Times) before generating.') }}", 'warning');
-        return;
-    }
-    const btn = $('#aiBtn');
-    const originalText = btn.innerHTML;
-    const resultsContainer = $('#aiResults');
-    btn.disabled = true;
-    btn.innerHTML = '✨ {{ translate("Generating the descriptions please wait some seconds...") }}';
-    resultsContainer.classList.remove('show');
-    resultsContainer.innerHTML = '';
-    try {
-        const response = await fetch('/generate_ai_description', { method: 'POST', body: formData });
-        if (!response.ok) throw new Error('Generation failed');
-        const data = await response.json();
-        const labels = {
-            'desc1': '{{ translate("Formal") }}',
-            'desc2': '{{ translate("Informal") }}',
-            'desc3': '{{ translate("Promotional") }}',
-            'desc4': '{{ translate("Entertaining") }}'
+    // Quotes Logic
+    fetch("/static/quotes.json").then(r=>r.json()).then(data=>{
+        const userLanguage = SAHYOG_CONFIG.userLanguage || "en";
+        const quoteEl = document.getElementById('ndhome');
+        if(!quoteEl) return;
+        const setQuote = () => {
+            const quoteKeys = Object.keys(data);
+            const randomQuoteKey = quoteKeys[Math.floor(Math.random() * quoteKeys.length)];
+            const quoteText = data[randomQuoteKey][userLanguage] || data[randomQuoteKey]["en"];
+            quoteEl.innerText = `{{ translate("Active Campaigns:") }} ${SAHYOG_CONFIG.activeEventsLength}\n\n"${quoteText}"`;
         };
-        Object.keys(data).forEach(key => {
-            const card = document.createElement('div');
-            card.className = `ai-option-card ai-card-${key}`;
-            card.innerHTML = `<h5>${labels[key] || key}</h5><p>${data[key]}</p>`;
-            card.onclick = () => {
-                $('#descriptionField').value = data[key];
-                showAlert("{{ translate('Description updated!') }}", 'success');
-                $('#descriptionField').scrollIntoView({behavior: 'smooth', block: 'center'});
-            };
-            resultsContainer.appendChild(card);
-        });
-        $('#aiInstruction').style.display = 'block';
-        resultsContainer.classList.add('show');
-    } catch (error) {
-        console.error('AI Error:', error);
-        showAlert("{{ translate('Failed to generate descriptions. Please try again.') }}", 'warning');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
-}
-
-const contentLoaders = {
-    campaigns: { loaded: false, callback: initializeCampaignListeners },
-    addForm: { loaded: false, callback: initializeAddFormListeners },
-    pending: { loaded: false, callback: initializePendingListeners }
-};
-
-function rerunScripts(container) {
-    container.querySelectorAll('script').forEach(oldScript => {
-        const newScript = document.createElement('script');
-        oldScript.getAttributeNames().forEach(attr =>
-            newScript.setAttribute(attr, oldScript.getAttribute(attr))
-        );
-        newScript.textContent = oldScript.textContent;
-        oldScript.parentNode.replaceChild(newScript, oldScript);
+        setQuote();
+        setInterval(setQuote, 6000);
     });
-}
-
-async function loadContent(type, url, loadingId, contentId, retryFn) {
-    if (contentLoaders[type].loaded && !window.location.hash.includes('campaigns')) return;
-    if (type === 'campaigns') contentLoaders[type].loaded = false;
-
-    const loadingState = $(loadingId);
-    const content = $(contentId);
-
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Failed to load ${type}`);
-        content.innerHTML = await response.text();
-        rerunScripts(content);
-        content.style.display = 'block';
-        loadingState.style.display = 'none';
-        contentLoaders[type].loaded = true;
-        contentLoaders[type].callback?.();
-    } catch (error) {
-        console.error(`Error loading ${type}:`, error);
-        loadingState.innerHTML = `
-            <p style="color: var(--danger-color);">{{ translate("Failed to load content. Please try again.") }}</p>
-            <button class="cta" onclick="${retryFn}">{{ translate("Retry") }}</button>
-        `;
-    }
-}
-
-const loadCampaigns = () => loadContent('campaigns', '/show_campaigns', '#campaignsLoadingState', '#campaignsContent', 'loadCampaigns()');
-const loadAddForm = () => loadContent('addForm', '/show_add_form', '#addFormLoadingState', '#addFormContent', 'loadAddForm()');
-const loadPendingEvents = () => loadContent('pending', '/show_pending_events', '#pendingLoadingState', '#pendingContent', 'loadPendingEvents()');
-
-function initializeCampaignListeners() {
-    const campaignsSection = $('#campaigns');
-    const backToAllBtn = $('#backToAllBtn');
-    const allCategoryWrappers = $$('.campaign-category-wrapper');
-    campaignsSection?.addEventListener('click', e => {
-        if (!e.target.matches('.view-all-btn')) return;
-        const categoryIdToShow = e.target.dataset.categoryId;
-        allCategoryWrappers.forEach(wrapper => {
-            const show = wrapper.dataset.categoryId === categoryIdToShow;
-            wrapper.style.display = show ? 'block' : 'none';
-            if (show) wrapper.querySelectorAll('.campaign-card.hidden').forEach(c => c.classList.remove('hidden'));
-        });
-        backToAllBtn.style.display = 'block';
-        campaignsSection.scrollIntoView({ behavior: 'smooth' });
-    });
-    backToAllBtn?.addEventListener('click', () => {
-        allCategoryWrappers.forEach(w => {
-            w.style.display = 'block';
-            w.querySelectorAll('.campaign-card').forEach((c, i) => i >= 4 && c.classList.add('hidden'));
-        });
-        backToAllBtn.style.display = 'none';
-    });
-}
-
-function initializeAddFormListeners() {
-    const form = $('#addEventForm');
-    if (!form) return;
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        e.target.dataset.url = '/addeventreq';
-        handleFormSubmit(e.target, text => {
-            if (text.includes('Please Login')) showSection('home');
-            if (text.includes('Registered')) setTimeout(() => location.reload(), 4000);
-        });
-    });
-    form.addEventListener('change', e => {
-        const fd = new FormData();
-        fd.append('field', e.target.name);
-        fd.append('value', e.target.value);
-        fetch('/save_draft', { method: 'POST', body: fd });
-    });
-}
-
-function initializePendingListeners() {
-    $$('.approve-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.preventDefault();
-            const row = btn.closest('tr');
-            if (!row) return;
-            const originalText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = '{{ translate("Processing...") }}';
-            const formData = new FormData();
-            row.querySelectorAll('input, select, textarea').forEach(input => {
-                formData.append(input.name, input.value);
-            });
-            fetch('/addevent', { method: 'POST', body: formData })
-            .then(response => {
-                if (response.redirected) { window.location.href = response.url; return null; }
-                return response.text();
-            })
-            .then(text => {
-                if (text === null) return;
-                const isSuccess = text.toLowerCase().includes('success') ||
-                                 text.toLowerCase().includes('approved') ||
-                                 text.toLowerCase().includes('added');
-                showAlert(text, isSuccess ? 'success' : 'info');
-                if (isSuccess) {
-                    row.style.opacity = '0';
-                    setTimeout(() => { contentLoaders.pending.loaded = false; loadPendingEvents(); }, 1000);
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = originalText;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert('{{ translate("An error occurred.") }}', 'error');
-                btn.disabled = false;
-                btn.textContent = originalText;
-            });
-        });
-    });
-}
-
-const handleFormSubmit = async (form, callback) => {
-    const btn = form.querySelector('button[type="submit"]');
-    const originalBtnText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = '{{ translate("Processing...") }}';
-    try {
-        const response = await fetch(form.dataset.url, { method: 'POST', body: new FormData(form) });
-        const text = await response.text();
-        const type = text.includes('Success') || text.includes('Registered') ? 'success' :
-                     text.includes('Error') || text.includes('Invalid') ? 'error' : 'info';
-        showAlert(text, type);
-        callback?.(text);
-    } catch (error) {
-        showAlert('{{ translate("An error occurred.") }}', 'error');
-        console.error(error);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalBtnText;
-    }
-};
-
-const showSection = id => {
-    const target = id || 'home';
-    $$('.navlink').forEach(l => l.classList.toggle('active', l.dataset.section === target));
-    $$('main > section').forEach(s => s.classList.toggle('active', s.id === target));
-    window.scrollTo(0, 0);
-    $('nav')?.classList.remove('active');
-    if (target === 'campaigns') loadCampaigns();
-    if (target === 'add') loadAddForm();
-    if (target === 'pending') loadPendingEvents();
-};
-
-window.togglePasswordVisibility = id => {
-    const field = $(`#${id}`);
-    if (field) field.type = field.type === 'password' ? 'text' : 'password';
-};
-
-const addFormSubmitListener = (selector, url, callback) => {
-    $(selector)?.addEventListener('submit', e => {
-        e.preventDefault();
-        e.target.dataset.url = url;
-        handleFormSubmit(e.target, callback);
-    });
-};
-
-let calendar;
-
-window.toggleView = function(view) {
-    const listBtn = $('#listViewBtn');
-    const calBtn = $('#calendarViewBtn');
-    const listContent = $('#campaignsContent');
-    const calContent = $('#calendarView');
-    if (!contentLoaders.campaigns.loaded) loadCampaigns();
-    if (view === 'list') {
-        listBtn.classList.add('active'); calBtn.classList.remove('active');
-        listContent.style.display = 'block'; calContent.style.display = 'none';
-    } else {
-        listBtn.classList.remove('active'); calBtn.classList.add('active');
-        listContent.style.display = 'none'; calContent.style.display = 'block';
-        if (!calendar) { initCalendar(); } else { setTimeout(() => calendar.render(), 100); }
-    }
-};
-
-function initCalendar() {
-    const calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' },
-        events: function(info, successCallback, failureCallback) {
-            fetch('/api').then(r => r.json()).then(data => {
-                const events = data['active events'].map(e => ({
-                    title: e.eventname,
-                    start: e.eventstartdate + (e.eventstarttime ? 'T' + e.eventstarttime : ''),
-                    url: '#',
-                    extendedProps: { description: e.description, location: e.location }
-                }));
-                successCallback(events);
-            }).catch(failureCallback);
-        },
-        eventClick: function(info) {
-            info.jsEvent.preventDefault();
-            showAlert(`${info.event.title}\n📍 ${info.event.extendedProps.location}\n📅 ${info.event.start.toLocaleDateString()}`, 'info');
-        }
-    });
-    calendar.render();
-}
-
-window.changetemplate = () => fetch("/changetemplate").then(() => location.reload());
-window.viewyourevents = username => fetch(`/viewyourevents/${username}`, { method: 'POST' })
-    .then(() => { window.location.href = '#campaigns'; location.reload(); });
-window.sendsortreq = sortby => fetch(`/setsortby/${sortby}`, { method: 'POST' })
-    .then(() => { window.location.href = '#campaigns'; location.reload(); });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const storedAlert = localStorage.getItem('showLanguageChangeAlert');
-    if (storedAlert) {
-        try {
-            const alertData = JSON.parse(storedAlert);
-            showAlert(alertData.message, 'success', 0, true);
-            localStorage.removeItem('showLanguageChangeAlert');
-        } catch (e) { console.error('Error parsing stored alert:', e); }
-    }
-
-    document.body.addEventListener('click', e => {
-        if (e.target.matches('.navlink')) {
-            e.preventDefault();
-            showSection(e.target.dataset.section);
-            location.hash = e.target.dataset.section;
-        }
-    });
-
-    if (location.hash) { showSection(location.hash.slice(1)); }
-    else { showSection('home'); }
-    window.addEventListener('hashchange', () => showSection(location.hash.slice(1)));
-
-    addFormSubmitListener('#loginpage', '/login', text => text.includes('Success') && location.reload());
-    addFormSubmitListener('#signuppage', '/signup', text => text.includes('Success') && location.reload());
-    addFormSubmitListener('#forgetpasswordpage', '/forgetpassword', text => text.includes('Success') && location.reload());
-
-
-    $('.toggle-buttons')?.addEventListener('click', e => {
-        if (e.target.tagName !== 'BUTTON') return;
-        if (e.target.id === 'listViewBtn' || e.target.id === 'calendarViewBtn') return;
-        const isLogin = e.target.id === 'login-tab-btn';
-        $('#login-tab-btn').classList.toggle('active', isLogin);
-        $('#signup-tab-btn').classList.toggle('active', !isLogin);
-        $('#loginpage').classList.toggle('active', isLogin);
-        $('#signuppage').classList.toggle('active', !isLogin);
-        // Ensure forget password form is hidden
-        $('#forgetpasswordpage').classList.remove('active');
-        $('.toggle-buttons').style.display = 'flex';
-    });
-
-    // Forget Password Toggle Logic
-    const forgetLink = $('#forget-pass-link');
-    const backToLoginBtn = $('#backToLoginBtn');
-
-    if (forgetLink) {
-        forgetLink.addEventListener('click', () => {
-            // Pre-fill email/username
-            const loginUserVal = $('input[name="loginusername"]').value;
-            if(loginUserVal) $('#forgetemail').value = loginUserVal;
-
-            // Copy Password to New Password
-            const loginPassVal = $('#loginpassword').value;
-            if(loginPassVal) $('#newpassword').value = loginPassVal;
-
-            $('#loginpage').classList.remove('active');
-            $('#forgetpasswordpage').classList.add('active');
-            $('.toggle-buttons').style.display = 'none';
-        });
-    }
-
-    if (backToLoginBtn) {
-        backToLoginBtn.addEventListener('click', () => {
-             $('#forgetpasswordpage').classList.remove('active');
-             $('#loginpage').classList.add('active');
-             $('.toggle-buttons').style.display = 'flex';
-        });
-    }
-
-    // Forget Password OTP Logic
-    const sendForgetOtpBtn = $('#sendForgetOtpBtn');
-    if (sendForgetOtpBtn) {
-        sendForgetOtpBtn.addEventListener('click', async e => {
-             const btn = e.target;
-             const emailEl = $('#forgetemail');
-             if (!emailEl.checkValidity()) { return showAlert("{{ translate('Please enter a valid email address.') }}", 'warning'); }
-             btn.disabled = true;
-             btn.textContent = "{{ translate('Sending...') }}";
-             try {
-                const fd = new FormData();
-                fd.append('email', emailEl.value);
-                const response = await fetch("/sendforgetotp", { method: "POST", body: fd });
-                const text = await response.text();
-                if (!response.ok) throw new Error(text || '{{ translate("Failed to send OTP.") }}');
-                showAlert(text, 'success');
-                $('#forget-step-2').style.display = 'block'; // Show rest of form
-                btn.style.display = 'none'; // Hide send button
-                emailEl.readOnly = true; // Disable email input
-             } catch (err) {
-                showAlert(err.message, 'error');
-             } finally {
-                if (btn.style.display !== 'none') {
-                    setTimeout(() => { btn.disabled = false; btn.textContent = "{{ translate('Send OTP') }}"; }, 5000);
-                }
-             }
-        });
-    }
-
-    // Forget Password Submit Logic
-    const forgetForm = $('#forgetpasswordpage');
-    if (forgetForm) {
-        forgetForm.addEventListener('submit', async e => {
-            e.preventDefault();
-
-            // New Validation Block
-            const otpVal = forgetForm.querySelector('input[name="forgetotp"]').value;
-            const newPass = $('#newpassword').value;
-            const confirmPass = $('#confirmnewpassword').value;
-
-            if (!otpVal || !newPass || !confirmPass) {
-                 return showAlert("{{ translate('Please fill in all fields.') }}", 'warning');
-            }
-
-            if (newPass !== confirmPass) {
-                return showAlert("{{ translate('Passwords do not match.') }}", 'error');
-            }
-
-            const btn = forgetForm.querySelector('.submit-btn');
-            const originalText = btn.textContent;
-            btn.disabled = true;
-            btn.textContent = "{{ translate('Processing...') }}";
-
-            try {
-                const fd = new FormData(forgetForm);
-                const response = await fetch("/forgetpassword", { method: "POST", body: fd });
-                const text = await response.text();
-
-                if(text.includes('Success')) {
-                     showAlert(text, 'success');
-                     setTimeout(() => location.reload(), 2000);
-                } else {
-                     showAlert(text, 'error');
-                }
-            } catch (err) {
-                 showAlert('{{ translate("An error occurred.") }}', 'error');
-            } finally {
-                 btn.disabled = false;
-                 btn.textContent = originalText;
-            }
-        });
-    }
-
-    $('#sendOtpBtn')?.addEventListener('click', async e => {
-        const btn = e.target;
-        const emailEl = $('#email');
-        if (!emailEl.checkValidity()) { return showAlert("{{ translate('Please enter a valid email address.') }}", 'warning'); }
-        btn.disabled = true;
-        btn.textContent = "{{ translate('Sending...') }}";
-        try {
-            const fd = new FormData();
-            fd.append('email', emailEl.value);
-            const response = await fetch("/sendsignupotp", { method: "POST", body: fd });
-            const text = await response.text();
-            if (!response.ok) throw new Error(text || '{{ translate("Failed to send OTP.") }}');
-            showAlert(text, 'info');
-        } catch (err) {
-            showAlert(err.message, 'error');
-        } finally {
-            setTimeout(() => { btn.disabled = false; btn.textContent = "{{ translate('Send OTP') }}"; }, 5000);
-        }
-    });
-
-    const languageBtn = $('#languageBtn');
-    const languageDropdown = $('#languageDropdown');
-
-    if (languageBtn) {
-        languageBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            languageDropdown.style.display = languageDropdown.style.display === 'none' ? 'block' : 'none';
-        });
-
-        $$('.lang-option').forEach(option => {
-            option.addEventListener('click', async e => {
-                const langCode = e.target.dataset.lang;
-                const langName = e.target.textContent;
-                localStorage.setItem('selectedLanguage', langCode);
-                try {
-                    showAlert(`{{ translate("Please wait changing language to ") }} ${langName}...`, 'info', 0);
-                    const response = await fetch(`/setlanguage/${langCode}`, { method: 'POST' });
-                    if (!response.ok) throw new Error("{{ translate('Failed to set language') }}");
-                    localStorage.setItem('showLanguageChangeAlert', JSON.stringify({
-                        message: `{{ translate("Language changed to ") }} ${langName}. {{ translate("If not changed please try to reload the page or click the button below to reload!") }}`,
-                        duration: 0
-                    }));
-                    window.location.reload();
-                } catch (err) {
-                    showAlert('{{ translate("Could not change language right now. Please try again.") }}', 'error');
-                    console.error(err);
-                }
-                languageDropdown.style.display = 'none';
-            });
-        });
-
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.language-selector')) { languageDropdown.style.display = 'none'; }
-        });
-    }
-});
 </script>
+
+<!-- Load the external script -->
+<script src="/static/script.js"></script>
 </body>
 </html>
