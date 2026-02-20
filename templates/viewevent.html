@@ -10,80 +10,84 @@
 <link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-color); -webkit-font-smoothing: antialiased; min-height: 100vh; }
-
-/* ── Navbar ──────────────────────────────────────────────────────── */
+html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-color); -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
 .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(10,10,14,0.92); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-color); padding: 0 3%; height: 56px; }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 100%; }
 .brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
 .brand img { width: 32px; height: 32px; border-radius: 7px; object-fit: cover; box-shadow: 0 3px 10px rgba(215,106,30,0.3); }
 .brand-text .b1 { font-size: 14px; font-weight: 700; background: linear-gradient(90deg,#f8ebb8,#d76a1e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .brand-text .b2 { font-size: 9.5px; color: var(--text-muted); }
-.nav-right { display: flex; align-items: center; gap: 8px; }
-.nav-eid { font-size: 0.7rem; color: var(--text-muted); padding: 3px 9px; border-radius: 5px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); }
 .nav-back { display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; padding: 5px 12px; border-radius: 7px; border: 1px solid var(--border-color); transition: 0.18s; }
 .nav-back:hover { color: var(--text-color); border-color: var(--primary-color); background: rgba(215,106,30,0.07); }
 .nav-back svg { width: 13px; height: 13px; }
-
-/* ── Toast ───────────────────────────────────────────────────────── */
 .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(12px); z-index: 9999; display: flex; align-items: center; gap: 9px; padding: 10px 16px; border-radius: 9px; font-size: 0.84rem; font-weight: 600; min-width: 190px; max-width: 84vw; background: #1c1c26; border: 1px solid var(--border-color); color: var(--text-color); box-shadow: 0 8px 30px rgba(0,0,0,0.55); opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; }
 .toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
 .toast.success { border-color: #22c55e; background: #0c2016; color: #4ade80; }
-.toast.error   { border-color: #ef4444; background: #200c0c; color: #f87171; }
+.toast.error { border-color: #ef4444; background: #200c0c; color: #f87171; }
 .toast.warning { border-color: #f59e0b; background: #1f1500; color: #fbbf24; }
-.toast.info    { border-color: var(--primary-color); background: #1a0e04; color: var(--primary-color); }
+.toast.info { border-color: var(--primary-color); background: #1a0e04; color: var(--primary-color); }
 .toast svg { width: 15px; height: 15px; flex-shrink: 0; }
 .toast-x { background: none; border: none; color: inherit; opacity: 0.5; cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 2px; margin-left: auto; transition: opacity 0.15s; }
 .toast-x:hover { opacity: 1; }
-
-/* ── Page wrapper ────────────────────────────────────────────────── */
-.page-wrap { padding: calc(1rem + 5vh) 3% 3%; display: flex; justify-content: center; }
-
-/* ── Main card ───────────────────────────────────────────────────── */
-.event-card { width: 100%; max-width: 95vw; display: grid; grid-template-columns: clamp(300px, 40%, 450px) 1fr; border-radius: 1.4rem; border: 1px solid var(--border-color); overflow: hidden; background: var(--bg-light); box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
-
-/* ── LEFT column ─────────────────────────────────────────────────── */
-.ev-left { padding: clamp(0.75rem, 2%, 1.5rem); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; gap: clamp(0.5rem, 1%, 0.75rem); overflow-y: auto; max-height: 100vh; }
-
-.ev-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.75rem; border-radius: 20px; background: rgba(215,106,30,0.1); border: 1px solid rgba(215,106,30,0.26); font-size: clamp(0.5rem, 1vw, 0.64rem); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-color); width: fit-content; }
-.ev-badge svg { width: clamp(7px, 1.5vw, 9px); height: clamp(7px, 1.5vw, 9px); }
-
-.ev-title { font-size: clamp(1.1rem, 4vw, 1.35rem); font-weight: 800; line-height: 1.25; color: var(--text-color); }
-
-.ev-sub { font-size: clamp(0.6rem, 1.5vw, 0.72rem); color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
-.ev-sub .dot { width: 0.2rem; height: 0.2rem; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
-.ev-sub a { color: var(--primary-color); font-weight: 700; text-decoration: none; }
-.ev-sub a:hover { text-decoration: underline; }
-
-/* pills */
-.meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.mpill { display: inline-flex; align-items: center; gap: 0.3rem; padding: clamp(0.25rem, 0.5%, 0.35rem) clamp(0.5rem, 1%, 0.65rem); border-radius: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border-color); font-size: clamp(0.65rem, 1.2vw, 0.76rem); color: var(--text-muted); }
-.mpill svg { width: clamp(9px, 1.2vw, 11px); height: clamp(9px, 1.2vw, 11px); flex-shrink: 0; color: var(--primary-color); }
-.mpill strong, .mpill a { color: var(--text-color); font-weight: 600; text-decoration: none; }
-.mpill a:hover { color: var(--primary-color); }
-
-/* date row */
-.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-.dc { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 0.6rem; padding: clamp(0.5rem, 1%, 0.65rem) clamp(0.65rem, 1.2%, 0.85rem); }
-.dc-lbl { font-size: clamp(0.5rem, 0.9vw, 0.59rem); text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.2rem; }
-.dc-lbl svg { width: clamp(8px, 1vw, 9px); height: clamp(8px, 1vw, 9px); color: var(--primary-color); }
-.dc-date { font-size: clamp(0.7rem, 1.2vw, 0.82rem); font-weight: 700; color: var(--text-color); }
-.dc-time { font-size: clamp(0.6rem, 1vw, 0.7rem); color: var(--primary-color); font-weight: 600; margin-top: 0.1rem; }
-
-/* location */
-.loc-link { display: flex; align-items: center; gap: 0.6rem; padding: clamp(0.5rem, 1%, 0.65rem) clamp(0.65rem, 1.2%, 0.85rem); border-radius: 0.6rem; background: var(--bg-dark); border: 1px solid var(--border-color); text-decoration: none; color: var(--text-color); font-size: clamp(0.7rem, 1.2vw, 0.8rem); font-weight: 600; transition: 0.18s; overflow: hidden; }
+.page-wrap { padding: 76px 3% 20px; display: flex; justify-content: center; height: 100dvh; overflow: hidden; }
+.event-card { width: 100%; max-width: 1400px; display: grid; grid-template-columns: 50% 50%; border-radius: 1.4rem; border: 1px solid var(--border-color); overflow: hidden; background: var(--bg-light); box-shadow: 0 12px 40px rgba(0,0,0,0.35); height: 100%; min-height: 0; }
+.ev-left { display: flex; flex-direction: column; border-right: 1px solid var(--border-color); overflow-y: auto; height: 100%; min-height: 0; overscroll-behavior: contain; }
+.ev-left::-webkit-scrollbar { width: 6px; }
+.ev-left::-webkit-scrollbar-track { background: transparent; }
+.ev-left::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+.ev-left::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+.ev-hero { padding: 1.5rem 1.4rem 1.1rem; background: linear-gradient(150deg, rgba(215,106,30,0.09) 0%, transparent 65%); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+.ev-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.22rem 0.75rem; border-radius: 20px; background: rgba(215,106,30,0.12); border: 1px solid rgba(215,106,30,0.3); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--primary-color); width: fit-content; margin-bottom: 0.8rem; }
+.ev-badge svg { width: 9px; height: 9px; }
+.ev-title { font-size: clamp(1.15rem, 2.5vw, 1.5rem); font-weight: 800; line-height: 1.25; color: var(--text-color); margin-bottom: 0.75rem; }
+.ev-meta-line { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.71rem; color: var(--text-muted); }
+.ev-meta-line svg { width: 11px; height: 11px; color: var(--primary-color); flex-shrink: 0; }
+.ev-meta-line a { color: var(--primary-color); font-weight: 700; text-decoration: none; }
+.ev-meta-line a:hover { text-decoration: underline; }
+.ev-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+.ev-stats-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.8rem 1.4rem; border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.01); flex-shrink: 0; }
+.stat-chip { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.28rem 0.65rem; border-radius: 999px; background: var(--bg-dark); border: 1px solid var(--border-color); font-size: 0.71rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+.stat-chip svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--primary-color); }
+.stat-chip span { color: var(--text-color); }
+.stat-chip.st-orange { border-color: rgba(215,106,30,0.4); }
+.stat-chip.st-orange svg { color: var(--primary-color); }
+.stat-chip.st-green { border-color: rgba(74,222,128,0.35); }
+.stat-chip.st-green svg { color: #4ade80; }
+.stat-chip.st-red { border-color: rgba(239,68,68,0.35); }
+.stat-chip.st-red svg { color: #ef4444; }
+.ev-section { padding: 1rem 1.4rem; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.7rem; flex-shrink: 0; }
+.ev-section:last-child { border-bottom: none; }
+.sec-label { display: flex; align-items: center; gap: 0.45rem; font-size: 0.57rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); }
+.sec-label svg { width: 11px; height: 11px; color: var(--primary-color); flex-shrink: 0; }
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
+.date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.dc { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 0.7rem; padding: 0.8rem 0.9rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.dc-type { font-size: 0.56rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.15rem; }
+.dc-type svg { width: 10px; height: 10px; color: var(--primary-color); }
+.dc-date-val { font-size: 0.86rem; font-weight: 700; color: var(--text-color); }
+.dc-time-val { font-size: 0.74rem; font-weight: 600; color: var(--primary-color); display: flex; align-items: center; gap: 0.3rem; margin-top: 0.1rem; }
+.dc-time-val svg { width: 10px; height: 10px; }
+.loc-hint { display: flex; align-items: center; gap: 0.3rem; font-size: 0.67rem; color: var(--text-muted); }
+.loc-hint svg { width: 10px; height: 10px; color: var(--primary-color); }
+.loc-link { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 0.95rem; border-radius: 0.65rem; background: var(--bg-dark); border: 1px solid var(--border-color); text-decoration: none; color: var(--text-color); font-size: 0.82rem; font-weight: 600; transition: 0.18s; }
 .loc-link:hover { border-color: var(--primary-color); background: rgba(215,106,30,0.05); }
-.loc-link svg { width: clamp(12px, 2vw, 14px); height: clamp(12px, 2vw, 14px); color: var(--primary-color); flex-shrink: 0; }
-.loc-link span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.loc-link .arr { color: var(--text-muted); font-size: clamp(0.65rem, 1vw, 0.78rem); flex-shrink: 0; }
-
-/* divider */
-.thin-div { height: 1px; background: var(--border-color); margin: 0.1rem 0; }
-
-/* action buttons */
-.act-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.ab { display: inline-flex; align-items: center; gap: 0.3rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 0.5rem; padding: clamp(0.3rem, 0.5%, 0.4rem) clamp(0.6rem, 1%, 0.75rem); font-size: clamp(0.65rem, 1vw, 0.75rem); font-weight: 600; cursor: pointer; transition: 0.15s; text-decoration: none; white-space: nowrap; }
-.ab svg { width: clamp(11px, 1.5vw, 13px); height: clamp(11px, 1.5vw, 13px); flex-shrink: 0; }
+.loc-link svg { width: 17px; height: 17px; color: var(--primary-color); flex-shrink: 0; }
+.loc-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.loc-arr { font-size: 0.68rem; color: var(--text-muted); flex-shrink: 0; background: rgba(215,106,30,0.1); border: 1px solid rgba(215,106,30,0.2); padding: 2px 7px; border-radius: 4px; font-weight: 700; color: var(--primary-color); }
+.desc-text { font-size: 0.84rem; line-height: 1.85; color: var(--text-muted); white-space: pre-wrap; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; }
+.icell { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 0.65rem; padding: 0.65rem 0.85rem; }
+.icell-label { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.4rem; }
+.icell-label svg { width: 10px; height: 10px; color: var(--primary-color); }
+.icell-val { font-size: 0.8rem; font-weight: 700; color: var(--text-color); }
+.icell-val.orange { color: var(--primary-color); }
+.icell-val.green { color: #4ade80; }
+.icell-val.red { color: #ef4444; }
+.icell-val a { color: var(--primary-color); text-decoration: none; }
+.icell-val a:hover { text-decoration: underline; }
+.actions-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; }
+.ab { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 0.55rem; padding: 0.6rem 0.75rem; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: 0.15s; text-decoration: none; white-space: nowrap; width: 100%; }
+.ab svg { width: 14px; height: 14px; flex-shrink: 0; }
 .ab:hover { color: var(--primary-color); border-color: var(--primary-color); background: rgba(215,106,30,0.06); }
 .ab.like svg { fill: none; stroke: currentColor; stroke-width: 2; }
 .ab.like:hover, .ab.like.liked { color: #ef4444; border-color: #ef4444; background: rgba(239,68,68,0.07); }
@@ -91,73 +95,47 @@ html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color
 .ab.del { color: #ef4444; border-color: rgba(239,68,68,0.28); background: rgba(239,68,68,0.05); }
 .ab.del:hover { background: rgba(239,68,68,0.12); border-color: #ef4444; }
 .ab.act-tr { color: var(--primary-color); border-color: var(--primary-color); background: rgba(215,106,30,0.09); }
+.ab.ab-full { grid-column: 1 / -1; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .ab.loading svg { animation: spin 0.7s linear infinite; }
-
-/* ── Details Section ─────────────────────────────────────────────── */
-.sec-lbl { font-size: clamp(0.5rem, 0.9vw, 0.6rem); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
-.sec-lbl svg { width: clamp(9px, 1.2vw, 11px); height: clamp(9px, 1.2vw, 11px); color: var(--primary-color); }
-.sec-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border-color); }
-
-.desc-text { font-size: clamp(0.75rem, 1.3vw, 0.88rem); line-height: 1.8; color: var(--text-muted); white-space: pre-wrap; }
-
-/* info grid */
-.igrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.4rem, 1%, 0.5rem); }
-.icell { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 0.6rem; padding: clamp(0.5rem, 1%, 0.65rem) clamp(0.65rem, 1.2%, 0.8rem); }
-.icell-lbl { font-size: clamp(0.5rem, 0.9vw, 0.57rem); text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.2rem; }
-.icell-lbl svg { width: clamp(8px, 1vw, 9px); height: clamp(8px, 1vw, 9px); color: var(--primary-color); }
-.icell-val { font-size: clamp(0.7rem, 1.1vw, 0.8rem); font-weight: 700; color: var(--text-color); }
-.icell-val.orange { color: var(--primary-color); }
-.icell-val.green  { color: #4ade80; }
-.icell-val.red { color: #ef4444; }
-.icell-val a { color: var(--primary-color); text-decoration: none; }
-.icell-val a:hover { text-decoration: underline; }
-
-/* divider light */
-.thin-divider { display: flex; align-items: center; gap: 0.6rem; opacity: 0.25; }
-.thin-divider::before, .thin-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg,transparent,var(--accent-gold),transparent); }
-.thin-divider span { font-size: clamp(0.5rem, 0.9vw, 0.56rem); letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent-gold-light); white-space: nowrap; }
-
-/* ── RIGHT column (Chat Iframe) ──────────────────────────────────── */
-.ev-right { padding: 0; background: var(--bg-dark); border-left: 1px solid var(--border-color); }
-.chat-iframe { width: 100%; height: 100%; border: none; display: block; min-height: clamp(60vh, 85vh, 100vh); }
-
-/* ── Error State ────────────────────────────────────────────────── */
-.error-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: clamp(1rem, 3%, 2rem); }
-.error-state svg { width: clamp(50px, 10vw, 64px); height: clamp(50px, 10vw, 64px); color: var(--primary-color); margin-bottom: clamp(0.75rem, 2%, 1rem); opacity: 0.7; }
-.error-state h2 { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 700; margin-bottom: clamp(0.3rem, 1%, 0.5rem); color: var(--text-color); }
-.error-state p { font-size: clamp(0.75rem, 2vw, 0.9rem); color: var(--text-muted); margin-bottom: clamp(1rem, 2%, 1.5rem); }
-.error-state a { display: inline-flex; align-items: center; gap: 0.35rem; padding: clamp(0.5rem, 1%, 0.65rem) clamp(1rem, 2%, 1.2rem); background: rgba(215,106,30,0.1); border: 1px solid rgba(215,106,30,0.26); border-radius: 0.5rem; color: var(--primary-color); text-decoration: none; font-weight: 600; transition: 0.18s; }
-.error-state a:hover { background: rgba(215,106,30,0.2); border-color: var(--primary-color); }
-
-/* ── Modals ──────────────────────────────────────────────────────── */
+.ev-right { padding: 0; background: var(--bg-dark); overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.chat-iframe { width: 100%; height: 100%; border: none; display: block; flex-grow: 1; }
+.error-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem; width: 100%; }
+.error-state svg { width: 64px; height: 64px; color: var(--primary-color); margin-bottom: 1rem; opacity: 0.7; }
+.error-state h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+.error-state p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+.error-state a { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.65rem 1.2rem; background: rgba(215,106,30,0.1); border: 1px solid rgba(215,106,30,0.26); border-radius: 0.5rem; color: var(--primary-color); text-decoration: none; font-weight: 600; transition: 0.18s; }
+.error-state a:hover { background: rgba(215,106,30,0.2); }
 .mbg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2500; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
 .mbg.show { display: flex; }
-.mbox { background: var(--bg-light); padding: clamp(1rem, 2%, 1.4rem); border-radius: 1rem; border: 1px solid var(--border-color); max-width: clamp(90vw, 85%, 340px); width: 92%; position: relative; box-shadow: 0 18px 50px rgba(0,0,0,0.5); }
-.mclose { position: absolute; top: clamp(0.5rem, 1%, 0.7rem); right: clamp(0.5rem, 1%, 0.7rem); background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); width: clamp(20px, 5vw, 24px); height: clamp(20px, 5vw, 24px); border-radius: 0.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: clamp(0.8rem, 1.5vw, 0.9rem); transition: 0.15s; }
+.mbox { background: var(--bg-light); padding: 1.4rem; border-radius: 1rem; border: 1px solid var(--border-color); max-width: 340px; width: 92%; position: relative; box-shadow: 0 18px 50px rgba(0,0,0,0.5); }
+.mclose { position: absolute; top: 0.7rem; right: 0.7rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-muted); width: 24px; height: 24px; border-radius: 0.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.15s; }
 .mclose:hover { color: var(--text-color); }
-.mhead { text-align: center; margin-bottom: clamp(0.75rem, 1.5%, 1rem); }
-.mhead svg { width: clamp(18px, 3vw, 22px); height: clamp(18px, 3vw, 22px); color: var(--primary-color); margin-bottom: 0.4rem; }
-.mhead h3 { font-size: clamp(0.8rem, 2vw, 0.95rem); font-weight: 700; }
-.mhead p { font-size: clamp(0.6rem, 1.2vw, 0.75rem); color: var(--text-muted); margin-top: 0.15rem; }
-.mopts { display: grid; gap: clamp(0.4rem, 0.8%, 0.5rem); }
-.mopt { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: clamp(0.6rem, 1%, 0.75rem) clamp(0.8rem, 1.5%, 1rem); background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 0.6rem; cursor: pointer; transition: 0.15s; font-size: clamp(0.75rem, 1.2vw, 0.84rem); font-weight: 600; text-decoration: none; }
+.mhead { text-align: center; margin-bottom: 1rem; }
+.mhead svg { width: 22px; height: 22px; color: var(--primary-color); margin-bottom: 0.4rem; }
+.mhead h3 { font-size: 0.95rem; font-weight: 700; }
+.mhead p { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; }
+.mopts { display: grid; gap: 0.5rem; }
+.mopt { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.75rem 1rem; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 0.6rem; cursor: pointer; transition: 0.15s; font-size: 0.84rem; font-weight: 600; text-decoration: none; }
 .mopt:hover { border-color: var(--primary-color); background: rgba(215,106,30,0.07); }
-.mopt svg { width: clamp(14px, 2vw, 16px); height: clamp(14px, 2vw, 16px); flex-shrink: 0; }
+.mopt svg { width: 16px; height: 16px; flex-shrink: 0; }
 .mopt.wa { color: #22c55e; }
 .mopt.wa:hover { border-color: #22c55e; background: rgba(34,197,94,0.07); }
-
-/* ── Responsive ──────────────────────────────────────────────────── */
-@media (max-width: 780px) {
-  .event-card { grid-template-columns: 1fr; max-width: 95vw; }
-  .ev-left { border-right: none; border-bottom: 1px solid var(--border-color); max-height: none; }
+@media (max-width: 900px) {
+  .page-wrap { height: auto; min-height: 100dvh; padding: 76px 3% 2rem; display: block; }
+  .event-card { grid-template-columns: 1fr; height: auto; min-height: unset; }
+  .ev-left { border-right: none; overflow: visible; height: auto; }
   .ev-right { display: none; }
 }
-@media (max-width: 500px) {
-  .page-wrap { padding: calc(1rem + 4vh) 3% 3%; }
-  .event-card { max-width: 100%; border-radius: 0.8rem; }
-  .ev-left { padding: clamp(0.7rem, 2%, 1rem); }
-  .igrid { grid-template-columns: 1fr; }
+@media (max-width: 520px) {
+  .page-wrap { padding: 56px 0 0; }
+  .event-card { border-radius: 0; border: none; }
+  .ev-hero { padding: 1.2rem 1rem; }
+  .ev-section { padding: 1rem; }
+  .ev-stats-row { padding: 0.8rem 1rem; }
+  .date-grid { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+  .actions-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 </head>
@@ -173,7 +151,6 @@ html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color
         <div class="b2">{{ translate("Weaving Communities Together") }}</div>
       </div>
     </a>
-
   </div>
 </header>
 
@@ -186,199 +163,183 @@ html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color
 
 <!-- Page -->
 <div class="page-wrap">
-  {% if eventdetails %}
-    <!-- Event Found - Show Content -->
-    <div class="event-card">
+{% if eventdetails %}
+  <div class="event-card">
 
-      <!-- ══ LEFT PANEL (Combined Details) ════════════════════════════════════ -->
-      <div class="ev-left">
+    <div class="ev-left">
 
-        <!-- Badge & Title -->
+      <div class="ev-hero">
         <div class="ev-badge">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          {{ translate("Event") }} · {{ eventdetails.category }}
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          {{ translate("Event") }} &middot; {{ eventdetails.category }}
         </div>
-
         <h1 class="ev-title">{{ eventdetails.eventname }}</h1>
-
-        <div class="ev-sub">
-          <span>{{ translate("by") }}</span><span class="dot"></span>
+        <div class="ev-meta-line">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          {{ translate("Posted by") }}
           <a href="/user/{{ eventdetails.username }}">{{ eventdetails.username }}</a>
-          <span class="dot"></span><span>#{{ eventdetails.eventid }}</span>
+          <span class="ev-dot"></span>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+          {{ translate("ID") }} #{{ eventdetails.eventid }}
         </div>
+      </div>
 
-        <!-- Meta Info -->
-        <div class="meta-row">
-          <div class="mpill">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            <span id="like-pill">{{ eventdetails.likes or 0 }}</span>&thinsp;{{ translate("likes") }}
-          </div>
-          <div class="mpill">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-            <strong>{{ eventdetails.category }}</strong>
-          </div>
-          <div class="mpill">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            <a href="/user/{{ eventdetails.username }}">{{ eventdetails.username }}</a>
-          </div>
+      <div class="ev-stats-row">
+        <div class="stat-chip st-orange">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <span id="like-pill">{{ eventdetails.likes or 0 }}</span>&thinsp;{{ translate("likes") }}
         </div>
+        <div class="stat-chip">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="event-duration-chip">…</span>
+        </div>
+        <div class="stat-chip st-green" id="status-chip">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" id="status-chip-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span id="event-status-chip">…</span>
+        </div>
+      </div>
 
-        <!-- Date & Time -->
-        <div class="date-row">
+      <div class="ev-section">
+        <div class="sec-label">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          {{ translate("Date & Time") }}
+        </div>
+        <div class="date-grid">
           <div class="dc">
-            <div class="dc-lbl">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              {{ translate("Starts") }}
+            <div class="dc-type">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 8 14"/></svg>
+              {{ translate("Event Starts") }}
             </div>
-            <div class="dc-date">{{ eventdetails.eventstartdate | datetimeformat }}</div>
-            <div class="dc-time">⏰ {{ eventdetails.eventstarttime }}</div>
-          </div>
-          <div class="dc">
-            <div class="dc-lbl">
+            <div class="dc-date-val" id="ev-startdate">{{ eventdetails.eventstartdate | datetimeformat }}</div>
+            <div class="dc-time-val">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              {{ translate("Ends") }}
+              {{ translate("At") }} {{ eventdetails.eventstarttime }}
             </div>
-            <div class="dc-date">{{ eventdetails.eventenddate | datetimeformat }}</div>
-            <div class="dc-time">🏁 {{ eventdetails.eventendtime }}</div>
+          </div>
+          <div class="dc">
+            <div class="dc-type">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              {{ translate("Event Ends") }}
+            </div>
+            <div class="dc-date-val" id="ev-enddate">{{ eventdetails.eventenddate | datetimeformat }}</div>
+            <div class="dc-time-val">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              {{ translate("At") }} {{ eventdetails.eventendtime }}
+            </div>
           </div>
         </div>
+      </div>
 
-        <!-- Location -->
+      <div class="ev-section">
+        <div class="sec-label">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          {{ translate("Location") }}
+        </div>
+        <div class="loc-hint">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ translate("Tap the address below to open in Google Maps") }}
+        </div>
         <a href="https://www.google.com/maps/search/?api=1&query={{ eventdetails.location | urlencode }}" target="_blank" class="loc-link">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          <span>{{ eventdetails.location }}</span>
-          <span class="arr">↗</span>
+          <span class="loc-text" id="ev-location">{{ eventdetails.location }}</span>
+          <span class="loc-arr">↗ Maps</span>
         </a>
+      </div>
 
-        <div class="thin-div"></div>
+      <div class="ev-section">
+        <div class="sec-label">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          {{ translate("About this Event") }}
+        </div>
+        <p class="desc-text" id="desc-main">{{ eventdetails.description }}</p>
+      </div>
 
-        <!-- Action Buttons -->
-        <div class="act-row">
+      <div class="ev-section">
+        <div class="sec-label">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          {{ translate("Actions") }}
+        </div>
+        <div class="actions-grid">
 
-          <!-- Like Button -->
           {% if c_user == "None" %}
             {% set loginalertmsg = translate("Login to like this event.") %}
             <button id="likeevent-{{ eventdetails.eventid }}" class="ab like" onclick="showAlert('{{ loginalertmsg }}', 'warning')">
               <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0 }}</span>
+              {{ translate("Like") }} (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0 }}</span>)
             </button>
           {% else %}
             {% set userliked = userdetails['likes'].split(",") if userdetails and userdetails['likes'] else [] %}
             {% if eventdetails.eventid|string in userliked %}
               <button id="likeevent-{{ eventdetails.eventid }}" class="ab like liked" onclick="changelike({{ eventdetails.eventid }},'remove')">
                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                <span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0 }}</span>
+                {{ translate("Liked") }} (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0 }}</span>)
               </button>
             {% else %}
               <button id="likeevent-{{ eventdetails.eventid }}" class="ab like" onclick="changelike({{ eventdetails.eventid }},'add')">
                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                <span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0 }}</span>
+                {{ translate("Like") }} (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0 }}</span>)
               </button>
             {% endif %}
           {% endif %}
 
           <button class="ab" onclick="openM('shareModal')">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            {{ translate("Share") }}
+            {{ translate("Share Event") }}
           </button>
 
           <a href="/download_ics/{{ eventdetails.eventid }}" class="ab">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            {{ translate("Calendar") }}
+            {{ translate("Add to Calendar") }}
           </a>
 
           <a href="/group-chat/from-event/{{ eventdetails.eventid }}" class="ab">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-            {{ translate("Chat") }}
+            {{ translate("Open Chat") }}
           </a>
 
           <a href="/user/{{ eventdetails.username }}" class="ab">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            {{ translate("Profile") }}
+            {{ translate("View Organiser") }}
           </a>
 
-          {% if user_lang != "en" %}
+          {% if user_language != "en" %}
           <button class="ab" id="translateBtn" onclick="toggleTranslate(this)">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            {{ translate("Translate") }}
+            {{ translate("Translate Page") }}
           </button>
           {% endif %}
 
           {% if eventdetails.username == c_user or isadmin %}
-          <button class="ab del" onclick="openM('deleteModal')">
+          <button class="ab del ab-full" onclick="openM('deleteModal')">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-            {{ translate("Delete") }}
+            {{ translate("Delete Event") }}
           </button>
           {% endif %}
 
         </div>
-
-        <div class="thin-div"></div>
-
-        <!-- Description Section -->
-        <div class="sec-lbl">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          {{ translate("Full Description") }}
-        </div>
-
-        <p class="desc-text" id="desc-main">{{ eventdetails.description }}</p>
-
-        <div class="thin-divider"><span>{{ translate("Details") }}</span></div>
-
-        <!-- Info Grid -->
-        <div class="igrid">
-          <div class="icell">
-            <div class="icell-lbl">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-              {{ translate("Category") }}
-            </div>
-            <div class="icell-val orange">{{ eventdetails.category }}</div>
-          </div>
-          <div class="icell">
-            <div class="icell-lbl">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              {{ translate("Status") }}
-            </div>
-            <div id="event-status" class="icell-val green">● {{ translate("Active") }}</div>
-          </div>
-          <div class="icell">
-            <div class="icell-lbl">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              {{ translate("Posted By") }}
-            </div>
-            <div class="icell-val"><a href="/user/{{ eventdetails.username }}">{{ eventdetails.username }}</a></div>
-          </div>
-          <div class="icell">
-            <div class="icell-lbl">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-              {{ translate("Total Likes") }}
-            </div>
-            <div class="icell-val" id="eventlike-grid">{{ eventdetails.likes or 0 }}</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ══ RIGHT PANEL (Group Chat Iframe) ════════════════════════════════ -->
-      <div class="ev-right">
-        <iframe src="/group-chat/from-event/{{ eventdetails.eventid }}" class="chat-iframe"></iframe>
       </div>
 
     </div>
-  {% else %}
-    <!-- Event Not Found - Show Error State -->
-    <div class="error-state">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-      <h2>{{ translate("Event Not Found") }}</h2>
-      <p>{{ translate("The event you're looking for doesn't exist or has been removed.") }}</p>
-      <a href="/">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        {{ translate("Back to Home") }}
-      </a>
+
+    <div class="ev-right">
+      <iframe src="/group-chat/from-event/{{ eventdetails.eventid }}" class="chat-iframe"></iframe>
     </div>
-  {% endif %}
+
+  </div>
+
+{% else %}
+  <div class="error-state">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <h2>{{ translate("Event Not Found") }}</h2>
+    <p>{{ translate("The event you're looking for doesn't exist or has been removed.") }}</p>
+    <a href="/">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      {{ translate("Back to Home") }}
+    </a>
+  </div>
+{% endif %}
 </div>
 
 <!-- ── Share Modal ─────────────────────────────────────────────────── -->
@@ -417,11 +378,11 @@ html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color
     <div class="mhead">
       <svg style="color:#ef4444;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
       <h3 style="color:#f87171;">{{ translate("Delete Event?") }}</h3>
-      <p>{{ translate("This cannot be undone.") }}</p>
+      <p>{{ translate("This action cannot be undone.") }}</p>
     </div>
-    <div style="display:flex;gap:7px;">
-      <button onclick="closeM('deleteModal')" class="ab" style="flex:1;justify-content:center;padding:8px 0;">{{ translate("Cancel") }}</button>
-      <a href="/deleteevent/{{ eventdetails.eventid }}" class="ab del" style="flex:1;justify-content:center;padding:8px 0;">{{ translate("Delete") }}</a>
+    <div style="display:flex;gap:8px;margin-top:0.5rem;">
+      <button onclick="closeM('deleteModal')" class="ab" style="flex:1;padding:10px 0;">{{ translate("Cancel") }}</button>
+      <a href="/deleteevent/{{ eventdetails.eventid }}" class="ab del" style="flex:1;padding:10px 0;">{{ translate("Delete") }}</a>
     </div>
   </div>
 </div>
@@ -430,22 +391,21 @@ html, body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color
 <script>
 const socket = io();
 {% if eventdetails %}
-const EVENTID = {{ eventdetails.eventid }};
-const EVENTNAME = {{ eventdetails.eventname | tojson }};
-const EVENTLOC  = {{ eventdetails.location | tojson }};
-const EVENTDATE = {{ (eventdetails.eventstartdate | datetimeformat) | tojson }};
-const EVENTTIME = {{ eventdetails.eventstarttime | tojson }};
+const EVENTID            = {{ eventdetails.eventid }};
+const EVENTNAME          = {{ eventdetails.eventname | tojson }};
+const EVENTLOC           = {{ eventdetails.location | tojson }};
+const EVENTDATE          = {{ (eventdetails.eventstartdate | datetimeformat) | tojson }};
+const EVENTTIME          = {{ eventdetails.eventstarttime | tojson }};
 const EVENTSTARTDATETIME = {{ eventdetails.eventstartdate | tojson }};
-const EVENTENDDATETIME = {{ eventdetails.eventenddate | tojson }};
-const ORIG_DESC = {{ eventdetails.description | tojson }};
-const C_USER    = "{{ c_user }}";
+const EVENTENDDATETIME   = {{ eventdetails.eventenddate | tojson }};
+const ORIG_DESC          = {{ eventdetails.description | tojson }};
+const C_USER             = "{{ c_user }}";
 {% else %}
 const EVENTID = null;
-const C_USER = "{{ c_user }}";
+const C_USER  = "{{ c_user }}";
 {% endif %}
-let translated  = false;
+let translated = false;
 
-/* Toast */
 const TI = {
   success: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
   error:   '<path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
@@ -453,172 +413,177 @@ const TI = {
   info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
 };
 let tmr;
-
 function showAlert(msg, type='info') {
   const t = document.getElementById('toast');
-  document.getElementById('toast-icon').innerHTML = TI[type]||TI.info;
+  document.getElementById('toast-icon').innerHTML = TI[type] || TI.info;
   document.getElementById('toast-text').textContent = msg;
-  t.className = 'toast '+type+' show';
+  t.className = 'toast ' + type + ' show';
   clearTimeout(tmr);
   tmr = setTimeout(hideToast, 3600);
 }
+function hideToast() { document.getElementById('toast').classList.remove('show'); }
 
-function hideToast() {
-  document.getElementById('toast').classList.remove('show');
-}
-
-/* Modals */
-function openM(id)  {
-  document.getElementById(id).classList.add('show');
-}
-
-function closeM(id) {
-  document.getElementById(id).classList.remove('show');
-}
-
+function openM(id)  { document.getElementById(id).classList.add('show'); }
+function closeM(id) { document.getElementById(id).classList.remove('show'); }
 document.querySelectorAll('.mbg').forEach(m => m.addEventListener('click', e => {
-  if(e.target===m) m.classList.remove('show');
+  if (e.target === m) m.classList.remove('show');
 }));
 
-/* Event Status Checker */
-function updateEventStatus() {
+function calcDuration() {
   if (!EVENTID) return;
-
   try {
-    const startStr = EVENTSTARTDATETIME;
-    const endStr = EVENTENDDATETIME;
-
-    // Parse start date-time (format: "2024-01-15 14:30:00" or "2024-01-15")
-    let startDateTime;
-    if (startStr.includes(' ')) {
-      const [startDate, startTime] = startStr.split(' ');
-      startDateTime = new Date(startDate + 'T' + startTime);
-    } else {
-      startDateTime = new Date(startStr + 'T00:00:00');
-    }
-
-    // Parse end date (format: "2024-01-15" - just date, no time)
-    // Set end time to 23:59:59 to include the entire day
-    let endDateTime;
-    if (endStr.includes(' ')) {
-      const [endDate, endTime] = endStr.split(' ');
-      endDateTime = new Date(endDate + 'T' + endTime);
-    } else {
-      endDateTime = new Date(endStr + 'T23:59:59');
-    }
-
-    const currentTime = new Date();
-
-    const statusEl = document.getElementById('event-status');
-    let statusHTML = '';
-
-    if (currentTime < startDateTime) {
-      // Upcoming
-      statusHTML = '⏳ {{ translate("Upcoming") }}';
-      if (statusEl) statusEl.className = 'icell-val orange';
-    } else if (currentTime >= startDateTime && currentTime <= endDateTime) {
-      // Ongoing
-      statusHTML = '🟢 {{ translate("Ongoing") }}';
-      if (statusEl) statusEl.className = 'icell-val green';
-    } else {
-      // Ended
-      statusHTML = '✓ {{ translate("Ended") }}';
-      if (statusEl) statusEl.className = 'icell-val red';
-    }
-
-    if (statusEl) statusEl.innerHTML = statusHTML;
-  } catch (e) {
-    console.error('Error updating event status:', e);
-  }
+    const s = new Date(EVENTSTARTDATETIME.includes(' ') ? EVENTSTARTDATETIME.replace(' ', 'T') : EVENTSTARTDATETIME + 'T00:00:00');
+    const e = new Date(EVENTENDDATETIME.includes(' ')   ? EVENTENDDATETIME.replace(' ', 'T')   : EVENTENDDATETIME   + 'T23:59:59');
+    const ms = e - s;
+    if (ms <= 0) return;
+    const days  = Math.floor(ms / 86400000);
+    const hours = Math.floor((ms % 86400000) / 3600000);
+    let out = '';
+    if (days > 0)  out += days  + '{{ translate("d") }} ';
+    if (hours > 0) out += hours + '{{ translate("h") }}';
+    if (!out) out = '< 1{{ translate("h") }}';
+    const el = document.getElementById('ev-duration');
+    if (el) el.textContent = out.trim();
+    const chipEl = document.getElementById('event-duration-chip');
+    if (chipEl) chipEl.textContent = out.trim();
+  } catch(err) {}
 }
 
-// Update status on load and every minute
+function updateEventStatus() {
+  if (!EVENTID) return;
+  try {
+    const startStr = EVENTSTARTDATETIME;
+    const endStr   = EVENTENDDATETIME;
+    const startDT  = new Date(startStr.includes(' ') ? startStr.replace(' ','T') : startStr + 'T00:00:00');
+    const endDT    = new Date(endStr.includes(' ')   ? endStr.replace(' ','T')   : endStr   + 'T23:59:59');
+    const now      = new Date();
+
+    const statusEl   = document.getElementById('event-status');
+    const chipText   = document.getElementById('event-status-chip');
+    const chip       = document.getElementById('status-chip');
+    const chipIcon   = document.getElementById('status-chip-icon');
+
+    const upcomingIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+    const ongoingIcon  = '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+    const endedIcon    = '<path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+
+    if (now < startDT) {
+      if (statusEl) { statusEl.className = 'icell-val orange'; statusEl.textContent = '⏳ {{ translate("Upcoming") }}'; }
+      if (chipText) chipText.textContent = '{{ translate("Upcoming") }}';
+      if (chip)     { chip.className = 'stat-chip st-orange'; }
+      if (chipIcon) chipIcon.innerHTML = upcomingIcon;
+    } else if (now >= startDT && now <= endDT) {
+      if (statusEl) { statusEl.className = 'icell-val green'; statusEl.textContent = '🟢 {{ translate("Ongoing") }}'; }
+      if (chipText) chipText.textContent = '{{ translate("Ongoing") }}';
+      if (chip)     { chip.className = 'stat-chip st-green'; }
+      if (chipIcon) chipIcon.innerHTML = ongoingIcon;
+    } else {
+      if (statusEl) { statusEl.className = 'icell-val red'; statusEl.textContent = '✓ {{ translate("Ended") }}'; }
+      if (chipText) chipText.textContent = '{{ translate("Ended") }}';
+      if (chip)     { chip.className = 'stat-chip st-red'; }
+      if (chipIcon) chipIcon.innerHTML = endedIcon;
+    }
+  } catch(err) { console.error('Status error:', err); }
+}
+
 if (EVENTID) {
   updateEventStatus();
+  calcDuration();
   setInterval(updateEventStatus, 60000);
 }
 
-/* Like */
 function allLikeEls() {
-  return document.querySelectorAll('#eventlike-'+EVENTID+', #like-pill, #eventlike-grid');
+  return document.querySelectorAll('#eventlike-' + EVENTID + ', #like-pill, #eventlike-grid');
 }
-
 function changelike(id, type) {
-  const btn = document.getElementById('likeevent-'+id);
+  const btn = document.getElementById('likeevent-' + id);
   allLikeEls().forEach(el => {
-    let n=parseInt(el.innerText)||0;
-    el.innerText=type==='add'?n+1:Math.max(0,n-1);
+    let n = parseInt(el.innerText) || 0;
+    el.innerText = type === 'add' ? n + 1 : Math.max(0, n - 1);
   });
-  if(type==='add') {
+  if (type === 'add') {
     btn.classList.add('liked');
-    btn.setAttribute('onclick',`changelike(${id},'remove')`);
-  }
-  else {
+    btn.setAttribute('onclick', `changelike(${id},'remove')`);
+  } else {
     btn.classList.remove('liked');
-    btn.setAttribute('onclick',`changelike(${id},'add')`);
+    btn.setAttribute('onclick', `changelike(${id},'add')`);
   }
-  socket.emit('addeventlike',{eventid:id,byuser:C_USER,type});
+  socket.emit('addeventlike', { eventid: id, byuser: C_USER, type });
 }
-
 socket.on('update_like', d => {
-  if(d.eventid==EVENTID) allLikeEls().forEach(el=>el.innerText=d.likes);
+  if (d.eventid == EVENTID) allLikeEls().forEach(el => el.innerText = d.likes);
 });
 
-/* Share */
 function shareWA() {
   if (!EVENTID) return;
-  const link=`${location.origin}/event/${EVENTID}`;
-  window.open('https://wa.me/?text='+encodeURIComponent(`*${EVENTNAME}*\n📅 ${EVENTDATE} at ${EVENTTIME}\n📍 ${EVENTLOC}\n\n🔗 ${link}`),'_blank');
+  const link = `${location.origin}/event/${EVENTID}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(`*${EVENTNAME}*\n📅 ${EVENTDATE} at ${EVENTTIME}\n📍 ${EVENTLOC}\n\n🔗 ${link}`), '_blank');
   closeM('shareModal');
 }
-
 function copyLink() {
   if (!EVENTID) return;
-  const link=`${location.origin}/event/${EVENTID}`;
-  const fb=()=>{
-    const ta=document.createElement('textarea');
-    ta.value=link;
-    ta.style.cssText='position:fixed;left:-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try{
-      document.execCommand('copy');
-      showAlert('{{ translate("Copied!") }}','success');
-    } catch {
-      showAlert('{{ translate("Failed") }}','error');
-    }
+  const link = `${location.origin}/event/${EVENTID}`;
+  const fb = () => {
+    const ta = document.createElement('textarea');
+    ta.value = link; ta.style.cssText = 'position:fixed;left:-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); showAlert('{{ translate("Copied!") }}', 'success'); }
+    catch { showAlert('{{ translate("Failed") }}', 'error'); }
     document.body.removeChild(ta);
   };
-  navigator.clipboard && window.isSecureContext ? navigator.clipboard.writeText(link).then(()=>showAlert('{{ translate("Copied!") }}','success')).catch(fb) : fb();
+  navigator.clipboard && window.isSecureContext
+    ? navigator.clipboard.writeText(link).then(() => showAlert('{{ translate("Copied!") }}', 'success')).catch(fb)
+    : fb();
   closeM('shareModal');
 }
 
-/* Translate */
-function toggleTranslate(btn) {
+const GLOBE_SVG   = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+const SPINNER_SVG = `<svg style="animation:spin 0.7s linear infinite;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
+
+async function toggleTranslate(btn) {
   if (!EVENTID) return;
-  const d=document.getElementById('desc-main');
-  if(translated){
-    d.textContent=ORIG_DESC;
-    btn.classList.remove('act-tr','loading');
-    translated=false;
+
+  if (translated) {
+    document.querySelector('.ev-title').textContent = EVENTNAME;
+    document.getElementById('desc-main').textContent = ORIG_DESC;
+    const locEl = document.querySelector('.loc-text');
+    if (locEl) locEl.textContent = EVENTLOC;
+    const startEl = document.getElementById('ev-startdate');
+    if (startEl) startEl.textContent = EVENTDATE;
+    btn.classList.remove('act-tr');
+    btn.innerHTML = GLOBE_SVG + ' {{ translate("Translate Page") }}';
+    translated = false;
     return;
   }
-  btn.classList.add('loading','act-tr');
-  fetch('/api/translate',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({text:ORIG_DESC})
-  })
-    .then(r=>r.json())
-    .then(res=>{
-      d.textContent=res.translated||ORIG_DESC;
-      translated=true;
-      btn.classList.remove('loading');
-    })
-    .catch(()=>{
-      btn.classList.remove('loading','act-tr');
-      showAlert('{{ translate("Translation failed.") }}','error');
+
+  btn.classList.add('loading');
+  btn.innerHTML = SPINNER_SVG + ' {{ translate("Translating…") }}';
+
+  try {
+    const resp = await fetch('/translate_event', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventname: EVENTNAME, description: ORIG_DESC, location: EVENTLOC, startdate: EVENTDATE, enddate: EVENTENDDATETIME })
     });
+    if (!resp.ok) throw new Error('failed');
+    const data = await resp.json();
+
+    if (data.eventname)  document.querySelector('.ev-title').textContent = data.eventname;
+    if (data.description) document.getElementById('desc-main').textContent = data.description;
+    const locEl = document.querySelector('.loc-text');
+    if (locEl && data.location) locEl.textContent = data.location;
+    const startEl = document.getElementById('ev-startdate');
+    if (startEl && data.startdate) startEl.textContent = data.startdate;
+
+    translated = true;
+    btn.classList.remove('loading');
+    btn.classList.add('act-tr');
+    btn.innerHTML = GLOBE_SVG + ' {{ translate("Show Original") }}';
+  } catch(err) {
+    btn.classList.remove('loading', 'act-tr');
+    btn.innerHTML = GLOBE_SVG + ' {{ translate("Translate Page") }}';
+    showAlert('{{ translate("Translation failed.") }}', 'error');
+  }
 }
 </script>
 </body>

@@ -400,6 +400,7 @@ async def eventfromeventid(request: Request, eventid: int, db: AsyncDB = Depends
         "c_user": str(currentuname).strip(),
         "eventdetails": getevent,
         "translate": bound_translate,
+        "user_language": user_lang
     })
 
 @app.post("/forgetpassword")

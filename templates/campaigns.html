@@ -336,7 +336,6 @@
                                 </svg>
                             </button>
                             <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
-                            <button class="campaign-tag" onclick="window.location.href='/user/{{ e.username }}'">{{ translate('Profile') }}</button>
 
                             {% if e.username == c_user or isadmin %}
                                 <button onclick="asktodelete({{ e.eventid }})" class="delete-btn">✕</button>
@@ -789,22 +788,36 @@ function generateImage() {
          padding: 20px;
      `;
 
+     // Scrollable wrapper — this is what makes touch-scroll work on iOS/Android
+     const iframeWrapper = document.createElement('div');
+     iframeWrapper.style.cssText = `
+         width: 100%;
+         height: 90vh;
+         max-width: 1400px;
+         overflow-y: auto;
+         -webkit-overflow-scrolling: touch;
+         border-radius: 12px;
+         position: relative;
+         background: var(--bg-light);
+     `;
+
      const iframe = document.createElement('iframe');
      iframe.src = '/event/' + eventid;
+     iframe.scrolling = 'yes';
      iframe.style.cssText = `
          width: 100%;
          height: 100%;
-         max-width: 1400px;
-         max-height: 90vh;
+         min-height: 90vh;
          border: none;
          border-radius: 12px;
          background: var(--bg-light);
+         display: block;
      `;
 
      const closeBtn = document.createElement('button');
      closeBtn.innerHTML = '✕';
      closeBtn.style.cssText = `
-         position: absolute;
+         position: fixed;
          top: 20px;
          right: 20px;
          width: 40px;
@@ -825,15 +838,21 @@ function generateImage() {
      closeBtn.onclick = (e) => {
          e.stopPropagation();
          modal.remove();
+         document.body.style.overflow = '';
      };
 
      modal.onclick = (e) => {
          if (e.target === modal) {
              modal.remove();
+             document.body.style.overflow = '';
          }
      };
 
-     modal.appendChild(iframe);
+     // Prevent background page scroll while modal is open
+     document.body.style.overflow = 'hidden';
+
+     iframeWrapper.appendChild(iframe);
+     modal.appendChild(iframeWrapper);
      modal.appendChild(closeBtn);
      document.body.appendChild(modal);
  }
