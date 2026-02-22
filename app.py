@@ -13,6 +13,7 @@ import csv
 import io
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
+from functools import wraps
 from typing import Optional, Dict, Any
 
 from fastapi import FastAPI, Request, Form, Depends, Response, BackgroundTasks, HTTPException
@@ -35,13 +36,14 @@ load_dotenv()
 ist = zoneinfo.ZoneInfo("Asia/Kolkata")
 translations_lock = threading.Lock()
 active_events = 0
+app_running_port = int(os.environ.get("PORT", 8000))
+app_running_host = "0.0.0.0"
 
 all_translations = {}
 non_file_translations = {}
 
 # --- In-Memory Stores ---
 rate_limit_store: dict[str, float] = {}  # {ip: timestamp}
-
 _translation_executor = ThreadPoolExecutor(max_workers=50)
 
 # --- Campaigns Cache ---
@@ -70,16 +72,17 @@ def save_translations():
         print(f"Error saving translation file: {e}")
         sendlog(f"Error saving translation file: {e}")
 
-# def translation_file_thread():
-#     while True:
-#         time.sleep(60)
-#         with translations_lock:
-#             save_translations()
-#             try:
-#                 with open("translations_backup.json", "w", encoding="utf-8") as f:
-#                     json.dump(all_translations, f, indent=4, ensure_ascii=False)
-#             except Exception:
-#                 pass
+
+def translation_file_thread():
+    while True:
+        time.sleep(60)
+        with translations_lock:
+            save_translations()
+            try:
+                with open("translations_backup.json", "w", encoding="utf-8") as f:
+                    json.dump(all_translations, f, indent=4, ensure_ascii=False)
+            except Exception:
+                pass
 
 def translate_thread(text, lang, save_file):
     global all_translations
@@ -97,6 +100,17 @@ def translate_thread(text, lang, save_file):
         existing = translate_dict.get(text, {})
         existing[lang] = translated
         translate_dict[text] = existing
+
+
+async def checkevent():
+    while True:
+        await asyncio.sleep(5 + random.randint(0, 10))
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.get(f"http://{app_running_host}:{app_running_port}/checkeventloop")
+        except Exception as e:
+            print(f"Check event loop error: {e}")
+            await asyncio.sleep(6)
 
 # --- Rate Limiter Helper ---
 def check_rate_limit(ip: str, window: int = 30) -> tuple[bool, int]:
@@ -122,12 +136,14 @@ def check_rate_limit(ip: str, window: int = 30) -> tuple[bool, int]:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Startup
     load_translations()
-
-    # abhi jarurat nhi hai
-    # threading.Thread(target=translation_file_thread, name="TranslationFileThread", daemon=True).start()
+    threading.Thread(target=translation_file_thread, name="TranslationFileThread", daemon=True).start()
+    task = asyncio.create_task(checkevent())
+    print("Starting background check also")
     yield
     # Shutdown
+    task.cancel()
     _translation_executor.shutdown(wait=False)
 
 app = FastAPI(lifespan=lifespan)
@@ -144,6 +160,18 @@ templates = Jinja2Templates(directory="templates")
 # --- Database Helpers ---
 # SQLiteCloud is synchronous, so we wrap DB calls in run_in_executor
 # to avoid blocking the async event loop.
+
+def sqldb(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        db = sq.connect(os.environ.get("SQLITECLOUD"))
+        db.row_factory = sq.Row
+        c = db.cursor()
+        final = function(c, *args, **kwargs)
+        db.commit()
+        db.close()
+        return final
+    return wrapper
 
 def _sync_get_db_conn():
     """Opens a synchronous SQLiteCloud connection."""
@@ -185,10 +213,15 @@ async def run_queries_parallel(*queries):
     return await asyncio.gather(*tasks)
 
 # --- Synchronous DB for non-async contexts (SocketIO, background tasks) ---
-def get_socket_db():
+def sync_db():
     db = _sync_get_db_conn()
+    db.row_factory = sq.Row
     c = db.cursor()
     return db, c
+
+def close_db(db):
+    db.commit()
+    db.close()
 
 # --- FastAPI DB Dependency (async-safe) ---
 class AsyncDB:
@@ -888,32 +921,40 @@ async def api(request: Request, db: AsyncDB = Depends(get_db)):
     return JSONResponse(content=toreturn)
 
 @app.get("/checkeventloop")
-async def checkeventloop(db: AsyncDB = Depends(get_db)):
+def checkeventloop():
+    db, c = sync_db()
     try:
-        await db.execute("SELECT * FROM eventdetail")
-        ch = await db.fetchall()
-        loop = asyncio.get_event_loop()
+        c.execute("SELECT * FROM eventdetail")
+        ch = c.fetchall()
+        hour24 = datetime.timedelta(hours=24)
+
         for x in ch:
             try:
                 etime = datetime.datetime.strptime(
-                    f"{x['enddate']} {x['endtime']}", "%Y-%m-%d %H:%M"
+                    f"{x['eventenddate']} {x['eventendtime']}", "%Y-%m-%d %H:%M"
                 ).replace(tzinfo=ist)
+
+                # etime = etime + hour24
+
                 if etime <= datetime.datetime.now(ist):
-                    await loop.run_in_executor(None, lambda: del_event(db._c, x["eventid"]))
-                    details = detailsformat(dict(x))
-                    sendmail(x["email"], "Event Ended",
-                             f"Hey there your event was ended, so it has been deleted!\n\nEvent Details:\n\n{details}\n\nThank You!")
-                    sendlog(f"#EventEnd \nEvent Ended at {etime.strftime('%Y-%m-%d %H:%M:%S')}.\nEvent Details:\n\n{details}")
+                    print(f"Deleting event {x['eventid']}")
+                    # del_event(c, x["eventid"])
+                    # details = detailsformat(dict(x))
+                    # sendmail(x["email"], "Event Ended",
+                    #          f"Hey there your event was ended, so it has been deleted!\n\nEvent Details:\n\n{details}\n\nThank You!")
+                    # sendlog(f"#EventEnd \nEvent Ended at {etime.strftime('%Y-%m-%d %H:%M:%S')}.\nEvent Details:\n\n{details}")
                     # Invalidate campaigns cache
                     _campaigns_cache["ts"] = 0
             except Exception as e:
-                print(f"Date parse error for event {x['eventid']}: {e}")
+                sendlog(f"Date parse error for event {x['eventid']}: {e}")
 
         return Response(content="<h1>CHECK EVENT LOOP COMPLETED</h1>", media_type="text/html")
     except Exception as e:
         text = f"Check event loop error: {e}"
         sendlog(text)
         return Response(content=text, media_type="text/plain")
+    finally:
+        close_db(db)
 
 @app.get("/download_ics/{eventid}")
 async def download_ics(eventid: int, db: AsyncDB = Depends(get_db)):
@@ -997,7 +1038,7 @@ async def add_group_msg(sid, data):
     loop = asyncio.get_event_loop()
 
     def _insert():
-        db, c = get_socket_db()
+        db, c = sync_db()
         try:
             find = c.execute("SELECT * FROM messages2 WHERE eventid=(?)", (eventid,)).fetchone()
             if not find:
@@ -1029,7 +1070,7 @@ async def add_like(sid, data):
     loop = asyncio.get_event_loop()
 
     def _update_like():
-        db, c = get_socket_db()
+        db, c = sync_db()
         try:
             ud = c.execute("SELECT * FROM userdetails WHERE username=?", (byuser,)).fetchone()
             liked_events = ud["likes"].split(",") if ud["likes"] else []
@@ -1064,7 +1105,5 @@ app = socketio.ASGIApp(sio, app)
 
 if __name__ == "__main__":
     import uvicorn
-    import os
-    port = int(os.environ.get("PORT", 8000))
 
-    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("app:app", host=app_running_host, port=app_running_port, reload=True)
