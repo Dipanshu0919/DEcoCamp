@@ -47,183 +47,81 @@
        TOUR SYSTEM — REBUILT (same engine as addevent)
        ============================================ */
 
-    .how-to-btn {
-        background: transparent;
-        border: 1px solid var(--primary-color, #d76a1e);
-        color: var(--primary-color, #d76a1e);
-        padding: 8px 18px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-    }
+    .how-to-btn { background: transparent; border: 1px solid var(--primary-color, #d76a1e); color: var(--primary-color, #d76a1e); padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; margin-bottom: 1rem; font-size: 0.9rem; }
     .how-to-btn:hover { background: var(--primary-color, #d76a1e); color: #fff; }
-
-    /* Dark overlay */
-    #cTourOverlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(5, 8, 30, 0.82);
-        z-index: 8990;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.35s ease;
-        backdrop-filter: blur(3px);
-        -webkit-backdrop-filter: blur(3px);
-    }
-    #cTourOverlay.active  { display: block; }
+    #cTourOverlay { position: fixed; inset: 0; background: rgba(5, 8, 30, 0.82); z-index: 8990; display: none; opacity: 0; transition: opacity 0.35s ease; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+    #cTourOverlay.active { display: block; }
     #cTourOverlay.visible { opacity: 1; }
-
-    /* Spotlight frame */
-    #cTourSpotlight {
-        position: fixed;
-        z-index: 8995;
-        border-radius: 14px;
-        pointer-events: none;
-        box-shadow:
-            0 0 0 4px #d76a1e,
-            0 0 0 7px rgba(215, 106, 30, 0.25),
-            0 0 40px rgba(215, 106, 30, 0.15);
-        transition:
-            top    0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            left   0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            width  0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.3s ease;
-        opacity: 0;
-    }
-    #cTourSpotlight.visible {
-        opacity: 1;
-        animation: cSpotPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes cSpotPulse {
-        0%,100% { box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); }
-        50%      { box-shadow: 0 0 0 4px #f08040, 0 0 0 10px rgba(215,106,30,0.15), 0 0 55px rgba(215,106,30,0.2); }
-    }
-
-    /* Tooltip card */
-    #cTourTooltip {
-        position: fixed;
-        z-index: 9000;
-        width: 330px;
-        max-width: calc(100vw - 24px);
-        background: #111827;
-        border: 1px solid rgba(215, 106, 30, 0.5);
-        border-radius: 14px;
-        padding: 0;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
-        display: none;
-        opacity: 0;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-        transform: translateY(8px);
-        overflow: hidden;
-    }
+    #cTourSpotlight { position: fixed; z-index: 8995; border-radius: 14px; pointer-events: none; box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215, 106, 30, 0.25), 0 0 40px rgba(215, 106, 30, 0.15); transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1), left 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; opacity: 0; }
+    #cTourSpotlight.visible { opacity: 1; animation: cSpotPulse 2.5s ease-in-out infinite; }
+    @keyframes cSpotPulse { 0%,100% { box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); } 50% { box-shadow: 0 0 0 4px #f08040, 0 0 0 10px rgba(215,106,30,0.15), 0 0 55px rgba(215,106,30,0.2); } }
+    #cTourTooltip { position: fixed; z-index: 9000; width: 330px; max-width: calc(100vw - 24px); background: #111827; border: 1px solid rgba(215, 106, 30, 0.5); border-radius: 14px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04); display: none; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(8px); overflow: hidden; box-sizing: border-box; }
     #cTourTooltip.visible { opacity: 1; transform: translateY(0); }
-
-    #cTourTooltip .c-tour-arrow {
-        position: absolute;
-        width: 0; height: 0;
-        border: 9px solid transparent;
-        pointer-events: none;
-    }
-    #cTourTooltip.arrow-top    .c-tour-arrow { top: -18px;    left: 28px; border-bottom-color: rgba(215,106,30,0.5); }
-    #cTourTooltip.arrow-bottom .c-tour-arrow { bottom: -18px; left: 28px; border-top-color:    rgba(215,106,30,0.5); }
-
-    .c-tour-header-bar {
-        background: linear-gradient(135deg, #d76a1e, #c45a10);
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-    }
-    .c-tour-step-pill {
-        background: rgba(0,0,0,0.25);
-        color: #fff;
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 10px;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-    }
+    #cTourTooltip .c-tour-arrow { position: absolute; width: 0; height: 0; border: 9px solid transparent; pointer-events: none; }
+    #cTourTooltip.arrow-top .c-tour-arrow { top: -18px; left: 50%; transform: translateX(-50%); border-bottom-color: rgba(215,106,30,0.5); }
+    #cTourTooltip.arrow-bottom .c-tour-arrow { bottom: -18px; left: 50%; transform: translateX(-50%); border-top-color: rgba(215,106,30,0.5); }
+    .c-tour-header-bar { background: linear-gradient(135deg, #d76a1e, #c45a10); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .c-tour-step-pill { background: rgba(0,0,0,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: 0.05em; white-space: nowrap; }
     .c-tour-title { color: #fff; font-weight: 700; font-size: 0.95rem; flex: 1; }
-    .c-tour-x-btn {
-        background: rgba(0,0,0,0.2);
-        border: none;
-        color: rgba(255,255,255,0.85);
-        width: 24px; height: 24px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 0.85rem;
-        transition: background 0.2s;
-        flex-shrink: 0;
-        line-height: 1;
-    }
+    .c-tour-x-btn { background: rgba(0,0,0,0.2); border: none; color: rgba(255,255,255,0.85); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: background 0.2s; flex-shrink: 0; line-height: 1; }
     .c-tour-x-btn:hover { background: rgba(0,0,0,0.45); color: #fff; }
-
-    .c-tour-body  { padding: 14px 16px 10px; }
-    .c-tour-text  { color: #cbd5e1; font-size: 0.875rem; line-height: 1.6; margin: 0 0 10px; }
-
-    /* Legend grid for card-buttons step */
-    .c-tour-legend {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-        margin-bottom: 10px;
-    }
-    .c-tour-legend-item {
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 8px;
-        padding: 7px 9px;
-        display: flex;
-        align-items: flex-start;
-        gap: 7px;
-    }
-    .c-tour-legend-icon  { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-    .c-tour-legend-text  { display: flex; flex-direction: column; gap: 1px; }
+    .c-tour-body { padding: 14px 16px 10px; overflow-y: auto; max-height: 55vh; }
+    .c-tour-text { color: #cbd5e1; font-size: 0.875rem; line-height: 1.6; margin: 0 0 10px; word-break: break-word; overflow-wrap: break-word; }
+    .c-tour-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    @media (max-width: 400px) { .c-tour-legend { grid-template-columns: 1fr; } }
+    .c-tour-legend-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 7px 9px; display: flex; align-items: flex-start; gap: 7px; }
+    .c-tour-legend-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .c-tour-legend-text { display: flex; flex-direction: column; gap: 1px; }
     .c-tour-legend-label { font-size: 0.72rem; font-weight: 700; color: #f1f5f9; }
-    .c-tour-legend-desc  { font-size: 0.68rem; color: #64748b; line-height: 1.3; }
-
-    .c-tour-footer {
-        padding: 10px 16px 14px;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-    }
+    .c-tour-legend-desc { font-size: 0.68rem; color: #64748b; line-height: 1.3; }
+    .c-tour-footer { padding: 10px 16px 14px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .c-tour-dots { display: flex; gap: 5px; align-items: center; }
-    .c-tour-dot {
-        width: 7px; height: 7px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.15);
-        transition: background 0.2s, transform 0.2s;
-        cursor: pointer;
-    }
+    .c-tour-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background 0.2s, transform 0.2s; cursor: pointer; }
     .c-tour-dot.active { background: #d76a1e; transform: scale(1.3); }
     .c-tour-nav-btns { display: flex; gap: 6px; }
-    .c-tour-nav-btn {
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.1);
-        color: #e2e8f0;
-        padding: 6px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
+    .c-tour-nav-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; }
     .c-tour-nav-btn:hover { background: rgba(255,255,255,0.14); }
     .c-tour-nav-btn.primary { background: #d76a1e; border-color: #d76a1e; color: #fff; }
     .c-tour-nav-btn.primary:hover { background: #c45a10; }
+
+    /* ============================================
+       TOUR SECTION HIGHLIGHT (Pulls target above blur)
+       ============================================ */
+    .c-tour-highlight-target {
+        position: relative !important;
+        z-index: 8992 !important; /* Higher than #cTourOverlay (8990) */
+        background-color: var(--bg-light, #141828) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 0 0 12px var(--bg-light, #141828) !important;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Custom overrides for specific highlighted elements to maintain their natural look */
+    .search-wrapper.c-tour-highlight-target,
+    .filter-container.c-tour-highlight-target {
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+    .campaign-card.c-tour-highlight-target {
+        background-color: var(--bg-dark, #0a0c20) !important;
+        box-shadow: 0 0 0 4px var(--bg-dark, #0a0c20) !important;
+    }
+    .trending-card.c-tour-highlight-target {
+        background-color: rgba(245, 158, 11, 0.1) !important;
+        box-shadow: 0 0 0 8px rgba(245, 158, 11, 0.1) !important;
+    }
+    .controls-container.c-tour-highlight-target {
+        background-color: var(--bg-light, #141828) !important;
+        box-shadow: 0 0 0 10px var(--bg-light, #141828) !important;
+        border-radius: 10px !important;
+    }
+    .card-footer.c-tour-highlight-target {
+        position: relative !important;
+        z-index: 8993 !important;
+        background-color: var(--bg-dark, #0a0c20) !important;
+        box-shadow: 0 0 0 6px var(--bg-dark, #0a0c20) !important;
+        border-radius: 10px !important;
+    }
 </style>
 
 <!-- ====== CAMPAIGNS TOUR DOM ====== -->
@@ -758,17 +656,20 @@
             text:  '{{ translate("Tap a category pill to show only campaigns from that group. You can combine multiple filters. On mobile, tap the Filter Categories button to expand them.") }}'
         },
         {
-            buildId: 'trending-section-wrapper',
+            buildId: null, // first .trending-card only
             title: '{{ translate("3. Trending Now 🔥") }}',
             text:  '{{ translate("These are the highest-rated and most-liked campaigns right now. They appear at the top so nothing hot gets missed.") }}'
         },
         {
-            buildId: null, // first .step-campaigns-cat, found dynamically
-            title: '{{ translate("4. Category Section and Sorting") }}',
-            text:  '{{ translate("Each category has its own search bar and sort controls. Use the dropdown to order by date, name, likes, or ID. The ↓ arrow reverses the order.") }}'
+            buildId: null, // .controls-container inside first category section
+            title: '{{ translate("4. Category Search and Sort") }}',
+            text:  '{{ translate("Each category has its own search bar and sort controls. Use the dropdown to order by date, name, likes, or ID. The arrow button reverses the order.") }}'
         },
         {
-            buildId: null, // first .campaign-card, found dynamically
+            buildId: null, // .card-footer inside first .campaign-card
+            preferAbove: true,
+            scrollBlock: 'end',
+            highlightParent: true,
             title: '{{ translate("5. Campaign Card Buttons") }}',
             text:  '{{ translate("Every card has a row of action buttons at the bottom:") }}',
             legend: [
@@ -790,18 +691,32 @@
 
     const _cEl = id => document.getElementById(id);
 
+    // Helper to clear highlights
+    function _cClearTourHighlights() {
+        document.querySelectorAll('.c-tour-highlight-target').forEach(el => {
+            el.classList.remove('c-tour-highlight-target');
+        });
+    }
+
     function _cBuildSteps() {
         _cTourSteps = [];
         _cTourStepDefs.forEach((def, i) => {
             let el = null;
             if (def.buildId) {
                 el = document.getElementById(def.buildId);
+            } else if (i === 2) {
+                // Step 3: highlight only the first trending card, not the whole section
+                el = document.querySelector('.trending-card');
             } else if (i === 3) {
-                el = document.querySelector('.step-campaigns-cat');
+                // Step 4: highlight the search+sort controls of the first category section
+                const catSection = document.querySelector('.step-campaigns-cat');
+                el = catSection ? catSection.querySelector('.controls-container') : null;
             } else if (i === 4) {
-                el = document.querySelector('.campaign-card');
+                // Step 5: highlight only the card-footer (buttons row) of the first card
+                const firstCard = document.querySelector('.campaign-card');
+                el = firstCard ? firstCard.querySelector('.card-footer') : null;
             }
-            if (el) _cTourSteps.push({ el, title: def.title, text: def.text, legend: def.legend || null });
+            if (el) _cTourSteps.push({ el, title: def.title, text: def.text, legend: def.legend || null, preferAbove: def.preferAbove || false, scrollBlock: def.scrollBlock || 'nearest', highlightParent: def.highlightParent || false });
         });
     }
 
@@ -824,32 +739,57 @@
         sp.style.height = (rect.height + pad * 2) + 'px';
     }
 
-    function _cPositionTooltip(spotRect, pad = 10) {
+    function _cPositionTooltip(spotRect, pad = 10, preferAbove = false) {
         const tt = _cEl('cTourTooltip');
-        const TW = tt.offsetWidth  || 330;
-        const TH = tt.offsetHeight || 200;
+        const TW = tt.offsetWidth;
+        const TH = tt.offsetHeight;
         const VW = window.innerWidth;
         const VH = window.innerHeight;
-        const MARGIN = 14;
+        const MARGIN = 12;
+
+        const belowTop  = spotRect.bottom + pad + MARGIN;
+        const aboveTop  = spotRect.top    - pad - TH - MARGIN;
+        const fitsBelow = belowTop + TH <= VH - 10;
+        const fitsAbove = aboveTop >= 10;
 
         let top, arrowClass;
-        const belowTop = spotRect.bottom + pad + MARGIN;
-        const aboveTop = spotRect.top  - pad - TH - MARGIN;
 
-        if (belowTop + TH <= VH - 10) {
-            top = belowTop; arrowClass = 'arrow-top';
-        } else if (aboveTop >= 10) {
-            top = aboveTop; arrowClass = 'arrow-bottom';
+        if (preferAbove) {
+            if (fitsAbove)       { top = aboveTop; arrowClass = 'arrow-bottom'; }
+            else if (fitsBelow)  { top = belowTop; arrowClass = 'arrow-top'; }
+            else                 { top = Math.max(10, aboveTop); arrowClass = 'arrow-bottom'; }
         } else {
-            top = Math.max(10, (VH - TH) / 2); arrowClass = '';
+            if (fitsBelow)       { top = belowTop; arrowClass = 'arrow-top'; }
+            else if (fitsAbove)  { top = aboveTop; arrowClass = 'arrow-bottom'; }
+            else {
+                const centered = (VH - TH) / 2;
+                const spotMid  = (spotRect.top + spotRect.bottom) / 2;
+                top = centered < spotMid
+                    ? Math.max(10, spotRect.top - pad - TH - MARGIN)
+                    : Math.min(VH - TH - 10, spotRect.bottom + pad + MARGIN);
+                arrowClass = centered < spotMid ? 'arrow-bottom' : 'arrow-top';
+            }
         }
 
-        let left = spotRect.left - pad;
+        // Center tooltip horizontally over the target, clamped to viewport
+        const targetCenterX = spotRect.left + spotRect.width / 2;
+        let left = Math.round(targetCenterX - TW / 2);
         left = Math.max(12, Math.min(left, VW - TW - 12));
 
         tt.style.top  = top  + 'px';
         tt.style.left = left + 'px';
-        tt.className  = arrowClass;
+        tt.classList.remove('arrow-top', 'arrow-bottom');
+        if (arrowClass) tt.classList.add(arrowClass);
+
+        // Move the arrow so it actually points at the highlighted element
+        if (arrowClass) {
+            const arrow = tt.querySelector('.c-tour-arrow');
+            if (arrow) {
+                const arrowLeft = Math.max(12, Math.min(Math.round(targetCenterX - left - 9), TW - 30));
+                arrow.style.left      = arrowLeft + 'px';
+                arrow.style.transform = 'none';
+            }
+        }
     }
 
     function _cShowStep(index) {
@@ -857,7 +797,19 @@
         const step = _cTourSteps[index];
         if (!step) { cEndTour(); return; }
 
-        step.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Apply visual highlight to pull the element over the overlay
+        _cClearTourHighlights();
+        step.el.classList.add('c-tour-highlight-target');
+        // If highlightParent: also lift the parent card above the overlay so its content is visible
+        if (step.highlightParent) {
+            const parentCard = step.el.closest('.campaign-card');
+            if (parentCard) parentCard.classList.add('c-tour-highlight-target');
+        }
+
+        // Scroll instantly so getBoundingClientRect() always reads the correct
+        // post-scroll position — smooth scroll is async and causes the spotlight
+        // to land on the wrong coordinates on mobile.
+        step.el.scrollIntoView({ behavior: 'instant', block: step.scrollBlock || 'nearest' });
 
         _cEl('cTourTitle').textContent = step.title;
         _cEl('cTourText').textContent  = step.text;
@@ -886,22 +838,26 @@
 
         _cBuildDots();
 
-        setTimeout(() => {
-            const rect = step.el.getBoundingClientRect();
-            _cPositionSpotlight(rect);
-            _cEl('cTourSpotlight').classList.add('visible');
-
-            const tt = _cEl('cTourTooltip');
-            tt.style.display    = 'block';
-            tt.style.visibility = 'hidden';
-            tt.classList.remove('visible');
-
+        // Double rAF: first frame lets the browser paint updated tooltip content,
+        // second frame measures real offsetWidth/Height before positioning.
+        requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                _cPositionTooltip(rect);
-                tt.style.visibility = 'visible';
-                tt.classList.add('visible');
+                const rect = step.el.getBoundingClientRect();
+                _cPositionSpotlight(rect);
+                _cEl('cTourSpotlight').classList.add('visible');
+
+                const tt = _cEl('cTourTooltip');
+                tt.style.display    = 'block';
+                tt.style.visibility = 'hidden';
+                tt.classList.remove('visible');
+
+                requestAnimationFrame(() => {
+                    _cPositionTooltip(rect, 10, step.preferAbove);
+                    tt.style.visibility = 'visible';
+                    tt.classList.add('visible');
+                });
             });
-        }, 320);
+        });
     }
 
     function cStartTour() {
@@ -931,6 +887,9 @@
         setTimeout(() => { tt.style.display = 'none'; }, 300);
 
         document.body.style.overflow = '';
+
+        // Safely wipe highlights once the dark overlay is gone
+        setTimeout(() => _cClearTourHighlights(), 300);
     }
 
     function cNextStep() {
@@ -957,11 +916,17 @@
         if (e.key === 'ArrowLeft')  cPrevStep();
     });
 
-    // Reposition on resize
+    // Reposition on resize — just re-measure and reposition, no full re-show
     let _cResizeTimer;
     window.addEventListener('resize', () => {
         if (!_cTourOpen) return;
         clearTimeout(_cResizeTimer);
-        _cResizeTimer = setTimeout(() => _cShowStep(_cTourStep), 200);
+        _cResizeTimer = setTimeout(() => {
+            const step = _cTourSteps[_cTourStep];
+            if (!step) return;
+            const rect = step.el.getBoundingClientRect();
+            _cPositionSpotlight(rect);
+            _cPositionTooltip(rect, 10, step.preferAbove);
+        }, 150);
     });
 </script>
