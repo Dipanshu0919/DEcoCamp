@@ -14,66 +14,122 @@
     <link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
 
     <style>
-        /* --- Tour Logic CSS --- */
-        .how-to-btn {
-            background: transparent; border: 1px solid var(--primary-color, #d76a1e);
-            color: var(--primary-color, #d76a1e); padding: 8px 16px; border-radius: 20px;
-            cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
-            transition: all 0.2s; margin-bottom: 1rem; font-size: 0.9rem;
+        /* ============================================
+           HOME TOUR — position:fixed engine
+           ============================================ */
+        #hTourOverlay {
+            position: fixed; inset: 0;
+            background: rgba(5, 8, 30, 0.82);
+            z-index: 8990; display: none; opacity: 0;
+            transition: opacity 0.35s ease;
+            backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
         }
-        .how-to-btn:hover { background: var(--primary-color, #d76a1e); color: #fff; }
+        #hTourOverlay.active  { display: block; }
+        #hTourOverlay.visible { opacity: 1; }
 
-        .tour-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            z-index: 9000; display: none; opacity: 0; transition: opacity 0.3s;
+        #hTourSpotlight {
+            position: fixed; z-index: 8995; border-radius: 14px; pointer-events: none;
+            box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15);
+            transition: top .4s cubic-bezier(.4,0,.2,1), left .4s cubic-bezier(.4,0,.2,1),
+                        width .4s cubic-bezier(.4,0,.2,1), height .4s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+            opacity: 0;
         }
-        .tour-overlay.active { display: block; opacity: 1; }
+        #hTourSpotlight.visible { opacity: 1; animation: hSpotPulse 2.5s ease-in-out infinite; }
+        @keyframes hSpotPulse {
+            0%,100% { box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); }
+            50%      { box-shadow: 0 0 0 4px #f08040, 0 0 0 10px rgba(215,106,30,0.15), 0 0 55px rgba(215,106,30,0.2); }
+        }
 
-        .tour-highlight {
-            position: relative; z-index: 9001 !important;
-            background: var(--bg-light, #141828) !important;
-            box-shadow: 0 0 0 4px var(--primary-color, #d76a1e), 0 0 25px rgba(0,0,0,0.7) !important;
-            border-radius: 12px; transition: all 0.3s; pointer-events: none;
+        #hTourTooltip {
+            position: fixed; z-index: 9000;
+            width: 320px; max-width: calc(100vw - 24px);
+            background: #111827; border: 1px solid rgba(215,106,30,0.5);
+            border-radius: 14px; padding: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+            display: none; opacity: 0;
+            transition: opacity .3s ease, transform .3s ease;
+            transform: translateY(8px); overflow: hidden;
         }
+        #hTourTooltip.visible { opacity: 1; transform: translateY(0); }
 
-        .tour-tooltip {
-            position: absolute; z-index: 9002; background: var(--primary-color, #d76a1e);
-            color: #fff; padding: 15px; border-radius: 8px; width: 280px; max-width: 90vw;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6); opacity: 0;
-            transition: opacity 0.3s, transform 0.3s; transform: translateY(10px);
+        #hTourTooltip .ht-arrow {
+            position: absolute; width: 0; height: 0;
+            border: 9px solid transparent; pointer-events: none;
         }
-        .tour-tooltip.active { opacity: 1; transform: translateY(0); }
-        .tour-tooltip::after {
-            content: ''; position: absolute; border: 10px solid transparent;
-        }
-        .tour-tooltip.pos-bottom::after { top: -20px; left: 20px; border-bottom-color: var(--primary-color, #d76a1e); }
-        .tour-tooltip.pos-top::after { bottom: -20px; left: 20px; border-top-color: var(--primary-color, #d76a1e); }
+        #hTourTooltip.arrow-top    .ht-arrow { top: -18px;    left: 28px; border-bottom-color: rgba(215,106,30,0.5); }
+        #hTourTooltip.arrow-bottom .ht-arrow { bottom: -18px; left: 28px; border-top-color:    rgba(215,106,30,0.5); }
 
-        .tour-header { font-weight: bold; margin-bottom: 8px; font-size: 1.1rem; padding-right: 20px; }
-        .tour-text { font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5; opacity: 0.95; }
-        .tour-nav { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
-        .tour-btn { background: rgba(0,0,0,0.25); border: none; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
-        .tour-btn:hover { background: rgba(0,0,0,0.4); }
-        .tour-close-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; opacity: 0.7; transition: opacity 0.2s; }
-        .tour-close-btn:hover { opacity: 1; }
+        .ht-header-bar {
+            background: linear-gradient(135deg, #d76a1e, #c45a10);
+            padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        }
+        .ht-pill  { background: rgba(0,0,0,0.25); color: #fff; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+        .ht-title { color: #fff; font-weight: 700; font-size: .95rem; flex: 1; }
+        .ht-x    {
+            background: rgba(0,0,0,0.2); border: none; color: rgba(255,255,255,0.85);
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem; flex-shrink: 0; line-height: 1; transition: background .2s;
+        }
+        .ht-x:hover { background: rgba(0,0,0,0.45); }
+
+        .ht-body { padding: 14px 16px 10px; }
+        .ht-text { color: #cbd5e1; font-size: .875rem; line-height: 1.6; margin: 0 0 10px; }
+
+        .ht-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+        .ht-legend-item {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px; padding: 7px 9px; display: flex; align-items: flex-start; gap: 7px;
+        }
+        .ht-li { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+        .ht-lt  { display: flex; flex-direction: column; gap: 1px; }
+        .ht-ll  { font-size: .72rem; font-weight: 700; color: #f1f5f9; }
+        .ht-ld  { font-size: .68rem; color: #64748b; line-height: 1.3; }
+
+        .ht-footer {
+            padding: 10px 16px 14px; border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        }
+        .ht-dots { display: flex; gap: 5px; }
+        .ht-dot  { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: background .2s, transform .2s; }
+        .ht-dot.active { background: #d76a1e; transform: scale(1.3); }
+        .ht-nav  { display: flex; gap: 6px; }
+        .ht-btn  {
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            color: #e2e8f0; padding: 6px 14px; border-radius: 8px;
+            cursor: pointer; font-size: .82rem; font-weight: 600; transition: all .2s;
+        }
+        .ht-btn:hover { background: rgba(255,255,255,0.14); }
+        .ht-btn.primary { background: #d76a1e; border-color: #d76a1e; color: #fff; }
+        .ht-btn.primary:hover { background: #c45a10; }
     </style>
 </head>
 
 <body>
 
-    <!-- Tour Overlay and Tooltip Elements -->
-    <div class="tour-overlay" id="homeTourOverlay"></div>
-    <div class="tour-tooltip" id="homeTourTooltip" style="display: none;">
-        <button class="tour-close-btn" onclick="endHomeTour()">✕</button>
-        <div class="tour-header" id="homeTourHeader">Step 1</div>
-        <div class="tour-text" id="homeTourText">Text</div>
-        <div class="tour-nav">
-            <button class="tour-btn" id="homeTourPrev" onclick="prevHomeTourStep()">{{ translate("Prev") }}</button>
-            <span id="homeTourCount" style="font-size: 0.85rem; font-weight: 600; opacity: 0.9;">1/4</span>
-            <button class="tour-btn" id="homeTourNext" onclick="nextHomeTourStep()">{{ translate("Next") }}</button>
+    <!-- ====== HOME TOUR DOM ====== -->
+    <div id="hTourOverlay" onclick="hEndTour()"></div>
+    <div id="hTourSpotlight"></div>
+    <div id="hTourTooltip">
+        <div class="ht-arrow"></div>
+        <div class="ht-header-bar">
+            <div class="ht-title" id="hTourTitle">Step</div>
+            <div class="ht-pill"  id="hTourPill">1 / 4</div>
+            <button class="ht-x" onclick="hEndTour()" title="Close tour">✕</button>
+        </div>
+        <div class="ht-body">
+            <p class="ht-text" id="hTourText"></p>
+            <div class="ht-legend" id="hTourLegend" style="display:none;"></div>
+        </div>
+        <div class="ht-footer">
+            <div class="ht-dots" id="hTourDots"></div>
+            <div class="ht-nav">
+                <button class="ht-btn"         id="hTourPrevBtn" onclick="hPrevStep()">← {{ translate("Back") }}</button>
+                <button class="ht-btn primary"  id="hTourNextBtn" onclick="hNextStep()">{{ translate("Next") }} →</button>
+            </div>
         </div>
     </div>
+    <!-- ====== END TOUR DOM ====== -->
 
     <header class="navbar" id="step-nav">
         <div class="nav-inner">
@@ -157,7 +213,7 @@
                                 translate("Join Community") }}</button>
                             <button class="cta secondary"
                                 style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);"
-                                onclick="startHomeTour()">💡 {{ translate("Quick Tour") }}</button>
+                                onclick="hStartTour()">💡 {{ translate("Quick Tour") }}</button>
                         </div>
 
                         <div class="sutra-divider"><span>सहयोग सूत्र</span></div>
@@ -411,6 +467,7 @@
         </section>
     </main>
 
+    <script src="/static/script.js"></script>
     <script>
         window.SAHYOG_CONFIG = {
             currentUser: "{{ c_user }}",
@@ -460,136 +517,135 @@
             setInterval(setQuote, 6000);
         });
 
-        // --- Home Tour Logic ---
-        let currentHomeTourStep = 0;
-        let homeTourSteps = [];
-
-        function buildHomeTourSteps() {
-            homeTourSteps = [];
-
-            if (document.getElementById('step-nav')) {
-                homeTourSteps.push({
-                    targetId: 'step-nav',
-                    title: '{{ translate("1. Navigation Menu") }}',
-                    text: '{{ translate("Use this bar to navigate between pages, change your preferred language, or create new events.") }}',
-                    pos: 'bottom'
-                });
+        /* ================================================================
+           HOME TOUR — position:fixed spotlight + tooltip
+           ================================================================ */
+        const _hTourSteps = [
+            {
+                targetId: 'step-nav',
+                title: '{{ translate("1. Navigation Bar") }}',
+                text:  '{{ translate("Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly.") }}',
+                legend: [
+                    { icon: '🏠', label: '{{ translate("Home") }}',              desc: '{{ translate("Hero, leaderboard and account") }}' },
+                    { icon: '📋', label: '{{ translate("Explore Campaigns") }}',  desc: '{{ translate("Browse and filter all campaigns") }}' },
+                    { icon: '➕', label: '{{ translate("Create Event") }}',       desc: '{{ translate("Submit a new campaign") }}' },
+                    { icon: '🌐', label: '{{ translate("Language") }}',           desc: '{{ translate("Change site language instantly") }}' }
+                ]
+            },
+            {
+                targetId: 'login-signup-section',
+                title: '{{ translate("2. Your Account") }}',
+                text:  '{{ translate("Log in or sign up here. An account lets you like campaigns, track your events, join group chats, and use the AI description generator when creating events.") }}'
             }
+        ];
 
-            if (document.getElementById('step-hero')) {
-                homeTourSteps.push({
-                    targetId: 'step-hero',
-                    title: '{{ translate("2. Quick Actions") }}',
-                    text: '{{ translate("Explore all available campaigns or quickly jump down to join the community.") }}',
-                    pos: 'top'
-                });
-            }
+        let _hStep = 0, _hOpen = false;
+        const _hEl = id => document.getElementById(id);
 
-            if (document.getElementById('how-it-works-section')) {
-                homeTourSteps.push({
-                    targetId: 'how-it-works-section',
-                    title: '{{ translate("3. How it Works") }}',
-                    text: '{{ translate("A quick three-step guide explaining how you can discover events, volunteer, and organize your own campaigns.") }}',
-                    pos: 'top'
-                });
-            }
-
-            if (document.getElementById('login-signup-section')) {
-                homeTourSteps.push({
-                    targetId: 'login-signup-section',
-                    title: '{{ translate("4. Your Account") }}',
-                    text: '{{ translate("Login or Sign Up here. Having an account allows you to track your impact, organize events, and like campaigns.") }}',
-                    pos: 'top'
-                });
-            }
+        function _hDots() {
+            const c = _hEl('hTourDots'); c.innerHTML = '';
+            _hTourSteps.forEach((_, i) => {
+                const d = document.createElement('div');
+                d.className = 'ht-dot' + (i === _hStep ? ' active' : '');
+                d.onclick = () => _hShow(i); c.appendChild(d);
+            });
         }
 
-        function startHomeTour() {
-            buildHomeTourSteps();
-            if (homeTourSteps.length === 0) return;
-
-            currentHomeTourStep = 0;
-            document.getElementById('homeTourOverlay').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            showHomeTourStep(currentHomeTourStep);
+        function _hSpotlight(rect, p = 10) {
+            const s = _hEl('hTourSpotlight');
+            s.style.top = (rect.top - p) + 'px'; s.style.left = (rect.left - p) + 'px';
+            s.style.width = (rect.width + p*2) + 'px'; s.style.height = (rect.height + p*2) + 'px';
         }
 
-        function endHomeTour() {
-            document.getElementById('homeTourOverlay').classList.remove('active');
-            document.getElementById('homeTourTooltip').classList.remove('active');
-            document.getElementById('homeTourTooltip').style.display = 'none';
-            document.body.style.overflow = '';
-            document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+        function _hPosition(rect, p = 10) {
+            const tt = _hEl('hTourTooltip');
+            const TW = tt.offsetWidth || 320, TH = tt.offsetHeight || 200;
+            const VW = window.innerWidth, VH = window.innerHeight, M = 14;
+            const below = rect.bottom + p + M, above = rect.top - p - TH - M;
+            let top, cls;
+            if (below + TH <= VH - 10)  { top = below; cls = 'arrow-top'; }
+            else if (above >= 10)        { top = above; cls = 'arrow-bottom'; }
+            else                         { top = Math.max(10, (VH-TH)/2); cls = ''; }
+            let left = Math.max(12, Math.min(rect.left - p, VW - TW - 12));
+            tt.style.top = top + 'px'; tt.style.left = left + 'px'; tt.className = cls;
         }
 
-        function showHomeTourStep(index) {
-            document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
-
-            const step = homeTourSteps[index];
-            const target = document.getElementById(step.targetId);
-
-            if(!target) return endHomeTour();
-
-            target.classList.add('tour-highlight');
+        function _hShow(i) {
+            _hStep = i;
+            const step = _hTourSteps[i], target = _hEl(step.targetId);
+            if (!target) { hEndTour(); return; }
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            const tooltip = document.getElementById('homeTourTooltip');
-            document.getElementById('homeTourHeader').innerText = step.title;
-            document.getElementById('homeTourText').innerText = step.text;
-            document.getElementById('homeTourCount').innerText = `${index + 1}/${homeTourSteps.length}`;
-
-            document.getElementById('homeTourPrev').style.visibility = index === 0 ? 'hidden' : 'visible';
-            document.getElementById('homeTourNext').innerText = index === homeTourSteps.length - 1 ? '{{ translate("Finish") }}' : '{{ translate("Next") }}';
-
+            _hEl('hTourTitle').textContent = step.title;
+            _hEl('hTourText').textContent  = step.text;
+            _hEl('hTourPill').textContent  = `${i+1} / ${_hTourSteps.length}`;
+            const lg = _hEl('hTourLegend');
+            if (step.legend) {
+                lg.style.display = 'grid';
+                lg.innerHTML = step.legend.map(x => `<div class="ht-legend-item"><div class="ht-li">${x.icon}</div><div class="ht-lt"><div class="ht-ll">${x.label}</div><div class="ht-ld">${x.desc}</div></div></div>`).join('');
+            } else { lg.style.display = 'none'; lg.innerHTML = ''; }
+            _hEl('hTourPrevBtn').style.visibility = i === 0 ? 'hidden' : 'visible';
+            _hEl('hTourNextBtn').textContent = i === _hTourSteps.length-1 ? '{{ translate("Finish") }} ✓' : '{{ translate("Next") }} →';
+            _hDots();
             setTimeout(() => {
-                tooltip.style.display = 'block';
-                tooltip.style.visibility = 'hidden';
-                tooltip.classList.remove('pos-top', 'pos-bottom');
-                tooltip.classList.add('pos-' + step.pos);
-
                 const rect = target.getBoundingClientRect();
-
-                let topPos = rect.bottom + window.scrollY + 15;
-                if (step.pos === 'top') {
-                    topPos = rect.top + window.scrollY - tooltip.offsetHeight - 15;
-                }
-
-                let leftPos = rect.left + window.scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2);
-
-                if (leftPos + tooltip.offsetWidth > window.innerWidth - 10) {
-                    leftPos = window.innerWidth - tooltip.offsetWidth - 10;
-                }
-                if (leftPos < 10) {
-                    leftPos = 10;
-                }
-
-                tooltip.style.top = topPos + 'px';
-                tooltip.style.left = leftPos + 'px';
-
-                tooltip.style.visibility = 'visible';
-                tooltip.classList.add('active');
-            }, 300);
+                _hSpotlight(rect); _hEl('hTourSpotlight').classList.add('visible');
+                const tt = _hEl('hTourTooltip');
+                tt.style.display = 'block'; tt.style.visibility = 'hidden'; tt.classList.remove('visible');
+                requestAnimationFrame(() => { _hPosition(rect); tt.style.visibility = 'visible'; tt.classList.add('visible'); });
+            }, 320);
         }
 
-        function nextHomeTourStep() {
-            if(currentHomeTourStep < homeTourSteps.length - 1) {
-                currentHomeTourStep++;
-                showHomeTourStep(currentHomeTourStep);
-            } else {
-                endHomeTour();
+        function hStartTour() {
+            if (_hOpen) return; _hOpen = true; _hStep = 0;
+            const ov = _hEl('hTourOverlay');
+            ov.style.display = 'block';
+            requestAnimationFrame(() => ov.classList.add('active', 'visible'));
+            document.body.style.overflow = 'hidden';
+            _hShow(0);
+        }
+
+        function hEndTour() {
+            _hOpen = false;
+            const ov = _hEl('hTourOverlay');
+            ov.classList.remove('visible');
+            setTimeout(() => { ov.classList.remove('active'); ov.style.display = 'none'; }, 350);
+            _hEl('hTourSpotlight').classList.remove('visible');
+            const tt = _hEl('hTourTooltip');
+            tt.classList.remove('visible');
+            setTimeout(() => { tt.style.display = 'none'; }, 300);
+            document.body.style.overflow = '';
+        }
+
+        function hNextStep() {
+            if (_hStep < _hTourSteps.length-1) {
+                _hEl('hTourTooltip').classList.remove('visible');
+                _hEl('hTourSpotlight').classList.remove('visible');
+                setTimeout(() => _hShow(_hStep+1), 180);
+            } else { hEndTour(); }
+        }
+
+        function hPrevStep() {
+            if (_hStep > 0) {
+                _hEl('hTourTooltip').classList.remove('visible');
+                _hEl('hTourSpotlight').classList.remove('visible');
+                setTimeout(() => _hShow(_hStep-1), 180);
             }
         }
 
-        function prevHomeTourStep() {
-            if(currentHomeTourStep > 0) {
-                currentHomeTourStep--;
-                showHomeTourStep(currentHomeTourStep);
-            }
-        }
+        document.addEventListener('keydown', e => {
+            if (!_hOpen) return;
+            if (e.key === 'Escape')     hEndTour();
+            if (e.key === 'ArrowRight') hNextStep();
+            if (e.key === 'ArrowLeft')  hPrevStep();
+        });
+
+        let _hResizeT;
+        window.addEventListener('resize', () => {
+            if (!_hOpen) return;
+            clearTimeout(_hResizeT);
+            _hResizeT = setTimeout(() => _hShow(_hStep), 200);
+        });
     </script>
-
-    <!-- Load the external script -->
-    <script src="/static/script.js"></script>
 </body>
 
 </html>

@@ -43,66 +43,215 @@
     .close-share { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
     #capture-area { position: fixed; left: -9999px; width: 600px; background: var(--bg-dark); padding: 40px; border-radius: 12px; color: var(--text-color); border: 2px solid var(--primary-color); }
 
-    /* --- Tour Logic CSS --- */
+    /* ============================================
+       TOUR SYSTEM — REBUILT (same engine as addevent)
+       ============================================ */
+
     .how-to-btn {
-        background: transparent; border: 1px solid var(--primary-color, #d76a1e);
-        color: var(--primary-color, #d76a1e); padding: 8px 16px; border-radius: 20px;
-        cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
-        transition: all 0.2s; margin-bottom: 1rem; font-size: 0.9rem;
+        background: transparent;
+        border: 1px solid var(--primary-color, #d76a1e);
+        color: var(--primary-color, #d76a1e);
+        padding: 8px 18px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
     }
     .how-to-btn:hover { background: var(--primary-color, #d76a1e); color: #fff; }
 
-    .tour-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-        z-index: 9000; display: none; opacity: 0; transition: opacity 0.3s;
+    /* Dark overlay */
+    #cTourOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 8, 30, 0.82);
+        z-index: 8990;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
     }
-    .tour-overlay.active { display: block; opacity: 1; }
+    #cTourOverlay.active  { display: block; }
+    #cTourOverlay.visible { opacity: 1; }
 
-    .tour-highlight {
-        position: relative; z-index: 9001 !important;
-        background: var(--bg-light, #141828) !important;
-        box-shadow: 0 0 0 4px var(--primary-color, #d76a1e), 0 0 25px rgba(0,0,0,0.7) !important;
-        border-radius: 12px; transition: all 0.3s; pointer-events: none;
+    /* Spotlight frame */
+    #cTourSpotlight {
+        position: fixed;
+        z-index: 8995;
+        border-radius: 14px;
+        pointer-events: none;
+        box-shadow:
+            0 0 0 4px #d76a1e,
+            0 0 0 7px rgba(215, 106, 30, 0.25),
+            0 0 40px rgba(215, 106, 30, 0.15);
+        transition:
+            top    0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            left   0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            width  0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.3s ease;
+        opacity: 0;
+    }
+    #cTourSpotlight.visible {
+        opacity: 1;
+        animation: cSpotPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes cSpotPulse {
+        0%,100% { box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); }
+        50%      { box-shadow: 0 0 0 4px #f08040, 0 0 0 10px rgba(215,106,30,0.15), 0 0 55px rgba(215,106,30,0.2); }
     }
 
-    .tour-tooltip {
-        position: absolute; z-index: 9002; background: var(--primary-color, #d76a1e);
-        color: #fff; padding: 15px; border-radius: 8px; width: 280px; max-width: 90vw;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.6); opacity: 0;
-        transition: opacity 0.3s, transform 0.3s; transform: translateY(10px);
+    /* Tooltip card */
+    #cTourTooltip {
+        position: fixed;
+        z-index: 9000;
+        width: 330px;
+        max-width: calc(100vw - 24px);
+        background: #111827;
+        border: 1px solid rgba(215, 106, 30, 0.5);
+        border-radius: 14px;
+        padding: 0;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateY(8px);
+        overflow: hidden;
     }
-    .tour-tooltip.active { opacity: 1; transform: translateY(0); }
-    .tour-tooltip::after {
-        content: ''; position: absolute; border: 10px solid transparent;
-    }
-    .tour-tooltip.pos-bottom::after { top: -20px; left: 20px; border-bottom-color: var(--primary-color, #d76a1e); }
-    .tour-tooltip.pos-top::after { bottom: -20px; left: 20px; border-top-color: var(--primary-color, #d76a1e); }
+    #cTourTooltip.visible { opacity: 1; transform: translateY(0); }
 
-    .tour-header { font-weight: bold; margin-bottom: 8px; font-size: 1.1rem; padding-right: 20px; }
-    .tour-text { font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5; opacity: 0.95; }
-    .tour-nav { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
-    .tour-btn { background: rgba(0,0,0,0.25); border: none; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
-    .tour-btn:hover { background: rgba(0,0,0,0.4); }
-    .tour-close-btn { position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; opacity: 0.7; transition: opacity 0.2s; }
-    .tour-close-btn:hover { opacity: 1; }
+    #cTourTooltip .c-tour-arrow {
+        position: absolute;
+        width: 0; height: 0;
+        border: 9px solid transparent;
+        pointer-events: none;
+    }
+    #cTourTooltip.arrow-top    .c-tour-arrow { top: -18px;    left: 28px; border-bottom-color: rgba(215,106,30,0.5); }
+    #cTourTooltip.arrow-bottom .c-tour-arrow { bottom: -18px; left: 28px; border-top-color:    rgba(215,106,30,0.5); }
+
+    .c-tour-header-bar {
+        background: linear-gradient(135deg, #d76a1e, #c45a10);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .c-tour-step-pill {
+        background: rgba(0,0,0,0.25);
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 10px;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+    .c-tour-title { color: #fff; font-weight: 700; font-size: 0.95rem; flex: 1; }
+    .c-tour-x-btn {
+        background: rgba(0,0,0,0.2);
+        border: none;
+        color: rgba(255,255,255,0.85);
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+    .c-tour-x-btn:hover { background: rgba(0,0,0,0.45); color: #fff; }
+
+    .c-tour-body  { padding: 14px 16px 10px; }
+    .c-tour-text  { color: #cbd5e1; font-size: 0.875rem; line-height: 1.6; margin: 0 0 10px; }
+
+    /* Legend grid for card-buttons step */
+    .c-tour-legend {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .c-tour-legend-item {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px;
+        padding: 7px 9px;
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+    }
+    .c-tour-legend-icon  { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .c-tour-legend-text  { display: flex; flex-direction: column; gap: 1px; }
+    .c-tour-legend-label { font-size: 0.72rem; font-weight: 700; color: #f1f5f9; }
+    .c-tour-legend-desc  { font-size: 0.68rem; color: #64748b; line-height: 1.3; }
+
+    .c-tour-footer {
+        padding: 10px 16px 14px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .c-tour-dots { display: flex; gap: 5px; align-items: center; }
+    .c-tour-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        transition: background 0.2s, transform 0.2s;
+        cursor: pointer;
+    }
+    .c-tour-dot.active { background: #d76a1e; transform: scale(1.3); }
+    .c-tour-nav-btns { display: flex; gap: 6px; }
+    .c-tour-nav-btn {
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #e2e8f0;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .c-tour-nav-btn:hover { background: rgba(255,255,255,0.14); }
+    .c-tour-nav-btn.primary { background: #d76a1e; border-color: #d76a1e; color: #fff; }
+    .c-tour-nav-btn.primary:hover { background: #c45a10; }
 </style>
 
-<!-- Tour Overlay and Tooltip Elements -->
-<div class="tour-overlay" id="campaignsTourOverlay"></div>
-<div class="tour-tooltip" id="campaignsTourTooltip" style="display: none;">
-    <button class="tour-close-btn" onclick="endCampaignsTour()">✕</button>
-    <div class="tour-header" id="campaignsTourHeader">Step 1</div>
-    <div class="tour-text" id="campaignsTourText">Text</div>
-    <div class="tour-nav">
-        <button class="tour-btn" id="campaignsTourPrev" onclick="prevCampaignsTourStep()">{{ translate("Prev") }}</button>
-        <span id="campaignsTourCount" style="font-size: 0.85rem; font-weight: 600; opacity: 0.9;">1/4</span>
-        <button class="tour-btn" id="campaignsTourNext" onclick="nextCampaignsTourStep()">{{ translate("Next") }}</button>
+<!-- ====== CAMPAIGNS TOUR DOM ====== -->
+<div id="cTourOverlay" onclick="cEndTour()"></div>
+<div id="cTourSpotlight"></div>
+<div id="cTourTooltip">
+    <div class="c-tour-arrow" id="cTourArrow"></div>
+    <div class="c-tour-header-bar">
+        <div class="c-tour-title" id="cTourTitle">Step</div>
+        <div class="c-tour-step-pill" id="cTourPill">1 / 5</div>
+        <button class="c-tour-x-btn" onclick="cEndTour()" title="Close tour">✕</button>
+    </div>
+    <div class="c-tour-body">
+        <p class="c-tour-text" id="cTourText"></p>
+        <div class="c-tour-legend" id="cTourLegend" style="display:none;"></div>
+    </div>
+    <div class="c-tour-footer">
+        <div class="c-tour-dots" id="cTourDots"></div>
+        <div class="c-tour-nav-btns">
+            <button class="c-tour-nav-btn" id="cTourPrevBtn" onclick="cPrevStep()">← {{ translate("Back") }}</button>
+            <button class="c-tour-nav-btn primary" id="cTourNextBtn" onclick="cNextStep()">{{ translate("Next") }} →</button>
+        </div>
     </div>
 </div>
+<!-- ====== END CAMPAIGNS TOUR DOM ====== -->
 
 <div style="text-align: center; margin-bottom: 1.5rem;">
-    <button class="how-to-btn" onclick="startCampaignsTour()">💡 {{ translate("How to Use Campaigns") }}</button>
+    <button class="how-to-btn" onclick="cStartTour()">💡 {{ translate("How to Use Campaigns") }}</button>
 </div>
 
 {% if viewyourevents %}
@@ -121,12 +270,10 @@
     <div class="filter-header-mobile" onclick="toggleMobileFilterMenu()" id="mobileFilterHeader">
         <span id="mobileFilterText">{{ translate("Filter Categories") }}</span>
     </div>
-
     <div class="filter-buttons-wrapper" id="filterButtonsContainer">
         <button class="filter-btn clear-btn active" data-cat="all" onclick="toggleCategory('all', this)">
             {{ translate("All Categories") }}
         </button>
-
         {% for category_name in allevents.keys() %}
         <button class="filter-btn" data-cat="{{ category_name|replace(' ', '-')|lower }}"
             onclick="toggleCategory('{{ category_name|replace(' ', '-')|lower }}', this)">
@@ -146,9 +293,7 @@
             data-eventid="{{ e.eventid }}" data-eventname="{{ e.eventname|e }}" data-description="{{ e.description|e }}"
             data-location="{{ e.location|e }}" data-startdate="{{ e.eventstartdate|datetimeformat }}"
             data-enddate="{{ e.eventenddate|datetimeformat }}">
-            <div
-                style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">
-                TOP RATED</div>
+            <div style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">TOP RATED</div>
 
             <span class="campaign-id">#{{ e.eventid }}</span>
             <h4 class="card-title-text">{{ e.eventname }}</h4>
@@ -157,10 +302,8 @@
                 {% if e.description|length > 100 %}
                 <span id="desc-short-trending-{{e.eventid}}">{{ e.description[:100] }}...</span>
                 <span id="desc-full-trending-{{e.eventid}}" style="display:none">{{ e.description }}</span>
-                <button id="read-more-btn-trending-{{e.eventid}}" class="read-more-btn"
-                    onclick="toggleDescription('trending-{{e.eventid}}', 'more')">{{ translate("Read More") }}</button>
-                <button id="read-less-btn-trending-{{e.eventid}}" class="read-more-btn" style="display:none"
-                    onclick="toggleDescription('trending-{{e.eventid}}', 'less')">{{ translate("Read Less") }}</button>
+                <button id="read-more-btn-trending-{{e.eventid}}" class="read-more-btn" onclick="toggleDescription('trending-{{e.eventid}}', 'more')">{{ translate("Read More") }}</button>
+                <button id="read-less-btn-trending-{{e.eventid}}" class="read-more-btn" style="display:none" onclick="toggleDescription('trending-{{e.eventid}}', 'less')">{{ translate("Read Less") }}</button>
                 {% else %}
                 {{ e.description }}
                 {% endif %}
@@ -168,13 +311,10 @@
 
             {% set eventstartdate = e.eventstartdate|datetimeformat %}
             {% set eventeventenddate = e.eventenddate|datetimeformat %}
-            <p><b>{{ translate("From Date and Time:") }}</b> <span class="card-startdate-text">{{ eventstartdate
-                    }}</span> | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> <span
-                    class="card-enddate-text">{{ eventeventenddate }}</span> | {{ e.eventendtime }}</p>
+            <p><b>{{ translate("From Date and Time:") }}</b> <span class="card-startdate-text">{{ eventstartdate }}</span> | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> <span class="card-enddate-text">{{ eventeventenddate }}</span> | {{ e.eventendtime }}</p>
 
             <p><b>{{ translate("Location:") }}</b>
-                <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank"
-                    style="color: var(--primary-color); text-decoration: none;">
+                <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
                     📍 <span class="card-location-text">{{ e.location }}</span> ↗
                 </a>
             </p>
@@ -183,90 +323,40 @@
                 <div style="display: flex; align-items: center; gap: 8px;">
                     {% if c_user == "None" %}
                     {% set loginalertmsg = translate("Login to like this event.") %}
-                    <button id="likeevent-trending-{{e.eventid}}" class="like-btn"
-                        onclick="showAlert('{{ loginalertmsg }}', 'warning')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                        </svg>
+                    <button id="likeevent-trending-{{e.eventid}}" class="like-btn" onclick="showAlert('{{ loginalertmsg }}', 'warning')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
                     {% else %}
                     {% set userliked = userdetails['likes'].split(",") if userdetails['likes'] else [] %}
                     {% if e.eventid|string in userliked %}
-                    <button id="likeevent-trending-{{e.eventid}}" class="like-btn liked"
-                        onclick="changelike({{e.eventid}}, 'remove')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                        </svg>
-                    </button>
+                    <button id="likeevent-trending-{{e.eventid}}" class="like-btn liked" onclick="changelike({{e.eventid}}, 'remove')">
                     {% else %}
-                    <button id="likeevent-trending-{{e.eventid}}" class="like-btn"
-                        onclick="changelike({{e.eventid}}, 'add')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                        </svg>
-                    </button>
+                    <button id="likeevent-trending-{{e.eventid}}" class="like-btn" onclick="changelike({{e.eventid}}, 'add')">
                     {% endif %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
                     {% endif %}
                     <span id="eventlike-{{e.eventid}}" class="like-count">{{ e.likes }}</span>
                 </div>
 
                 <div style="display: flex; gap: 8px; margin-left: 10px;">
-                    <button
-                        onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')"
-                        class="share-btn" title="{{ translate('Share Event') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                            <polyline points="16 6 12 2 8 6"></polyline>
-                            <line x1="12" y1="2" x2="12" y2="15"></line>
-                        </svg>
+                    <button onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
                     </button>
-                    <a href="/download_ics/{{ e.eventid }}" class="share-btn"
-                        title="{{ translate('Add to Calendar') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
+                    <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     </a>
                     {% if user_language != "en" %}
-                    <button class="share-btn translate-btn" onclick="toggleTranslate(this)"
-                        title="{{ translate('Translate Event') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg>
+                    <button class="share-btn translate-btn" onclick="toggleTranslate(this)" title="{{ translate('Translate Event') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     </button>
                     {% endif %}
                 </div>
-
                 <div style="flex-grow: 1;"></div>
-
-                <button class="campaign-tag" onclick="openEventModal({{ e.eventid }})"
-                    title="{{ translate('View Event Details') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
+                <button class="campaign-tag" onclick="openEventModal({{ e.eventid }})" title="{{ translate('View Event Details') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
                 <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
-
                 {% if e.username == c_user or isadmin %}
                 <button onclick="asktodelete({{ e.eventid }})" class="delete-btn">✕</button>
                 {% endif %}
@@ -290,43 +380,28 @@
 {% endif %}
 
 {% if viewevents %}
-<div class="campaign-category-wrapper category-section step-campaigns-cat" id="cat-{{ category_name|replace(' ', '-')|lower }}"
-    data-category-id="{{ category_name|replace(' ', '-')|lower }}">
+<div class="campaign-category-wrapper category-section step-campaigns-cat" id="cat-{{ category_name|replace(' ', '-')|lower }}" data-category-id="{{ category_name|replace(' ', '-')|lower }}">
     <h3>{{ translate(category_name) }} ( {{ viewevents|length }} )</h3>
 
     <div class="controls-container">
         <div class="search-wrapper">
-            <input type="search" id="searchInput-{{ category_name|replace(' ', '-') }}"
-                placeholder="{{ translate('Search campaigns in this category...') }}" onkeyup="filterCampaigns(this)" />
+            <input type="search" id="searchInput-{{ category_name|replace(' ', '-') }}" placeholder="{{ translate('Search campaigns in this category...') }}" onkeyup="filterCampaigns(this)" />
         </div>
         <div class="sort-wrapper">
             <form>
-                <select name="sort" id="sortSelect-{{ category_name|replace(' ', '-') }}"
-                    onchange="sendsortreq(this.value)">
-                    <option value="eventenddate" {% if sortby=="eventenddate" %} selected {% endif %}>{{ translate("Sort
-                        by End Date") }}</option>
-                    <option value="eventstartdate" {% if sortby=="eventstartdate" %} selected {% endif %}>{{
-                        translate("Sort by Start Date") }}</option>
-                    <option value="eventname" {% if sortby=="eventname" %} selected {% endif %}>{{ translate("Sort by
-                        Name") }}</option>
-                    <option value="likes" {% if sortby=="likes" %} selected {% endif %}>{{ translate("Sort by Likes") }}
-                    </option>
-                    <option value="eventid" {% if sortby=="eventid" %} selected {% endif %}>{{ translate("Sort by Event
-                        ID") }}</option>
-                    <option value="location" {% if sortby=="location" %} selected {% endif %}>{{ translate("Sort by
-                        Location") }}</option>
-                    <option value="eventstarttime" {% if sortby=="eventstarttime" %} selected {% endif %}>{{
-                        translate("Sort by Start Time") }}</option>
-                    <option value="eventendtime" {% if sortby=="eventendtime" %} selected {% endif %}>{{ translate("Sort
-                        by End Time") }}</option>
+                <select name="sort" id="sortSelect-{{ category_name|replace(' ', '-') }}" onchange="sendsortreq(this.value)">
+                    <option value="eventenddate" {% if sortby=="eventenddate" %} selected {% endif %}>{{ translate("Sort by End Date") }}</option>
+                    <option value="eventstartdate" {% if sortby=="eventstartdate" %} selected {% endif %}>{{ translate("Sort by Start Date") }}</option>
+                    <option value="eventname" {% if sortby=="eventname" %} selected {% endif %}>{{ translate("Sort by Name") }}</option>
+                    <option value="likes" {% if sortby=="likes" %} selected {% endif %}>{{ translate("Sort by Likes") }}</option>
+                    <option value="eventid" {% if sortby=="eventid" %} selected {% endif %}>{{ translate("Sort by Event ID") }}</option>
+                    <option value="location" {% if sortby=="location" %} selected {% endif %}>{{ translate("Sort by Location") }}</option>
+                    <option value="eventstarttime" {% if sortby=="eventstarttime" %} selected {% endif %}>{{ translate("Sort by Start Time") }}</option>
+                    <option value="eventendtime" {% if sortby=="eventendtime" %} selected {% endif %}>{{ translate("Sort by End Time") }}</option>
                 </select>
             </form>
-            <button type="button" class="sort-direction-btn" onclick="toggleSortDirection(this)"
-                title="{{ translate('Reverse Order') }}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                </svg>
+            <button type="button" class="sort-direction-btn" onclick="toggleSortDirection(this)" title="{{ translate('Reverse Order') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 10 12 15 17 10"></polyline></svg>
             </button>
         </div>
     </div>
@@ -335,8 +410,7 @@
         {% for e in viewevents|sort(attribute=sortby) %}
         <div class="campaign-card {% if not viewyourevents and loop.index > 4 %}hidden{% endif %}"
             data-eventid="{{ e.eventid }}" data-eventname="{{ e.eventname|e }}" data-description="{{ e.description|e }}"
-            data-location="{{ e.location|e }}" data-startdate="{{ e.eventstartdate|datetimeformat }}"
-            data-enddate="{{ e.eventenddate|datetimeformat }}">
+            data-location="{{ e.location|e }}" data-startdate="{{ e.eventstartdate|datetimeformat }}" data-enddate="{{ e.eventenddate|datetimeformat }}">
             <span class="campaign-id">#{{ e.eventid }}</span>
             <h4 class="card-title-text">{{ e.eventname }}</h4>
 
@@ -344,10 +418,8 @@
                 {% if e.description|length > 100 %}
                 <span id="desc-short-{{e.eventid}}">{{ e.description[:100] }}...</span>
                 <span id="desc-full-{{e.eventid}}" style="display:none">{{ e.description }}</span>
-                <button id="read-more-btn-{{e.eventid}}" class="read-more-btn"
-                    onclick="toggleDescription({{e.eventid}}, 'more')">{{ translate("Read More") }}</button>
-                <button id="read-less-btn-{{e.eventid}}" class="read-more-btn" style="display:none"
-                    onclick="toggleDescription({{e.eventid}}, 'less')">{{ translate("Read Less") }}</button>
+                <button id="read-more-btn-{{e.eventid}}" class="read-more-btn" onclick="toggleDescription({{e.eventid}}, 'more')">{{ translate("Read More") }}</button>
+                <button id="read-less-btn-{{e.eventid}}" class="read-more-btn" style="display:none" onclick="toggleDescription({{e.eventid}}, 'less')">{{ translate("Read Less") }}</button>
                 {% else %}
                 {{ e.description }}
                 {% endif %}
@@ -355,13 +427,10 @@
 
             {% set eventstartdate = e.eventstartdate|datetimeformat %}
             {% set eventeventenddate = e.eventenddate|datetimeformat %}
-            <p><b>{{ translate("From Date and Time:") }}</b> <span class="card-startdate-text">{{ eventstartdate
-                    }}</span> | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> <span
-                    class="card-enddate-text">{{ eventeventenddate }}</span> | {{ e.eventendtime }}</p>
+            <p><b>{{ translate("From Date and Time:") }}</b> <span class="card-startdate-text">{{ eventstartdate }}</span> | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> <span class="card-enddate-text">{{ eventeventenddate }}</span> | {{ e.eventendtime }}</p>
 
             <p><b>{{ translate("Location:") }}</b>
-                <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank"
-                    style="color: var(--primary-color); text-decoration: none;">
+                <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank" style="color: var(--primary-color); text-decoration: none;">
                     📍 <span class="card-location-text">{{ e.location }}</span> ↗
                 </a>
             </p>
@@ -370,88 +439,40 @@
                 <div style="display: flex; align-items: center; gap: 8px;">
                     {% if c_user == "None" %}
                     {% set loginalertmsg = translate("Login to like this event.") %}
-                    <button id="likeevent-{{e.eventid}}" class="like-btn"
-                        onclick="showAlert('{{ loginalertmsg }}', 'warning')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                        </svg>
+                    <button id="likeevent-{{e.eventid}}" class="like-btn" onclick="showAlert('{{ loginalertmsg }}', 'warning')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
                     {% else %}
                     {% set userliked = userdetails['likes'].split(",") if userdetails['likes'] else [] %}
                     {% if e.eventid|string in userliked %}
-                    <button id="likeevent-{{e.eventid}}" class="like-btn liked"
-                        onclick="changelike({{e.eventid}}, 'remove')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                        </svg>
-                    </button>
+                    <button id="likeevent-{{e.eventid}}" class="like-btn liked" onclick="changelike({{e.eventid}}, 'remove')">
                     {% else %}
                     <button id="likeevent-{{e.eventid}}" class="like-btn" onclick="changelike({{e.eventid}}, 'add')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                            </path>
-                        </svg>
-                    </button>
                     {% endif %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
                     {% endif %}
                     <span id="eventlike-{{e.eventid}}" class="like-count">{{ e.likes }}</span>
                 </div>
 
                 <div style="display: flex; gap: 8px; margin-left: 10px;">
-                    <button
-                        onclick="openShareModal('{{ e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')"
-                        class="share-btn" title="{{ translate('Share Event') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="18" cy="5" r="3"></circle>
-                            <circle cx="6" cy="12" r="3"></circle>
-                            <circle cx="18" cy="19" r="3"></circle>
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                        </svg>
+                    <button onclick="openShareModal('{{ e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')" class="share-btn" title="{{ translate('Share Event') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                     </button>
-                    <a href="/download_ics/{{ e.eventid }}" class="share-btn"
-                        title="{{ translate('Add to Calendar') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
+                    <a href="/download_ics/{{ e.eventid }}" class="share-btn" title="{{ translate('Add to Calendar') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     </a>
                     {% if user_language != "en" %}
-                    <button class="share-btn translate-btn" onclick="toggleTranslate(this)"
-                        title="{{ translate('Translate Event') }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path
-                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                            </path>
-                        </svg>
+                    <button class="share-btn translate-btn" onclick="toggleTranslate(this)" title="{{ translate('Translate Event') }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     </button>
                     {% endif %}
                 </div>
 
                 <div style="flex-grow: 1;"></div>
 
-                <button class="campaign-tag" onclick="openEventModal({{ e.eventid }})"
-                    title="{{ translate('View Event Details') }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
+                <button class="campaign-tag" onclick="openEventModal({{ e.eventid }})" title="{{ translate('View Event Details') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
                 <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
 
@@ -464,8 +485,7 @@
     </div>
 
     {% if not viewyourevents and viewevents|length > 4 %}
-    <button class="cta view-all-btn" data-category-id="{{ category_name|replace(' ', '-')|lower }}">{{ translate("View
-        All") }}</button>
+    <button class="cta view-all-btn" data-category-id="{{ category_name|replace(' ', '-')|lower }}">{{ translate("View All") }}</button>
     {% endif %}
 </div>
 {% endif %}
@@ -475,7 +495,7 @@
 <button class="cta" onclick="location.reload();" style="width:100%">{{ translate("View All Events") }}</button>
 {% endif %}
 
-<!-- Shared Modal HTML Moved Here -->
+<!-- Share Modal -->
 <div id="shareModal" class="share-modal">
     <div class="share-content">
         <button class="close-share" onclick="closeShareModal()">×</button>
@@ -485,30 +505,17 @@
         </div>
         <div class="share-options">
             <button class="share-btn-opt" onclick="copyEventLink()">
-                <svg fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z" />
-                    <path
-                        d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z" />
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/></svg>
                 {{ translate("Copy Link") }}
             </button>
             <div style="border-top: 1px solid var(--border-color); margin: 5px 0;"></div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: 0;">{{ translate("Share
-                on WhatsApp as:") }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: 0;">{{ translate("Share on WhatsApp as:") }}</p>
             <button class="share-btn-opt wa-btn" onclick="shareWhatsApp('text')">
-                <svg fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z" />
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z"/></svg>
                 {{ translate("Text Message") }}
             </button>
             <button class="share-btn-opt img-btn" onclick="shareWhatsApp('image')">
-                <svg fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                    <path
-                        d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
-                </svg>
+                <svg fill="currentColor" viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/><path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/></svg>
                 {{ translate("Image Card") }}
             </button>
         </div>
@@ -525,8 +532,7 @@
     <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-top: 15px;">
         <p id="cap-desc" style="font-style: italic;"></p>
     </div>
-    <p style="margin-top: 20px; font-size: 0.8em; text-align: center; color: #64748b;">Visit SahyogSutra.com for more
-        details</p>
+    <p style="margin-top: 20px; font-size: 0.8em; text-align: center; color: #64748b;">Visit SahyogSutra.com for more details</p>
 </div>
 
 <script>
@@ -534,127 +540,58 @@
     var globalSearchTerm = '';
     var currentShareEvent = {};
 
-    // Globe icon SVG (normal state)
-    const GLOBE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <line x1="2" y1="12" x2="22" y2="12"></line>
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-</svg>`;
-
-    // Spinner SVG shown while fetching
-    const SPINNER_SVG = `<svg class="spinner-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-</svg>`;
+    const GLOBE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+    const SPINNER_SVG = `<svg class="spinner-svg" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
 
     async function toggleTranslate(btn) {
         const card = btn.closest('.campaign-card');
         if (!card) return;
-
-        // --- RESTORE (second click) ---
         if (btn.classList.contains('translate-active')) {
-            const rawName = card.dataset.eventname;
-            const rawDesc = card.dataset.description;
-            const rawLocation = card.dataset.location;
-            const rawStartDate = card.dataset.startdate;
-            const rawEndDate = card.dataset.enddate;
-            const eventId = card.dataset.eventid;
-
-            // Restore title
+            const rawName = card.dataset.eventname, rawDesc = card.dataset.description, rawLocation = card.dataset.location, rawStartDate = card.dataset.startdate, rawEndDate = card.dataset.enddate, eventId = card.dataset.eventid;
             const titleEl = card.querySelector('.card-title-text');
             if (titleEl) titleEl.textContent = rawName;
-
-            // Restore description spans
             const shortSpan = card.querySelector(`#desc-short-${eventId}, #desc-short-trending-${eventId}`);
-            const fullSpan = card.querySelector(`#desc-full-${eventId},  #desc-full-trending-${eventId}`);
-            const descWrap = card.querySelector(`#event-desc-wrapper-${eventId}, #event-desc-wrapper-trending-${eventId}`);
+            const fullSpan  = card.querySelector(`#desc-full-${eventId},  #desc-full-trending-${eventId}`);
+            const descWrap  = card.querySelector(`#event-desc-wrapper-${eventId}, #event-desc-wrapper-trending-${eventId}`);
             if (shortSpan) shortSpan.textContent = rawDesc.slice(0, 100) + (rawDesc.length > 100 ? '...' : '');
             if (fullSpan) fullSpan.textContent = rawDesc;
-            // Plain (no read-more) desc case
-            if (descWrap && !shortSpan) {
-                // preserve any child buttons (read-more), update only text nodes
-                Array.from(descWrap.childNodes).forEach(n => {
-                    if (n.nodeType === Node.TEXT_NODE) n.textContent = rawDesc;
-                });
-            }
-
-            // Restore location span
+            if (descWrap && !shortSpan) Array.from(descWrap.childNodes).forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.textContent = rawDesc; });
             const locEl = card.querySelector('.card-location-text');
             if (locEl) locEl.textContent = rawLocation;
-
-            // Restore dates
             const startEl = card.querySelector('.card-startdate-text');
             if (startEl) startEl.textContent = rawStartDate;
-
             const endEl = card.querySelector('.card-enddate-text');
             if (endEl) endEl.textContent = rawEndDate;
-
             btn.classList.remove('translate-active');
             btn.innerHTML = GLOBE_SVG;
             btn.title = '{{ translate("Translate Event") }}';
             return;
         }
-
-        // --- TRANSLATE (first click) ---
-        const rawName = card.dataset.eventname;
-        const rawDesc = card.dataset.description;
-        const rawLocation = card.dataset.location;
-        const rawStartDate = card.dataset.startdate;
-        const rawEndDate = card.dataset.enddate;
-        const eventId = card.dataset.eventid;
-
-        // Show spinner, disable button
+        const rawName = card.dataset.eventname, rawDesc = card.dataset.description, rawLocation = card.dataset.location, rawStartDate = card.dataset.startdate, rawEndDate = card.dataset.enddate, eventId = card.dataset.eventid;
         btn.classList.add('translate-loading');
         btn.innerHTML = SPINNER_SVG;
-
         try {
-            const resp = await fetch('/translate_event', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    eventname: rawName,
-                    description: rawDesc,
-                    location: rawLocation,
-                    startdate: rawStartDate,
-                    enddate: rawEndDate
-                })
-            });
-
+            const resp = await fetch('/translate_event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventname: rawName, description: rawDesc, location: rawLocation, startdate: rawStartDate, enddate: rawEndDate }) });
             if (!resp.ok) throw new Error('Translation request failed');
             const data = await resp.json();
-
-            // Swap title
             const titleEl = card.querySelector('.card-title-text');
             if (titleEl) titleEl.textContent = data.eventname || rawName;
-
-            // Swap description spans
             const shortSpan = card.querySelector(`#desc-short-${eventId}`) || card.querySelector(`#desc-short-trending-${eventId}`);
-            const fullSpan = card.querySelector(`#desc-full-${eventId}`) || card.querySelector(`#desc-full-trending-${eventId}`);
-            const descWrap = card.querySelector(`#event-desc-wrapper-${eventId}`) || card.querySelector(`#event-desc-wrapper-trending-${eventId}`);
+            const fullSpan  = card.querySelector(`#desc-full-${eventId}`)  || card.querySelector(`#desc-full-trending-${eventId}`);
+            const descWrap  = card.querySelector(`#event-desc-wrapper-${eventId}`) || card.querySelector(`#event-desc-wrapper-trending-${eventId}`);
             const translatedDesc = data.description || rawDesc;
             if (shortSpan) shortSpan.textContent = translatedDesc.slice(0, 100) + (translatedDesc.length > 100 ? '...' : '');
             if (fullSpan) fullSpan.textContent = translatedDesc;
-            if (descWrap && !shortSpan) {
-                Array.from(descWrap.childNodes).forEach(n => {
-                    if (n.nodeType === Node.TEXT_NODE) n.textContent = translatedDesc;
-                });
-            }
-
-            // Swap location span
+            if (descWrap && !shortSpan) Array.from(descWrap.childNodes).forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.textContent = translatedDesc; });
             const locEl = card.querySelector('.card-location-text');
             if (locEl) locEl.textContent = data.location || rawLocation;
-
-            // Swap dates
             const startEl = card.querySelector('.card-startdate-text');
             if (startEl) startEl.textContent = data.startdate || rawStartDate;
-
             const endEl = card.querySelector('.card-enddate-text');
             if (endEl) endEl.textContent = data.enddate || rawEndDate;
-
-            // Mark as translated, restore globe icon with active style
             btn.classList.add('translate-active');
             btn.innerHTML = GLOBE_SVG;
             btn.title = '{{ translate("Show Original") }}';
-
         } catch (err) {
             console.error('Translation failed:', err);
             btn.innerHTML = GLOBE_SVG;
@@ -665,162 +602,76 @@
     }
 
     function toggleMobileFilterMenu() {
-        const container = document.getElementById('filterButtonsContainer');
-        const header = document.getElementById('mobileFilterHeader');
-
-        container.classList.toggle('show');
-        header.classList.toggle('open');
+        document.getElementById('filterButtonsContainer').classList.toggle('show');
+        document.getElementById('mobileFilterHeader').classList.toggle('open');
     }
 
     function toggleCategory(catId, btnElement) {
         if (catId === 'all') {
-            selectedCategories.clear();
-            selectedCategories.add('all');
-
+            selectedCategories.clear(); selectedCategories.add('all');
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
-
-            updateMobileHeaderText();
-            applyFilters();
-            return;
+            updateMobileHeaderText(); applyFilters(); return;
         }
-
-        if (selectedCategories.has('all')) {
-            selectedCategories.delete('all');
-            const allBtn = document.querySelector('.filter-btn[data-cat="all"]');
-            if (allBtn) allBtn.classList.remove('active');
-        }
-
-        if (selectedCategories.has(catId)) {
-            selectedCategories.delete(catId);
-            btnElement.classList.remove('active');
-        } else {
-            selectedCategories.add(catId);
-            btnElement.classList.add('active');
-        }
-
-        if (selectedCategories.size === 0) {
-            selectedCategories.add('all');
-            const allBtn = document.querySelector('.filter-btn[data-cat="all"]');
-            if (allBtn) allBtn.classList.add('active');
-        }
-
-        updateMobileHeaderText();
-        applyFilters();
+        if (selectedCategories.has('all')) { selectedCategories.delete('all'); const a = document.querySelector('.filter-btn[data-cat="all"]'); if (a) a.classList.remove('active'); }
+        if (selectedCategories.has(catId)) { selectedCategories.delete(catId); btnElement.classList.remove('active'); }
+        else { selectedCategories.add(catId); btnElement.classList.add('active'); }
+        if (selectedCategories.size === 0) { selectedCategories.add('all'); const a = document.querySelector('.filter-btn[data-cat="all"]'); if (a) a.classList.add('active'); }
+        updateMobileHeaderText(); applyFilters();
     }
 
     function updateMobileHeaderText() {
-        const headerText = document.getElementById('mobileFilterText');
-        if (!headerText) return;
-
-        if (selectedCategories.has('all')) {
-            headerText.innerText = "{{ translate('Filter Categories') }}";
-        } else {
-            const count = selectedCategories.size;
-            headerText.innerText = `Filters (${count} selected)`;
-        }
+        const h = document.getElementById('mobileFilterText');
+        if (!h) return;
+        h.innerText = selectedCategories.has('all') ? "{{ translate('Filter Categories') }}" : `Filters (${selectedCategories.size} selected)`;
     }
 
-    function handleGlobalSearch(term) {
-        globalSearchTerm = term.toLowerCase().trim();
-        applyFilters();
-    }
+    function handleGlobalSearch(term) { globalSearchTerm = term.toLowerCase().trim(); applyFilters(); }
 
     function applyFilters() {
         const trendingSection = document.getElementById('trending-section-wrapper');
         const hasGlobalSearch = globalSearchTerm.length > 0;
-
-        // Hide trending section when global search is active
-        if (trendingSection) {
-            if (hasGlobalSearch) {
-                trendingSection.style.display = 'none';
-            } else {
-                // Only show trending if "All Categories" is selected
-                if (selectedCategories.has('all')) {
-                    trendingSection.style.display = 'block';
-                } else {
-                    trendingSection.style.display = 'none';
-                }
-            }
-        }
-
-        const allSections = document.querySelectorAll('.campaign-category-wrapper');
-
-        allSections.forEach(section => {
+        if (trendingSection) trendingSection.style.display = hasGlobalSearch ? 'none' : (selectedCategories.has('all') ? 'block' : 'none');
+        document.querySelectorAll('.campaign-category-wrapper').forEach(section => {
             const catId = section.getAttribute('data-category-id');
             const isCatActive = selectedCategories.has('all') || selectedCategories.has(catId);
-
             let sectionHasVisibleCards = false;
-
-            const cards = section.querySelectorAll('.campaign-card');
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                const matchesSearch = !globalSearchTerm || text.includes(globalSearchTerm);
-
-                if (isCatActive && matchesSearch) {
-                    card.style.display = '';
-                    card.classList.remove('hidden');
-                    sectionHasVisibleCards = true;
-                } else {
-                    card.style.display = 'none';
-                }
+            section.querySelectorAll('.campaign-card').forEach(card => {
+                const matchesSearch = !globalSearchTerm || card.textContent.toLowerCase().includes(globalSearchTerm);
+                if (isCatActive && matchesSearch) { card.style.display = ''; card.classList.remove('hidden'); sectionHasVisibleCards = true; }
+                else { card.style.display = 'none'; }
             });
-
-            if (sectionHasVisibleCards) {
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
+            section.style.display = sectionHasVisibleCards ? 'block' : 'none';
         });
     }
 
     function toggleSortDirection(btn) {
         btn.classList.toggle('descending');
-        const section = btn.closest('.campaign-category-wrapper');
-        const grid = section.querySelector('.campaign-grid');
+        const grid = btn.closest('.campaign-category-wrapper').querySelector('.campaign-grid');
         const cards = Array.from(grid.children);
         cards.reverse();
         cards.forEach(card => grid.appendChild(card));
     }
 
-    // Share Functions Moved from index.html
     function openShareModal(name, id, date, time, location, desc) {
         currentShareEvent = { name, id, date, time, location, desc };
         document.getElementById('share-event-name').textContent = name;
         document.getElementById('shareModal').classList.add('show');
     }
-
     function closeShareModal() { document.getElementById('shareModal').classList.remove('show'); }
 
     function copyEventLink() {
         const link = `${window.location.origin}/event/${currentShareEvent.id}`;
         const text = `Check out this event on EcoCamp: ${currentShareEvent.name}\n${link}`;
         if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(() => {
-                showAlert('{{ translate("Link copied to clipboard!") }}', 'success');
-                closeShareModal();
-            }).catch(() => fallbackCopyText(text));
-        } else {
-            fallbackCopyText(text);
-        }
+            navigator.clipboard.writeText(text).then(() => { showAlert('{{ translate("Link copied to clipboard!") }}', 'success'); closeShareModal(); }).catch(() => fallbackCopyText(text));
+        } else { fallbackCopyText(text); }
     }
 
     function fallbackCopyText(text) {
-        let textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            showAlert('{{ translate("Link copied to clipboard!") }}', 'success');
-        } catch (err) {
-            showAlert('{{ translate("Failed to copy link.") }}', 'error');
-        }
-        document.body.removeChild(textArea);
-        closeShareModal();
+        let ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.left = "-9999px"; document.body.appendChild(ta); ta.focus(); ta.select();
+        try { document.execCommand('copy'); showAlert('{{ translate("Link copied to clipboard!") }}', 'success'); } catch(err) { showAlert('{{ translate("Failed to copy link.") }}', 'error'); }
+        document.body.removeChild(ta); closeShareModal();
     }
 
     function shareWhatsApp(type) {
@@ -832,13 +683,11 @@
 
     function populateCaptureArea() {
         document.getElementById('cap-title').textContent = currentShareEvent.name;
-        document.getElementById('cap-date').textContent = currentShareEvent.date;
-        document.getElementById('cap-time').textContent = currentShareEvent.time;
-        document.getElementById('cap-loc').textContent = currentShareEvent.location;
-        document.getElementById('cap-desc').textContent = currentShareEvent.desc.substring(0, 150) + (currentShareEvent.desc.length > 150 ? "..." : "");
+        document.getElementById('cap-date').textContent  = currentShareEvent.date;
+        document.getElementById('cap-time').textContent  = currentShareEvent.time;
+        document.getElementById('cap-loc').textContent   = currentShareEvent.location;
+        document.getElementById('cap-desc').textContent  = currentShareEvent.desc.substring(0, 150) + (currentShareEvent.desc.length > 150 ? "..." : "");
     }
-
-
 
     function generateImage() {
         showAlert('{{ translate("Generating Image, please wait...") }}', 'info');
@@ -848,7 +697,6 @@
             link.download = `${currentShareEvent.name}.png`;
             link.href = canvas.toDataURL();
             link.click();
-
         });
         closeShareModal();
     }
@@ -856,265 +704,264 @@
     const socket = io();
 
     function changelike(eventid, type) {
-        // Select ALL like buttons and count spans for this eventid
-        // (handles both regular cards and trending cards)
-        const btns = document.querySelectorAll(
-            `#likeevent-${eventid}, #likeevent-trending-${eventid}`
-        );
-        const countSpans = document.querySelectorAll(
-            `#eventlike-${eventid}, #eventlike-trending-${eventid}`
-        );
-
-        // Optimistic UI update
-        countSpans.forEach(countSpan => {
-            let currentCount = parseInt(countSpan.innerText) || 0;
-            if (type === 'add') {
-                countSpan.innerText = currentCount + 1;
-            } else {
-                countSpan.innerText = Math.max(0, currentCount - 1);
-            }
-        });
-
+        const btns = document.querySelectorAll(`#likeevent-${eventid}, #likeevent-trending-${eventid}`);
+        const countSpans = document.querySelectorAll(`#eventlike-${eventid}, #eventlike-trending-${eventid}`);
+        countSpans.forEach(s => { let c = parseInt(s.innerText) || 0; s.innerText = type === 'add' ? c + 1 : Math.max(0, c - 1); });
         btns.forEach(btn => {
-            if (type === 'add') {
-                btn.classList.add('liked');
-                btn.setAttribute('onclick', `changelike(${eventid}, 'remove')`);
-            } else {
-                btn.classList.remove('liked');
-                btn.setAttribute('onclick', `changelike(${eventid}, 'add')`);
-            }
+            if (type === 'add') { btn.classList.add('liked'); btn.setAttribute('onclick', `changelike(${eventid}, 'remove')`); }
+            else { btn.classList.remove('liked'); btn.setAttribute('onclick', `changelike(${eventid}, 'add')`); }
         });
-
-        socket.emit("addeventlike", {
-            eventid: eventid,
-            byuser: "{{ c_user }}",
-            type: type
-        });
+        socket.emit("addeventlike", { eventid, byuser: "{{ c_user }}", type });
     }
 
     socket.on("update_like", data => {
-        console.log("LIKE UPDATE RECEIVED", data);
-        // Update ALL count spans for this event (regular + trending)
-        const countSpans = document.querySelectorAll(
-            `#eventlike-${data.eventid}, #eventlike-trending-${data.eventid}`
-        );
-        countSpans.forEach(span => {
-            span.innerText = data.likes;
-        });
+        document.querySelectorAll(`#eventlike-${data.eventid}, #eventlike-trending-${data.eventid}`).forEach(s => { s.innerText = data.likes; });
     });
 
-    // Modal for event details
     function openEventModal(eventid) {
         const modal = document.createElement('div');
         modal.id = 'event-modal-' + eventid;
-        modal.style.cssText = `
-         position: fixed;
-         top: 0;
-         left: 0;
-         right: 0;
-         bottom: 0;
-         background: rgba(0,0,0,0.8);
-         z-index: 5000;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         padding: 20px;
-     `;
-
-        // Scrollable wrapper — this is what makes touch-scroll work on iOS/Android
+        modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;';
         const iframeWrapper = document.createElement('div');
-        iframeWrapper.style.cssText = `
-         width: 100%;
-         height: 90vh;
-         max-width: 1400px;
-         overflow-y: auto;
-         -webkit-overflow-scrolling: touch;
-         border-radius: 12px;
-         position: relative;
-         background: var(--bg-light);
-     `;
-
+        iframeWrapper.style.cssText = 'width:100%;height:90vh;max-width:1400px;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:12px;position:relative;background:var(--bg-light);';
         const iframe = document.createElement('iframe');
         iframe.src = '/event/' + eventid;
         iframe.scrolling = 'yes';
-        iframe.style.cssText = `
-         width: 100%;
-         height: 100%;
-         min-height: 90vh;
-         border: none;
-         border-radius: 12px;
-         background: var(--bg-light);
-         display: block;
-     `;
-
+        iframe.style.cssText = 'width:100%;height:100%;min-height:90vh;border:none;border-radius:12px;background:var(--bg-light);display:block;';
         const closeBtn = document.createElement('button');
         closeBtn.innerHTML = '✕';
-        closeBtn.style.cssText = `
-         position: fixed;
-         top: 20px;
-         right: 20px;
-         width: 40px;
-         height: 40px;
-         background: var(--primary-color);
-         border: none;
-         border-radius: 50%;
-         color: white;
-         font-size: 24px;
-         cursor: pointer;
-         z-index: 5001;
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         font-weight: bold;
-     `;
-
-        closeBtn.onclick = (e) => {
-            e.stopPropagation();
-            modal.remove();
-            document.body.style.overflow = '';
-        };
-
-        modal.onclick = (e) => {
-            if (e.target === modal) {
-                modal.remove();
-                document.body.style.overflow = '';
-            }
-        };
-
-        // Prevent background page scroll while modal is open
+        closeBtn.style.cssText = 'position:fixed;top:20px;right:20px;width:40px;height:40px;background:var(--primary-color);border:none;border-radius:50%;color:white;font-size:24px;cursor:pointer;z-index:5001;display:flex;align-items:center;justify-content:center;font-weight:bold;';
+        closeBtn.onclick = e => { e.stopPropagation(); modal.remove(); document.body.style.overflow = ''; };
+        modal.onclick = e => { if (e.target === modal) { modal.remove(); document.body.style.overflow = ''; } };
         document.body.style.overflow = 'hidden';
-
         iframeWrapper.appendChild(iframe);
         modal.appendChild(iframeWrapper);
         modal.appendChild(closeBtn);
         document.body.appendChild(modal);
     }
 
-    // --- Campaigns Tour Logic ---
-    let currentCampaignsTourStep = 0;
-    let campaignsTourSteps = [];
 
-    function buildCampaignsTourSteps() {
-        campaignsTourSteps = [];
+    /* ================================================================
+       CAMPAIGNS TOUR — rebuilt with position:fixed spotlight + tooltip
+       Same engine as addevent.html. Namespace prefix: cTour / c_
+       ================================================================ */
 
-        if (document.getElementById('step-campaigns-search')) {
-            campaignsTourSteps.push({
-                targetId: 'step-campaigns-search',
-                title: '{{ translate("1. Global Search") }}',
-                text: '{{ translate("Use this bar to find any campaign across all categories by typing keywords.") }}',
-                pos: 'bottom'
-            });
+    const _cTourStepDefs = [
+        {
+            buildId: 'step-campaigns-search',
+            title: '{{ translate("1. Global Search") }}',
+            text:  '{{ translate("Type any keyword here to instantly search across all campaigns — by name, location, or description. Results update live as you type.") }}'
+        },
+        {
+            buildId: 'step-campaigns-filters',
+            title: '{{ translate("2. Category Filters") }}',
+            text:  '{{ translate("Tap a category pill to show only campaigns from that group. You can combine multiple filters. On mobile, tap the Filter Categories button to expand them.") }}'
+        },
+        {
+            buildId: 'trending-section-wrapper',
+            title: '{{ translate("3. Trending Now 🔥") }}',
+            text:  '{{ translate("These are the highest-rated and most-liked campaigns right now. They appear at the top so nothing hot gets missed.") }}'
+        },
+        {
+            buildId: null, // first .step-campaigns-cat, found dynamically
+            title: '{{ translate("4. Category Section and Sorting") }}',
+            text:  '{{ translate("Each category has its own search bar and sort controls. Use the dropdown to order by date, name, likes, or ID. The ↓ arrow reverses the order.") }}'
+        },
+        {
+            buildId: null, // first .campaign-card, found dynamically
+            title: '{{ translate("5. Campaign Card Buttons") }}',
+            text:  '{{ translate("Every card has a row of action buttons at the bottom:") }}',
+            legend: [
+                { icon: '❤️', label: '{{ translate("Like") }}',         desc: '{{ translate("Show support — tap again to unlike") }}' },
+                { icon: '↗️', label: '{{ translate("Share") }}',        desc: '{{ translate("Copy link or send via WhatsApp / image") }}' },
+                { icon: '📅', label: '{{ translate("Add to Calendar") }}', desc: '{{ translate("Download .ics file for any calendar app") }}' },
+                { icon: '🌐', label: '{{ translate("Translate") }}',    desc: '{{ translate("Translate the card into your language") }}' },
+                { icon: '👁️', label: '{{ translate("View Details") }}', desc: '{{ translate("Open full event page in a popup") }}' },
+                { icon: '💬', label: '{{ translate("Chat") }}',         desc: '{{ translate("Join the event group chat") }}' },
+                { icon: '📍', label: '{{ translate("Location Link") }}', desc: '{{ translate("Tap the address to open Google Maps") }}' },
+                { icon: '✕',  label: '{{ translate("Delete") }}',       desc: '{{ translate("Owners/admins can remove a campaign") }}' }
+            ]
         }
+    ];
 
-        if (document.getElementById('step-campaigns-filters')) {
-            campaignsTourSteps.push({
-                targetId: 'step-campaigns-filters',
-                title: '{{ translate("2. Category Filters") }}',
-                text: '{{ translate("Click these buttons to quickly filter and view specific types of campaigns.") }}',
-                pos: 'bottom'
-            });
-        }
+    let _cTourSteps = [];
+    let _cTourStep  = 0;
+    let _cTourOpen  = false;
 
-        if (document.getElementById('trending-section-wrapper')) {
-            campaignsTourSteps.push({
-                targetId: 'trending-section-wrapper',
-                title: '{{ translate("3. Trending Campaigns") }}',
-                text: '{{ translate("Discover the most popular and highly-rated campaigns happening right now.") }}',
-                pos: 'top'
-            });
-        }
+    const _cEl = id => document.getElementById(id);
 
-        const firstCat = document.querySelector('.step-campaigns-cat');
-        if (firstCat) {
-            campaignsTourSteps.push({
-                targetId: firstCat.id,
-                title: '{{ translate("4. Browse & Sort") }}',
-                text: '{{ translate("Browse categorized campaigns here. You can also search within a specific category or sort the cards by date, likes, and more.") }}',
-                pos: 'top'
-            });
-        }
+    function _cBuildSteps() {
+        _cTourSteps = [];
+        _cTourStepDefs.forEach((def, i) => {
+            let el = null;
+            if (def.buildId) {
+                el = document.getElementById(def.buildId);
+            } else if (i === 3) {
+                el = document.querySelector('.step-campaigns-cat');
+            } else if (i === 4) {
+                el = document.querySelector('.campaign-card');
+            }
+            if (el) _cTourSteps.push({ el, title: def.title, text: def.text, legend: def.legend || null });
+        });
     }
 
-    function startCampaignsTour() {
-        buildCampaignsTourSteps();
-        if (campaignsTourSteps.length === 0) return;
-
-        currentCampaignsTourStep = 0;
-        document.getElementById('campaignsTourOverlay').classList.add('active');
-        document.body.style.overflow = 'hidden';
-        showCampaignsTourStep(currentCampaignsTourStep);
+    function _cBuildDots() {
+        const dots = _cEl('cTourDots');
+        dots.innerHTML = '';
+        _cTourSteps.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'c-tour-dot' + (i === _cTourStep ? ' active' : '');
+            d.onclick = () => _cShowStep(i);
+            dots.appendChild(d);
+        });
     }
 
-    function endCampaignsTour() {
-        document.getElementById('campaignsTourOverlay').classList.remove('active');
-        document.getElementById('campaignsTourTooltip').classList.remove('active');
-        document.getElementById('campaignsTourTooltip').style.display = 'none';
-        document.body.style.overflow = '';
-        document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+    function _cPositionSpotlight(rect, pad = 10) {
+        const sp = _cEl('cTourSpotlight');
+        sp.style.top    = (rect.top    - pad) + 'px';
+        sp.style.left   = (rect.left   - pad) + 'px';
+        sp.style.width  = (rect.width  + pad * 2) + 'px';
+        sp.style.height = (rect.height + pad * 2) + 'px';
     }
 
-    function showCampaignsTourStep(index) {
-        document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+    function _cPositionTooltip(spotRect, pad = 10) {
+        const tt = _cEl('cTourTooltip');
+        const TW = tt.offsetWidth  || 330;
+        const TH = tt.offsetHeight || 200;
+        const VW = window.innerWidth;
+        const VH = window.innerHeight;
+        const MARGIN = 14;
 
-        const step = campaignsTourSteps[index];
-        const target = document.getElementById(step.targetId);
+        let top, arrowClass;
+        const belowTop = spotRect.bottom + pad + MARGIN;
+        const aboveTop = spotRect.top  - pad - TH - MARGIN;
 
-        if(!target) return endCampaignsTour();
+        if (belowTop + TH <= VH - 10) {
+            top = belowTop; arrowClass = 'arrow-top';
+        } else if (aboveTop >= 10) {
+            top = aboveTop; arrowClass = 'arrow-bottom';
+        } else {
+            top = Math.max(10, (VH - TH) / 2); arrowClass = '';
+        }
 
-        target.classList.add('tour-highlight');
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        let left = spotRect.left - pad;
+        left = Math.max(12, Math.min(left, VW - TW - 12));
 
-        const tooltip = document.getElementById('campaignsTourTooltip');
-        document.getElementById('campaignsTourHeader').innerText = step.title;
-        document.getElementById('campaignsTourText').innerText = step.text;
-        document.getElementById('campaignsTourCount').innerText = `${index + 1}/${campaignsTourSteps.length}`;
+        tt.style.top  = top  + 'px';
+        tt.style.left = left + 'px';
+        tt.className  = arrowClass;
+    }
 
-        document.getElementById('campaignsTourPrev').style.visibility = index === 0 ? 'hidden' : 'visible';
-        document.getElementById('campaignsTourNext').innerText = index === campaignsTourSteps.length - 1 ? '{{ translate("Finish") }}' : '{{ translate("Next") }}';
+    function _cShowStep(index) {
+        _cTourStep = index;
+        const step = _cTourSteps[index];
+        if (!step) { cEndTour(); return; }
+
+        step.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        _cEl('cTourTitle').textContent = step.title;
+        _cEl('cTourText').textContent  = step.text;
+        _cEl('cTourPill').textContent  = `${index + 1} / ${_cTourSteps.length}`;
+
+        const legendEl = _cEl('cTourLegend');
+        if (step.legend && step.legend.length) {
+            legendEl.style.display = 'grid';
+            legendEl.innerHTML = step.legend.map(item => `
+                <div class="c-tour-legend-item">
+                    <div class="c-tour-legend-icon">${item.icon}</div>
+                    <div class="c-tour-legend-text">
+                        <div class="c-tour-legend-label">${item.label}</div>
+                        <div class="c-tour-legend-desc">${item.desc}</div>
+                    </div>
+                </div>`).join('');
+        } else {
+            legendEl.style.display = 'none';
+            legendEl.innerHTML = '';
+        }
+
+        _cEl('cTourPrevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
+        _cEl('cTourNextBtn').textContent = index === _cTourSteps.length - 1
+            ? '{{ translate("Finish") }} ✓'
+            : '{{ translate("Next") }} →';
+
+        _cBuildDots();
 
         setTimeout(() => {
-            tooltip.style.display = 'block';
-            tooltip.style.visibility = 'hidden';
-            tooltip.classList.remove('pos-top', 'pos-bottom');
-            tooltip.classList.add('pos-' + step.pos);
+            const rect = step.el.getBoundingClientRect();
+            _cPositionSpotlight(rect);
+            _cEl('cTourSpotlight').classList.add('visible');
 
-            const rect = target.getBoundingClientRect();
+            const tt = _cEl('cTourTooltip');
+            tt.style.display    = 'block';
+            tt.style.visibility = 'hidden';
+            tt.classList.remove('visible');
 
-            let topPos = rect.bottom + window.scrollY + 15;
-            if (step.pos === 'top') {
-                topPos = rect.top + window.scrollY - tooltip.offsetHeight - 15;
-            }
-
-            let leftPos = rect.left + window.scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2);
-
-            if (leftPos + tooltip.offsetWidth > window.innerWidth - 10) {
-                leftPos = window.innerWidth - tooltip.offsetWidth - 10;
-            }
-            if (leftPos < 10) {
-                leftPos = 10;
-            }
-
-            tooltip.style.top = topPos + 'px';
-            tooltip.style.left = leftPos + 'px';
-
-            tooltip.style.visibility = 'visible';
-            tooltip.classList.add('active');
-        }, 300);
+            requestAnimationFrame(() => {
+                _cPositionTooltip(rect);
+                tt.style.visibility = 'visible';
+                tt.classList.add('visible');
+            });
+        }, 320);
     }
 
-    function nextCampaignsTourStep() {
-        if(currentCampaignsTourStep < campaignsTourSteps.length - 1) {
-            currentCampaignsTourStep++;
-            showCampaignsTourStep(currentCampaignsTourStep);
-        } else {
-            endCampaignsTour();
+    function cStartTour() {
+        if (_cTourOpen) return;
+        _cBuildSteps();
+        if (_cTourSteps.length === 0) return;
+        _cTourOpen = true;
+        _cTourStep = 0;
+
+        const ov = _cEl('cTourOverlay');
+        ov.style.display = 'block';
+        requestAnimationFrame(() => ov.classList.add('active', 'visible'));
+        document.body.style.overflow = 'hidden';
+
+        _cShowStep(0);
+    }
+
+    function cEndTour() {
+        _cTourOpen = false;
+        const ov = _cEl('cTourOverlay');
+        ov.classList.remove('visible');
+        setTimeout(() => { ov.classList.remove('active'); ov.style.display = 'none'; }, 350);
+
+        _cEl('cTourSpotlight').classList.remove('visible');
+        const tt = _cEl('cTourTooltip');
+        tt.classList.remove('visible');
+        setTimeout(() => { tt.style.display = 'none'; }, 300);
+
+        document.body.style.overflow = '';
+    }
+
+    function cNextStep() {
+        if (_cTourStep < _cTourSteps.length - 1) {
+            _cEl('cTourTooltip').classList.remove('visible');
+            _cEl('cTourSpotlight').classList.remove('visible');
+            setTimeout(() => _cShowStep(_cTourStep + 1), 180);
+        } else { cEndTour(); }
+    }
+
+    function cPrevStep() {
+        if (_cTourStep > 0) {
+            _cEl('cTourTooltip').classList.remove('visible');
+            _cEl('cTourSpotlight').classList.remove('visible');
+            setTimeout(() => _cShowStep(_cTourStep - 1), 180);
         }
     }
 
-    function prevCampaignsTourStep() {
-        if(currentCampaignsTourStep > 0) {
-            currentCampaignsTourStep--;
-            showCampaignsTourStep(currentCampaignsTourStep);
-        }
-    }
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+        if (!_cTourOpen) return;
+        if (e.key === 'Escape')     cEndTour();
+        if (e.key === 'ArrowRight') cNextStep();
+        if (e.key === 'ArrowLeft')  cPrevStep();
+    });
+
+    // Reposition on resize
+    let _cResizeTimer;
+    window.addEventListener('resize', () => {
+        if (!_cTourOpen) return;
+        clearTimeout(_cResizeTimer);
+        _cResizeTimer = setTimeout(() => _cShowStep(_cTourStep), 200);
+    });
 </script>
