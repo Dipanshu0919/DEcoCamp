@@ -15,7 +15,7 @@ function showAlert(message, type = 'info', duration = 5000, showButtons = false)
     const alertButtons = $('#alertButtons');
     const alertCloseBtn = $('#alertCloseBtn');
 
-    if(!alertBar) return;
+    if (!alertBar) return;
 
     alertText.textContent = message;
     alertBar.classList.remove('success', 'info', 'warning', 'error');
@@ -42,11 +42,13 @@ function openeventchat(eventid) {
     const iframe = $('#globalChatIframe');
     iframe.src = `/group-chat/from-event/${eventid}`;
     drawer.classList.add('open');
+    document.getElementById('scrollNav').style.display = 'none';
 }
 
 function closeEventChat() {
     $('#sideChatDrawer').classList.remove('open');
     setTimeout(() => $('#globalChatIframe').src = '', 400);
+    document.getElementById('scrollNav').style.display = '';
 }
 
 function toggleDescription(id, action) {
@@ -132,7 +134,7 @@ async function generateDescription() {
             card.onclick = () => {
                 $('#descriptionField').value = data[key];
                 showAlert(SAHYOG_CONFIG.trans.descUpdated, 'success');
-                $('#descriptionField').scrollIntoView({behavior: 'smooth', block: 'center'});
+                $('#descriptionField').scrollIntoView({ behavior: 'smooth', block: 'center' });
             };
             resultsContainer.appendChild(card);
         });
@@ -256,30 +258,30 @@ function initializePendingListeners() {
                 formData.append(input.name, input.value);
             });
             fetch('/addevent', { method: 'POST', body: formData })
-            .then(response => {
-                if (response.redirected) { window.location.href = response.url; return null; }
-                return response.text();
-            })
-            .then(text => {
-                if (text === null) return;
-                const isSuccess = text.toLowerCase().includes('success') ||
-                                 text.toLowerCase().includes('approved') ||
-                                 text.toLowerCase().includes('added');
-                showAlert(text, isSuccess ? 'success' : 'info');
-                if (isSuccess) {
-                    row.style.opacity = '0';
-                    setTimeout(() => { contentLoaders.pending.loaded = false; loadPendingEvents(); }, 1000);
-                } else {
+                .then(response => {
+                    if (response.redirected) { window.location.href = response.url; return null; }
+                    return response.text();
+                })
+                .then(text => {
+                    if (text === null) return;
+                    const isSuccess = text.toLowerCase().includes('success') ||
+                        text.toLowerCase().includes('approved') ||
+                        text.toLowerCase().includes('added');
+                    showAlert(text, isSuccess ? 'success' : 'info');
+                    if (isSuccess) {
+                        row.style.opacity = '0';
+                        setTimeout(() => { contentLoaders.pending.loaded = false; loadPendingEvents(); }, 1000);
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert(SAHYOG_CONFIG.trans.errorOccurred, 'error');
                     btn.disabled = false;
                     btn.textContent = originalText;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showAlert(SAHYOG_CONFIG.trans.errorOccurred, 'error');
-                btn.disabled = false;
-                btn.textContent = originalText;
-            });
+                });
         });
     });
 }
@@ -293,7 +295,7 @@ const handleFormSubmit = async (form, callback) => {
         const response = await fetch(form.dataset.url, { method: 'POST', body: new FormData(form) });
         const text = await response.text();
         const type = text.includes('Success') || text.includes('Registered') ? 'success' :
-                     text.includes('Error') || text.includes('Invalid') ? 'error' : 'info';
+            text.includes('Error') || text.includes('Invalid') ? 'error' : 'info';
         showAlert(text, type);
         callback?.(text);
     } catch (error) {
@@ -327,7 +329,7 @@ const addFormSubmitListener = (selector, url, callback) => {
 // --- Calendar Logic ---
 let calendar;
 
-window.toggleView = function(view) {
+window.toggleView = function (view) {
     const listBtn = $('#listViewBtn');
     const calBtn = $('#calendarViewBtn');
     const listContent = $('#campaignsContent');
@@ -348,7 +350,7 @@ function initCalendar() {
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' },
-        events: function(info, successCallback, failureCallback) {
+        events: function (info, successCallback, failureCallback) {
             fetch('/api').then(r => r.json()).then(data => {
                 const events = data['active events'].map(e => ({
                     title: e.eventname,
@@ -359,7 +361,7 @@ function initCalendar() {
                 successCallback(events);
             }).catch(failureCallback);
         },
-        eventClick: function(info) {
+        eventClick: function (info) {
             info.jsEvent.preventDefault();
             showAlert(`${info.event.title}\n📍 ${info.event.extendedProps.location}\n📅 ${info.event.start.toLocaleDateString()}`, 'info');
         }
@@ -425,9 +427,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Forget Password Toggle
     $('#forget-pass-link')?.addEventListener('click', () => {
         const loginUserVal = $('input[name="loginusername"]').value;
-        if(loginUserVal) $('#forgetemail').value = loginUserVal;
+        if (loginUserVal) $('#forgetemail').value = loginUserVal;
         const loginPassVal = $('#loginpassword').value;
-        if(loginPassVal) $('#newpassword').value = loginPassVal;
+        if (loginPassVal) $('#newpassword').value = loginPassVal;
 
         $('#loginpage').classList.remove('active');
         $('#forgetpasswordpage').classList.add('active');
@@ -442,12 +444,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Forget Password OTP
     $('#sendForgetOtpBtn')?.addEventListener('click', async e => {
-         const btn = e.target;
-         const emailEl = $('#forgetemail');
-         if (!emailEl.checkValidity()) { return showAlert(SAHYOG_CONFIG.trans.enterValidEmail, 'warning'); }
-         btn.disabled = true;
-         btn.textContent = SAHYOG_CONFIG.trans.sending;
-         try {
+        const btn = e.target;
+        const emailEl = $('#forgetemail');
+        if (!emailEl.checkValidity()) { return showAlert(SAHYOG_CONFIG.trans.enterValidEmail, 'warning'); }
+        btn.disabled = true;
+        btn.textContent = SAHYOG_CONFIG.trans.sending;
+        try {
             const fd = new FormData();
             fd.append('email', emailEl.value);
             const response = await fetch("/sendforgetotp", { method: "POST", body: fd });
@@ -457,13 +459,13 @@ document.addEventListener('DOMContentLoaded', () => {
             $('#forget-step-2').style.display = 'block';
             btn.style.display = 'none';
             emailEl.readOnly = true;
-         } catch (err) {
+        } catch (err) {
             showAlert(err.message, 'error');
-         } finally {
+        } finally {
             if (btn.style.display !== 'none') {
                 setTimeout(() => { btn.disabled = false; btn.textContent = SAHYOG_CONFIG.trans.sendOtp; }, 5000);
             }
-         }
+        }
     });
 
     // Forget Password Submit
@@ -476,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmPass = $('#confirmnewpassword').value;
 
             if (!otpVal || !newPass || !confirmPass) {
-                 return showAlert(SAHYOG_CONFIG.trans.fillAllFields, 'warning');
+                return showAlert(SAHYOG_CONFIG.trans.fillAllFields, 'warning');
             }
             if (newPass !== confirmPass) {
                 return showAlert(SAHYOG_CONFIG.trans.passwordMismatch, 'error');
@@ -492,17 +494,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch("/forgetpassword", { method: "POST", body: fd });
                 const text = await response.text();
 
-                if(text.includes('Success')) {
-                     showAlert(text, 'success');
-                     setTimeout(() => location.reload(), 2000);
+                if (text.includes('Success')) {
+                    showAlert(text, 'success');
+                    setTimeout(() => location.reload(), 2000);
                 } else {
-                     showAlert(text, 'error');
+                    showAlert(text, 'error');
                 }
             } catch (err) {
-                 showAlert(SAHYOG_CONFIG.trans.errorOccurred, 'error');
+                showAlert(SAHYOG_CONFIG.trans.errorOccurred, 'error');
             } finally {
-                 btn.disabled = false;
-                 btn.textContent = originalText;
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
         });
     }

@@ -1,731 +1,879 @@
+<link rel="stylesheet" href="/static/tour-engine.css">
 <style>
-.add-event-wrapper, .add-event-wrapper * { box-sizing: border-box; }
-.add-event-wrapper { color: var(--text-color, #f1f5f9); width: 100%; max-width: 100%; overflow-x: hidden; position: relative; }
-.add-event-grid { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; margin: 0; }
-.add-event-form-container { background: var(--bg-light, #141828); border: 1px solid var(--border-color, #334155); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); width: 100%; }
-.styled-input-group { margin-bottom: 1.25rem; width: 100%; }
-.styled-input-group label { font-weight: 600; font-size: 0.9rem; color: var(--text-muted, #94a3b8); display: block; margin-bottom: 0.5rem; }
-.label-row { display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; flex-wrap: wrap; }
-.label-row label { margin-bottom: 0; display: inline; }
-.info-icon-wrapper { position: relative; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary-color, #d76a1e); margin-top: -2px; }
-.info-icon-svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
-.info-icon-wrapper:hover .info-icon-svg { stroke: var(--primary-hover, #f0c84b); }
-.tooltip-text { visibility: hidden; width: 220px; max-width: 85vw; background-color: #0a0c20; color: #f1f5f9; text-align: center; border: 1px solid var(--border-color, #334155); border-radius: 8px; padding: 10px; position: absolute; z-index: 100; bottom: 140%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.2s, transform 0.2s; font-size: 0.8rem; font-weight: normal; line-height: 1.4; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); pointer-events: none; }
-.tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px; border-width: 6px; border-style: solid; border-color: var(--border-color, #334155) transparent transparent transparent; }
-.info-icon-wrapper:hover .tooltip-text, .info-icon-wrapper:focus .tooltip-text, .info-icon-wrapper:focus-within .tooltip-text { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(5px); }
-@media (max-width: 450px) { .tooltip-text { left: auto; right: -10px; transform: translateX(0); } .tooltip-text::after { left: auto; right: 15px; } .info-icon-wrapper:hover .tooltip-text, .info-icon-wrapper:focus .tooltip-text { transform: translateX(0) translateY(5px); } }
-.styled-input { width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-dark, #0a0c20); border: 1px solid var(--border-color, #334155); border-radius: 8px; color: var(--text-color, #f1f5f9); font-size: 0.95rem; transition: all 0.2s ease; }
-.styled-input:focus { outline: none; border-color: var(--primary-color, #d76a1e); box-shadow: 0 0 0 3px rgba(215, 106, 30, 0.2); }
-.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
-.date-time-wrapper { display: flex; align-items: stretch; gap: 1.5rem; margin-bottom: 1.25rem; width: 100%; }
-.date-time-wrapper .styled-input-group { margin-bottom: 0; }
-.dt-block { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.dt-separator { width: 1px; background-color: var(--border-color, #334155); opacity: 0.6; margin: 5px 0; }
-@media (max-width: 800px) { .date-time-wrapper { flex-direction: column; gap: 1rem; } .dt-separator { width: 100%; height: 1px; margin: 0; } }
-@media (max-width: 600px) { .input-row { grid-template-columns: 1fr; gap: 0; } .add-event-form-container { padding: 1.5rem; } }
-.category-box { background: var(--bg-dark, #0a0c20); border: 1px solid var(--border-color, #334155); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; width: 100%; }
-.cat-chips-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
-.cat-chip-btn { background: var(--bg-light, #141828); border: 1px solid var(--border-color, #475569); color: var(--text-muted, #94a3b8); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-.cat-chip-btn:hover { border-color: var(--primary-color, #d76a1e); color: var(--text-color, #fff); }
-.cat-chip-btn.active { background: var(--primary-color, #d76a1e); border-color: var(--primary-color, #d76a1e); color: #fff; }
-.event-search-box { width: 100%; padding: 10px 12px 10px 35px; background: var(--bg-light, #141828) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E") no-repeat 10px center; border: 1px solid var(--border-color, #475569); border-radius: 8px; color: var(--text-color, #fff); margin-bottom: 1rem; display: block; }
-.event-search-box:focus { outline: none; border-color: var(--primary-color, #d76a1e); }
-.event-list-panel { max-height: 200px; overflow-y: auto; border-top: 1px solid var(--border-color, #333); padding-top: 10px; display: none; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 10px; }
-.event-list-panel.visible { display: grid; }
-.event-radio-label { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; cursor: pointer; transition: background 0.2s; font-size: 0.85rem; color: var(--text-muted, #cbd5e1); border: 1px solid transparent; }
-.event-radio-label:hover { background: rgba(255, 255, 255, 0.05); }
-.event-radio-label.selected { background: rgba(215, 106, 30, 0.15); border-color: rgba(215, 106, 30, 0.3); color: #f0c84b; font-weight: 600; }
-.event-cat-tag { font-size: 0.7em; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: auto; color: #94a3b8; }
-.event-list-panel::-webkit-scrollbar { width: 6px; }
-.event-list-panel::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-.tips-dropdown { background: rgba(215, 106, 30, 0.08); border: 1px solid rgba(215, 106, 30, 0.3); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; margin-bottom: 0.5rem; width: 100%; }
-.tips-dropdown summary { padding: 1rem 1.5rem; cursor: pointer; font-weight: 600; color: var(--primary-color, #f0c84b); display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; }
-.tips-dropdown summary::-webkit-details-marker { display: none; }
-.tips-dropdown summary::after { content: '▼'; font-size: 0.8rem; transition: transform 0.3s; }
-.tips-dropdown[open] summary::after { transform: rotate(180deg); }
-.tips-content { padding: 0 1.5rem 1.5rem 1.5rem; color: var(--text-muted, #94a3b8); border-top: 1px solid rgba(215, 106, 30, 0.2); animation: slideDown 0.3s ease-out; }
-.tips-content ul { margin: 0; padding-left: 1.2rem; }
-.tips-content li { margin-bottom: 0.5rem; font-size: 0.9rem; }
-@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-.ai-btn-fancy { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; white-space: nowrap; }
-.ai-btn-fancy:hover { transform: scale(1.05); }
-.form-actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; width: 100%; }
-.btn-submit { flex: 2; min-width: 200px; padding: 12px; background: var(--primary-color, #d76a1e); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-.btn-submit:hover { background: var(--primary-hover, #2563eb); }
-.btn-reset { flex: 1; min-width: 120px; padding: 12px; background: transparent; border: 1px solid var(--border-color, #475569); color: var(--text-muted, #94a3b8); border-radius: 8px; cursor: pointer; }
-.btn-reset:hover { background: rgba(255, 255, 255, 0.05); color: white; }
-.ai-hint { color: var(--text-muted, #888); font-size: 0.9rem; margin-right: 10px; margin-bottom: 0; }
+  .add-event-wrapper,
+  .add-event-wrapper * {
+    box-sizing: border-box;
+  }
 
-/* ============================================
+  .add-event-wrapper {
+    color: var(--text-color, #f1f5f9);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .add-event-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    margin: 0;
+  }
+
+  .add-event-form-container {
+    background: var(--bg-light, #141828);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 100%;
+  }
+
+  .styled-input-group {
+    margin-bottom: 1.25rem;
+    width: 100%;
+  }
+
+  .styled-input-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted, #94a3b8);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .label-row label {
+    margin-bottom: 0;
+    display: inline;
+  }
+
+  .info-icon-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary-color, #d76a1e);
+    margin-top: -2px;
+  }
+
+  .info-icon-svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.2s;
+  }
+
+  .info-icon-wrapper:hover .info-icon-svg {
+    stroke: var(--primary-hover, #f0c84b);
+  }
+
+  .tooltip-text {
+    visibility: hidden;
+    width: 220px;
+    max-width: 85vw;
+    background-color: #0a0c20;
+    color: #f1f5f9;
+    text-align: center;
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 8px;
+    padding: 10px;
+    position: absolute;
+    z-index: 100;
+    bottom: 140%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    font-size: 0.8rem;
+    font-weight: normal;
+    line-height: 1.4;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+  }
+
+  .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--border-color, #334155) transparent transparent transparent;
+  }
+
+  .info-icon-wrapper:hover .tooltip-text,
+  .info-icon-wrapper:focus .tooltip-text,
+  .info-icon-wrapper:focus-within .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(5px);
+  }
+
+  @media (max-width: 450px) {
+    .tooltip-text {
+      left: auto;
+      right: -10px;
+      transform: translateX(0);
+    }
+
+    .tooltip-text::after {
+      left: auto;
+      right: 15px;
+    }
+
+    .info-icon-wrapper:hover .tooltip-text,
+    .info-icon-wrapper:focus .tooltip-text {
+      transform: translateX(0) translateY(5px);
+    }
+  }
+
+  .styled-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-dark, #0a0c20);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 8px;
+    color: var(--text-color, #f1f5f9);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  .styled-input:focus {
+    outline: none;
+    border-color: var(--primary-color, #d76a1e);
+    box-shadow: 0 0 0 3px rgba(215, 106, 30, 0.2);
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .date-time-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    width: 100%;
+  }
+
+  .date-time-wrapper .styled-input-group {
+    margin-bottom: 0;
+  }
+
+  .dt-block {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .dt-separator {
+    width: 1px;
+    background-color: var(--border-color, #334155);
+    opacity: 0.6;
+    margin: 5px 0;
+  }
+
+  @media (max-width: 800px) {
+    .date-time-wrapper {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dt-separator {
+      width: 100%;
+      height: 1px;
+      margin: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .input-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .add-event-form-container {
+      padding: 1.5rem;
+    }
+  }
+
+  .category-box {
+    background: var(--bg-dark, #0a0c20);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+  }
+
+  .cat-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .cat-chip-btn {
+    background: var(--bg-light, #141828);
+    border: 1px solid var(--border-color, #475569);
+    color: var(--text-muted, #94a3b8);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .cat-chip-btn:hover {
+    border-color: var(--primary-color, #d76a1e);
+    color: var(--text-color, #fff);
+  }
+
+  .cat-chip-btn.active {
+    background: var(--primary-color, #d76a1e);
+    border-color: var(--primary-color, #d76a1e);
+    color: #fff;
+  }
+
+  .event-search-box {
+    width: 100%;
+    padding: 10px 12px 10px 35px;
+    background: var(--bg-light, #141828) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E") no-repeat 10px center;
+    border: 1px solid var(--border-color, #475569);
+    border-radius: 8px;
+    color: var(--text-color, #fff);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .event-search-box:focus {
+    outline: none;
+    border-color: var(--primary-color, #d76a1e);
+  }
+
+  .event-list-panel {
+    max-height: 200px;
+    overflow-y: auto;
+    border-top: 1px solid var(--border-color, #333);
+    padding-top: 10px;
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .event-list-panel.visible {
+    display: grid;
+  }
+
+  .event-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.85rem;
+    color: var(--text-muted, #cbd5e1);
+    border: 1px solid transparent;
+  }
+
+  .event-radio-label:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .event-radio-label.selected {
+    background: rgba(215, 106, 30, 0.15);
+    border-color: rgba(215, 106, 30, 0.3);
+    color: #f0c84b;
+    font-weight: 600;
+  }
+
+  .event-cat-tag {
+    font-size: 0.7em;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: auto;
+    color: #94a3b8;
+  }
+
+  .event-list-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .event-list-panel::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 3px;
+  }
+
+  .tips-dropdown {
+    background: rgba(215, 106, 30, 0.08);
+    border: 1px solid rgba(215, 106, 30, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  .tips-dropdown summary {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-color, #f0c84b);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+    user-select: none;
+  }
+
+  .tips-dropdown summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tips-dropdown summary::after {
+    content: '▼';
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+  }
+
+  .tips-dropdown[open] summary::after {
+    transform: rotate(180deg);
+  }
+
+  .tips-content {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--text-muted, #94a3b8);
+    border-top: 1px solid rgba(215, 106, 30, 0.2);
+    animation: slideDown 0.3s ease-out;
+  }
+
+  .tips-content ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+
+  .tips-content li {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .ai-btn-fancy {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+    white-space: nowrap;
+  }
+
+  .ai-btn-fancy:hover {
+    transform: scale(1.05);
+  }
+
+  .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+    width: 100%;
+  }
+
+  .btn-submit {
+    flex: 2;
+    min-width: 200px;
+    padding: 12px;
+    background: var(--primary-color, #d76a1e);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-submit:hover {
+    background: var(--primary-hover, #2563eb);
+  }
+
+  .btn-reset {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border-color, #475569);
+    color: var(--text-muted, #94a3b8);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .btn-reset:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+  }
+
+  .ai-hint {
+    color: var(--text-muted, #888);
+    font-size: 0.9rem;
+    margin-right: 10px;
+    margin-bottom: 0;
+  }
+
+  /* ============================================
 TOUR SYSTEM — position:fixed engine
 ============================================ */
-.how-to-btn { background: transparent; border: 1px solid var(--primary-color, #d76a1e); color: var(--primary-color, #d76a1e); padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; margin-bottom: 1rem; font-size: 0.9rem; }
-.how-to-btn:hover { background: var(--primary-color, #d76a1e); color: #fff; }
-#tourOverlay { position: fixed; inset: 0; background: rgba(5, 8, 30, 0.82); z-index: 8990; display: none; opacity: 0; transition: opacity 0.35s ease; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
-#tourOverlay.active { display: block; }
-#tourOverlay.visible { opacity: 1; }
-#tourSpotlight { position: fixed; z-index: 8995; border-radius: 14px; pointer-events: none; box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); transition: top .4s cubic-bezier(.4,0,.2,1), left .4s cubic-bezier(.4,0,.2,1), width .4s cubic-bezier(.4,0,.2,1), height .4s cubic-bezier(.4,0,.2,1), opacity .3s ease; opacity: 0; }
-#tourSpotlight.visible { opacity: 1; animation: tSpotPulse 2.5s ease-in-out infinite; }
-@keyframes tSpotPulse { 0%,100% { box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); } 50% { box-shadow: 0 0 0 4px #f08040, 0 0 0 10px rgba(215,106,30,0.15), 0 0 55px rgba(215,106,30,0.2); } }
-#tourTooltip { position: fixed; z-index: 9000; width: 310px; max-width: calc(100vw - 24px); background: #111827; border: 1px solid rgba(215,106,30,0.5); border-radius: 14px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04); display: none; opacity: 0; transition: opacity .3s ease, transform .3s ease; transform: translateY(8px); overflow: hidden; }
-#tourTooltip.visible { opacity: 1; transform: translateY(0); }
-#tourTooltip .t-arrow { position: absolute; width: 0; height: 0; border: 9px solid transparent; pointer-events: none; left: 28px; }
-#tourTooltip.arrow-top .t-arrow { top: -18px; border-bottom-color: rgba(215,106,30,0.5); }
-#tourTooltip.arrow-bottom .t-arrow { bottom: -18px; border-top-color: rgba(215,106,30,0.5); }
-.t-header-bar { background: linear-gradient(135deg, #d76a1e, #c45a10); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.t-step-pill { background: rgba(0,0,0,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; white-space: nowrap; }
-.t-title { color: #fff; font-weight: 700; font-size: .95rem; flex: 1; }
-.t-x-btn { background: rgba(0,0,0,0.2); border: none; color: rgba(255,255,255,0.85); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .85rem; transition: background .2s; flex-shrink: 0; line-height: 1; }
-.t-x-btn:hover { background: rgba(0,0,0,0.45); color: #fff; }
-.t-body { padding: 14px 16px 10px; }
-.t-text { color: #cbd5e1; font-size: .875rem; line-height: 1.6; margin: 0 0 10px; }
-.t-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-.t-legend-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 7px 9px; display: flex; align-items: flex-start; gap: 7px; }
-.t-legend-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-.t-legend-text { display: flex; flex-direction: column; gap: 1px; }
-.t-legend-label { font-size: .72rem; font-weight: 700; color: #f1f5f9; }
-.t-legend-desc { font-size: .68rem; color: #64748b; line-height: 1.3; }
-.t-footer { padding: 10px 16px 14px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.t-dots { display: flex; gap: 5px; align-items: center; }
-.t-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background .2s, transform .2s; cursor: pointer; }
-.t-dot.active { background: #d76a1e; transform: scale(1.3); }
-.t-nav-btns { display: flex; gap: 6px; }
-.t-nav-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: .82rem; font-weight: 600; transition: all .2s; }
-.t-nav-btn:hover { background: rgba(255,255,255,0.14); }
-.t-nav-btn.primary { background: #d76a1e; border-color: #d76a1e; color: #fff; }
-.t-nav-btn.primary:hover { background: #c45a10; }
+  /* ── Tour: shared styles loaded from tour-engine.css ──────────────
+   Page-specific highlight overrides only: */
+  .sst-hl {
+    background-color: var(--bg-light, #141828) !important;
+    box-shadow: 0 0 0 12px var(--bg-light, #141828) !important;
+  }
 
-    /* ============================================
-       TOUR SECTION HIGHLIGHT (Pulls target above blur)
-       ============================================ */
-    .tour-highlight-target {
-        position: relative !important;
-        z-index: 8992 !important; /* Higher than #tourOverlay (8990) */
-        background-color: var(--bg-light, #141828) !important;
-        border-radius: 12px !important;
-        /* Box-shadow simulates padding so background covers gaps cleanly without breaking layout */
-        box-shadow: 0 0 0 12px var(--bg-light, #141828) !important;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    /* Keep the category box background color authentic */
-    #step-category.tour-highlight-target {
-        background-color: var(--bg-dark, #0a0c20) !important;
-        box-shadow: 0 0 0 4px var(--bg-dark, #0a0c20) !important;
-    }
+  /* Keep the category box background colour authentic */
+  #step-category.sst-hl {
+    background-color: var(--bg-dark, #0a0c20) !important;
+    box-shadow: 0 0 0 4px var(--bg-dark, #0a0c20) !important;
+  }
 </style>
 
-<!-- ====== TOUR DOM ====== -->
-<div id="tourOverlay" onclick="endTour()"></div>
-<div id="tourSpotlight"></div>
-<div id="tourTooltip">
-<div class="t-arrow"></div>
-<div class="t-header-bar">
-<div class="t-title" id="tourTitle">Step</div>
-<div class="t-step-pill" id="tourPill">1 / 5</div>
-<button class="t-x-btn" onclick="endTour()" title="Close tour">✕</button>
-</div>
-<div class="t-body">
-<p class="t-text" id="tourText"></p>
-<div class="t-legend" id="tourLegend" style="display:none;"></div>
-</div>
-<div class="t-footer">
-<div class="t-dots" id="tourDots"></div>
-<div class="t-nav-btns">
-<button class="t-nav-btn" id="tourPrevBtn" onclick="prevTourStep()">← {{ translate("Back") }}</button>
-<button class="t-nav-btn primary" id="tourNextBtn" onclick="nextTourStep()">{{ translate("Next") }} →</button>
-</div>
-</div>
-</div>
-<!-- ====== END TOUR DOM ====== -->
+<!-- Tour DOM removed to prevent duplicate IDs since it's loaded in index.html -->
 
 <div class="add-event-wrapper">
-<div style="text-align: center; margin-bottom: 2rem;">
-<h1 style="margin-bottom: 0.5rem;">{{ translate("Create a New Campaign") }}</h1>
-<p style="color: var(--text-muted, #94a3b8); margin-bottom: 1rem;">{{ translate("Add details for your campaign below. Once approved,
-it will appear in the campaign list for everyone to see.") }}</p>
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="margin-bottom: 0.5rem;">{{ translate("Create a New Campaign") }}</h1>
+    <p style="color: var(--text-muted, #94a3b8); margin-bottom: 1rem;">{{ translate("Add details for your campaign
+      below. Once approved,
+      it will appear in the campaign list for everyone to see.") }}</p>
 
-<button class="how-to-btn" onclick="startTour()">💡 {{ translate("How to Use this Form") }}</button>
-</div>
+    <button class="how-to-btn" onclick="startTour()">💡 {{ translate("How to Use this Form") }}</button>
+  </div>
 
-<div class="add-event-grid">
-<!-- TIPS DROPDOWN -->
-<details class="tips-dropdown">
-<summary>
-<span>💡 {{ translate("Tips for Success") }}</span>
-</summary>
-<div class="tips-content">
-<ul>
-<li>{{ translate("Use clear, concise titles.") }}</li>
-<li>{{ translate("Add the location or place id for clarity.") }}</li>
-<li>{{ translate("Choose the correct category.") }}</li>
-<li>{{ translate("Short descriptions work best!") }}</li>
-</ul>
-</div>
-</details>
+  <div class="add-event-grid">
+    <!-- TIPS DROPDOWN -->
+    <details class="tips-dropdown">
+      <summary>
+        <span>💡 {{ translate("Tips for Success") }}</span>
+      </summary>
+      <div class="tips-content">
+        <ul>
+          <li>{{ translate("Use clear, concise titles.") }}</li>
+          <li>{{ translate("Add the location or place id for clarity.") }}</li>
+          <li>{{ translate("Choose the correct category.") }}</li>
+          <li>{{ translate("Short descriptions work best!") }}</li>
+        </ul>
+      </div>
+    </details>
 
-<!-- FORM CONTAINER -->
-<div class="add-event-form-container">
-<form id="addEventForm">
+    <!-- FORM CONTAINER -->
+    <div class="add-event-form-container">
+      <form id="addEventForm">
 
-<!-- Row 1 -->
-<div class="input-row" id="step-name-loc">
-<div class="styled-input-group">
-<div class="label-row">
-<label>{{ translate("Campaign Name") }}</label>
-<div class="info-icon-wrapper" tabindex="0">
-<svg class="info-icon-svg" viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="10"></circle>
-<line x1="12" y1="16" x2="12" y2="12"></line>
-<line x1="12" y1="8" x2="12.01" y2="8"></line>
-</svg>
-<span class="tooltip-text">{{ translate('Enter a descriptive name for your campaign
-(e.g., Summer Charity Gala 2024)') }}</span>
-</div>
-</div>
-<input type="text" class="styled-input" name="eventname" value="{{ fvalues['eventname'] }}"
-placeholder="{{ translate('e.g., Summer Charity Gala 2024') }}" required />
-</div>
-<div class="styled-input-group">
-<div class="label-row">
-<label>{{ translate("Location of where event is going to happen") }}</label>
-<div class="info-icon-wrapper" tabindex="0">
-<svg class="info-icon-svg" viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="10"></circle>
-<line x1="12" y1="16" x2="12" y2="12"></line>
-<line x1="12" y1="8" x2="12.01" y2="8"></line>
-</svg>
-<span class="tooltip-text">{{ translate('Enter the venue or online link (e.g., Central
-Park, NY or Zoom Meeting ID)') }}</span>
-</div>
-</div>
-<input type="text" class="styled-input" name="location" value="{{ fvalues['location'] }}"
-placeholder="{{ translate('e.g., Central Park, NY or Zoom Meeting ID') }}" required />
-</div>
-</div>
+        <!-- Row 1 -->
+        <div class="input-row" id="step-name-loc">
+          <div class="styled-input-group">
+            <div class="label-row">
+              <label>{{ translate("Campaign Name") }}</label>
+              <div class="info-icon-wrapper" tabindex="0">
+                <svg class="info-icon-svg" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span class="tooltip-text">{{ translate('Enter a descriptive name for your campaign
+                  (e.g., Summer Charity Gala 2024)') }}</span>
+              </div>
+            </div>
+            <input type="text" class="styled-input" name="eventname" value="{{ fvalues['eventname'] }}"
+              placeholder="{{ translate('e.g., Summer Charity Gala 2024') }}" required />
+          </div>
+          <div class="styled-input-group">
+            <div class="label-row">
+              <label>{{ translate("Location of where event is going to happen") }}</label>
+              <div class="info-icon-wrapper" tabindex="0">
+                <svg class="info-icon-svg" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span class="tooltip-text">{{ translate('Enter the venue or online link (e.g., Central
+                  Park, NY or Zoom Meeting ID)') }}</span>
+              </div>
+            </div>
+            <input type="text" class="styled-input" name="location" value="{{ fvalues['location'] }}"
+              placeholder="{{ translate('e.g., Central Park, NY or Zoom Meeting ID') }}" required />
+          </div>
+        </div>
 
-<!-- Category Section -->
-<div class="category-box" id="step-category">
-<label style="display:block; margin-bottom:10px; font-weight:600; color:var(--text-color);">
-{{ translate("Category & Event Type") }}
-</label>
-<input type="hidden" id="categoryHiddenInput" name="category" value="{{ fvalues['category'] }}"
-required>
+        <!-- Category Section -->
+        <div class="category-box" id="step-category">
+          <label style="display:block; margin-bottom:10px; font-weight:600; color:var(--text-color);">
+            {{ translate("Category & Event Type") }}
+          </label>
+          <input type="hidden" id="categoryHiddenInput" name="category" value="{{ fvalues['category'] }}" required>
 
-<!-- Search Input -->
-<input type="text" id="eventSearchInput" class="event-search-box"
-placeholder="{{ translate('Type here to find an event category (e.g., Yoga, Meeting, Workshop)...') }}">
+          <!-- Search Input -->
+          <input type="text" id="eventSearchInput" class="event-search-box"
+            placeholder="{{ translate('Type here to find an event category (e.g., Yoga, Meeting, Workshop)...') }}">
 
-<!-- Chips -->
-<div class="cat-chips-container" id="catChips">
-{% for category, events in categories.items() %}
-<button type="button" class="cat-chip-btn" data-category="{{ category | safe }}">
-{{ translate(category) }}
-</button>
-{% endfor %}
-</div>
+          <!-- Chips -->
+          <div class="cat-chips-container" id="catChips">
+            {% for category, events in categories.items() %}
+            <button type="button" class="cat-chip-btn" data-category="{{ category | safe }}">
+              {{ translate(category) }}
+            </button>
+            {% endfor %}
+          </div>
 
-<p id="catHint" style="font-size:0.85rem; color:var(--text-muted); font-style:italic; margin:0;">
-{{ translate("Search above or pick a category to see options") }}
-</p>
+          <p id="catHint" style="font-size:0.85rem; color:var(--text-muted); font-style:italic; margin:0;">
+            {{ translate("Search above or pick a category to see options") }}
+          </p>
 
-<!-- List Panel -->
-<div class="event-list-panel" id="eventOptionsPanel"></div>
+          <!-- List Panel -->
+          <div class="event-list-panel" id="eventOptionsPanel"></div>
 
-<div id="selectedDisplay"
-style="margin-top:10px; color:#22c55e; font-size:0.9rem; font-weight:600; min-height:1.2em;">
-{% if fvalues['category'] %}✓ {{ translate("Selected") }}: {{ translate(fvalues['category'],
-save_file=False) }}{% endif %}
-</div>
-</div>
+          <div id="selectedDisplay"
+            style="margin-top:10px; color:#22c55e; font-size:0.9rem; font-weight:600; min-height:1.2em;">
+            {% if fvalues['category'] %}✓ {{ translate("Selected") }}: {{ translate(fvalues['category'],
+            save_file=False) }}{% endif %}
+          </div>
+        </div>
 
-<!-- Combined Date & Time Row -->
-<div class="date-time-wrapper" id="step-datetime">
-<!-- Dates Block -->
-<div class="dt-block">
-<div class="styled-input-group">
-<label>{{ translate("Date when event Starts") }}</label>
-<input type="date" class="styled-input" name="eventstartdate"
-value="{{fvalues['eventstartdate']}}" required />
-</div>
-<div class="styled-input-group">
-<label>{{ translate("Date when event Ends") }}</label>
-<input type="date" class="styled-input" name="eventenddate"
-value="{{fvalues['eventenddate']}}" required />
-</div>
-</div>
+        <!-- Combined Date & Time Row -->
+        <div class="date-time-wrapper" id="step-datetime">
+          <!-- Dates Block -->
+          <div class="dt-block">
+            <div class="styled-input-group">
+              <label>{{ translate("Date when event Starts") }}</label>
+              <input type="date" class="styled-input" name="eventstartdate" value="{{fvalues['eventstartdate']}}"
+                required />
+            </div>
+            <div class="styled-input-group">
+              <label>{{ translate("Date when event Ends") }}</label>
+              <input type="date" class="styled-input" name="eventenddate" value="{{fvalues['eventenddate']}}"
+                required />
+            </div>
+          </div>
 
-<!-- Separator Line -->
-<div class="dt-separator"></div>
+          <!-- Separator Line -->
+          <div class="dt-separator"></div>
 
-<!-- Times Block -->
-<div class="dt-block">
-<div class="styled-input-group">
-<label>{{ translate("Time when event Starts") }}</label>
-<input type="time" class="styled-input" name="eventstarttime"
-value="{{fvalues['eventstarttime']}}" required />
-</div>
-<div class="styled-input-group">
-<label>{{ translate("Time when event Ends") }}</label>
-<input type="time" class="styled-input" name="eventendtime"
-value="{{fvalues['eventendtime']}}" required />
-</div>
-</div>
-</div>
+          <!-- Times Block -->
+          <div class="dt-block">
+            <div class="styled-input-group">
+              <label>{{ translate("Time when event Starts") }}</label>
+              <input type="time" class="styled-input" name="eventstarttime" value="{{fvalues['eventstarttime']}}"
+                required />
+            </div>
+            <div class="styled-input-group">
+              <label>{{ translate("Time when event Ends") }}</label>
+              <input type="time" class="styled-input" name="eventendtime" value="{{fvalues['eventendtime']}}"
+                required />
+            </div>
+          </div>
+        </div>
 
-<!-- Description & AI -->
-<div class="styled-input-group" id="step-desc-ai" style="padding: 10px; margin: -10px; border-radius: 12px;">
-<!-- Update the flex layout here so elements wrap gracefully on mobile -->
-<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
+        <!-- Description & AI -->
+        <div class="styled-input-group" id="step-desc-ai" style="padding: 10px; margin: -10px; border-radius: 12px;">
+          <!-- Update the flex layout here so elements wrap gracefully on mobile -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
 
-<div class="label-row" style="margin-bottom:0;">
-<label>{{ translate("Description of the event") }}</label>
-<div class="info-icon-wrapper" tabindex="0">
-<svg class="info-icon-svg" viewBox="0 0 24 24">
-<circle cx="12" cy="12" r="10"></circle>
-<line x1="12" y1="16" x2="12" y2="12"></line>
-<line x1="12" y1="8" x2="12.01" y2="8"></line>
-</svg>
-<span class="tooltip-text">{{ translate('Describe details, agenda, and what to bring.
-(e.g., Join us for a community gathering with live music...)') }}</span>
-</div>
-</div>
+            <div class="label-row" style="margin-bottom:0;">
+              <label>{{ translate("Description of the event") }}</label>
+              <div class="info-icon-wrapper" tabindex="0">
+                <svg class="info-icon-svg" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span class="tooltip-text">{{ translate('Describe details, agenda, and what to bring.
+                  (e.g., Join us for a community gathering with live music...)') }}</span>
+              </div>
+            </div>
 
-<div style="display: flex; align-items: center;">
-<p class="ai-hint" style="display: none; sm:display: block;">{{ translate("Need help?") }}ㅤ
-</p>
-<button type="button" class="ai-btn-fancy" id="aiBtn" onclick="generateDescription()">
-✨ {{ translate("Generate description from AI") }}
-</button>
-</div>
-</div>
+            <div style="display: flex; align-items: center;">
+              <p class="ai-hint" style="display: none; sm:display: block;">{{ translate("Need help?") }}ㅤ
+              </p>
+              <button type="button" class="ai-btn-fancy" id="aiBtn" onclick="generateDescription()">
+                ✨ {{ translate("Generate description from AI") }}
+              </button>
+            </div>
+          </div>
 
-<!-- AI Options Container -->
-<h4 id="aiInstruction"
-style="text-align:center; margin: 10px 0; display:none; color:var(--text-muted); font-size: 0.9rem;">
-{{ translate("Click any option below to auto-fill the description") }}
-</h4>
+          <!-- AI Options Container -->
+          <h4 id="aiInstruction"
+            style="text-align:center; margin: 10px 0; display:none; color:var(--text-muted); font-size: 0.9rem;">
+            {{ translate("Click any option below to auto-fill the description") }}
+          </h4>
 
-<div id="aiResults" class="ai-options-container" style="margin-bottom:10px;"></div>
+          <div id="aiResults" class="ai-options-container" style="margin-bottom:10px;"></div>
 
-<textarea class="styled-input" id="descriptionField" name="description" rows="3"
-placeholder="{{ translate('e.g., Join us for a community gathering to support local artists with live music...') }}"
-required>{{ fvalues['description'] }}</textarea>
-</div>
+          <textarea class="styled-input" id="descriptionField" name="description" rows="3"
+            placeholder="{{ translate('e.g., Join us for a community gathering to support local artists with live music...') }}"
+            required>{{ fvalues['description'] }}</textarea>
+        </div>
 
-<div class="form-actions" id="step-actions">
-<button type="submit" class="btn-submit">{{ translate("Submit campaign for Approval") }}</button>
-<button type="reset" class="btn-reset">{{ translate("Reset Fields") }}</button>
-</div>
-</form>
-</div>
-</div>
+        <div class="form-actions" id="step-actions">
+          <button type="submit" class="btn-submit">{{ translate("Submit campaign for Approval") }}</button>
+          <button type="reset" class="btn-reset">{{ translate("Reset Fields") }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>
-(function () {
-// 1. Prepare Data Structure
-// categoriesData maps Category -> [EventList]
-const categoriesData = {
+  (function () {
+    // 1. Prepare Data Structure
+    // categoriesData maps Category -> [EventList]
+    const categoriesData = {
 {% for category, events in categories.items() %}
-"{{ category | safe }}": [{% for event_name in events %}"{{ event_name | safe }}"{% if not loop.last %}, {% endif %} {% endfor %}]{% if not loop.last %}, {% endif %}
-{% endfor %}
+    "{{ category | safe }}": [{% for event_name in events %}"{{ event_name | safe }}"{% if not loop.last %}, {% endif %} {% endfor %}]{% if not loop.last %}, {% endif %}
+  {% endfor %}
 };
 
-// Create a reverse map for easier searching: EventName -> CategoryName
-// And a flat list for search
-const allEvents = [];
-const eventToCategoryMap = {};
+  // Create a reverse map for easier searching: EventName -> CategoryName
+  // And a flat list for search
+  const allEvents = [];
+  const eventToCategoryMap = {};
 
-for (const [cat, events] of Object.entries(categoriesData)) {
-events.forEach(ev => {
-eventToCategoryMap[ev] = cat;
-allEvents.push({ name: ev, category: cat });
-});
-}
+  for (const [cat, events] of Object.entries(categoriesData)) {
+    events.forEach(ev => {
+      eventToCategoryMap[ev] = cat;
+      allEvents.push({ name: ev, category: cat });
+    });
+  }
 
-// 2. DOM Elements
-const chipsContainer = document.getElementById('catChips');
-const panel = document.getElementById('eventOptionsPanel');
-const hiddenInput = document.getElementById('categoryHiddenInput');
-const selectedDisplay = document.getElementById('selectedDisplay');
-const searchInput = document.getElementById('eventSearchInput');
-const catHint = document.getElementById('catHint');
+  // 2. DOM Elements
+  const chipsContainer = document.getElementById('catChips');
+  const panel = document.getElementById('eventOptionsPanel');
+  const hiddenInput = document.getElementById('categoryHiddenInput');
+  const selectedDisplay = document.getElementById('selectedDisplay');
+  const searchInput = document.getElementById('eventSearchInput');
+  const catHint = document.getElementById('catHint');
 
-let activeCategory = null;
-let selectedEvent = hiddenInput.value || null;
+  let activeCategory = null;
+  let selectedEvent = hiddenInput.value || null;
 
-// 3. Render Function (Handles both Search Results and Category Views)
-function renderList(eventsToRender, isSearchMode = false) {
+  // 3. Render Function (Handles both Search Results and Category Views)
+  function renderList(eventsToRender, isSearchMode = false) {
     panel.innerHTML = '';
 
     // Add '!eventsToRender' to safely catch undefined arrays
     if (!eventsToRender || eventsToRender.length === 0) {
-        panel.innerHTML = '<div style="padding:10px; color:#94a3b8; font-size:0.8rem; text-align:center;">No matching events found.</div>';
-        panel.classList.add('visible');
-        return;
+      panel.innerHTML = '<div style="padding:10px; color:#94a3b8; font-size:0.8rem; text-align:center;">No matching events found.</div>';
+      panel.classList.add('visible');
+      return;
     }
 
     eventsToRender.forEach(item => {
-const evName = typeof item === 'string' ? item : item.name;
-const evCat = typeof item === 'string' ? activeCategory : item.category; // If string, implied from activeCategory
+      const evName = typeof item === 'string' ? item : item.name;
+      const evCat = typeof item === 'string' ? activeCategory : item.category; // If string, implied from activeCategory
 
-const el = document.createElement('div');
-el.className = 'event-radio-label';
-if (selectedEvent === evName) el.classList.add('selected');
+      const el = document.createElement('div');
+      el.className = 'event-radio-label';
+      if (selectedEvent === evName) el.classList.add('selected');
 
-// HTML for the list item
-let innerHTML = `
+      // HTML for the list item
+      let innerHTML = `
 <div style="width:14px; height:14px; border:2px solid currentColor; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
 <div style="width:6px; height:6px; background:currentColor; border-radius:50%; opacity:${selectedEvent === evName ? 1 : 0}"></div>
 </div>
 <span>${evName}</span>
 `;
 
-// If searching, show which category it belongs to
-if (isSearchMode) {
-innerHTML += `<span class="event-cat-tag">${evCat}</span>`;
-}
+      // If searching, show which category it belongs to
+      if (isSearchMode) {
+        innerHTML += `<span class="event-cat-tag">${evCat}</span>`;
+      }
 
-el.innerHTML = innerHTML;
+      el.innerHTML = innerHTML;
 
-// Click Handler
-el.onclick = () => {
-selectEvent(evName, evCat);
-};
+      // Click Handler
+      el.onclick = () => {
+        selectEvent(evName, evCat);
+      };
 
-panel.appendChild(el);
-});
+      panel.appendChild(el);
+    });
 
-panel.classList.add('visible');
-catHint.style.display = 'none';
-}
+    panel.classList.add('visible');
+    catHint.style.display = 'none';
+  }
 
-// 4. Selection Logic
-function selectEvent(evName, categoryName) {
-selectedEvent = evName;
-hiddenInput.value = evName;
-selectedDisplay.innerHTML = `✓ {{ translate("Selected") }}: ${evName}`;
+  // 4. Selection Logic
+  function selectEvent(evName, categoryName) {
+    selectedEvent = evName;
+    hiddenInput.value = evName;
+    selectedDisplay.innerHTML = `✓ {{ translate("Selected") }}: ${evName}`;
 
-// Update visuals in the list
-const allItems = panel.querySelectorAll('.event-radio-label');
-allItems.forEach(item => {
-item.classList.remove('selected');
-item.querySelector('div > div').style.opacity = '0';
-// Check text content matches (rough check, or we could store data attributes)
-if (item.textContent.includes(evName)) { // Simple check
-item.classList.add('selected');
-item.querySelector('div > div').style.opacity = '1';
-}
-});
+    // Update visuals in the list
+    const allItems = panel.querySelectorAll('.event-radio-label');
+    allItems.forEach(item => {
+      item.classList.remove('selected');
+      item.querySelector('div > div').style.opacity = '0';
+      // Check text content matches (rough check, or we could store data attributes)
+      if (item.textContent.includes(evName)) { // Simple check
+        item.classList.add('selected');
+        item.querySelector('div > div').style.opacity = '1';
+      }
+    });
 
-// Update Category Chips to reflect the selection
-activeCategory = categoryName;
-updateChipsVisuals();
-}
+    // Update Category Chips to reflect the selection
+    activeCategory = categoryName;
+    updateChipsVisuals();
+  }
 
-function updateChipsVisuals() {
-const chips = chipsContainer.querySelectorAll('.cat-chip-btn');
-chips.forEach(btn => {
-if (btn.dataset.category === activeCategory) {
-btn.classList.add('active');
-} else {
-btn.classList.remove('active');
-}
-});
-}
+  function updateChipsVisuals() {
+    const chips = chipsContainer.querySelectorAll('.cat-chip-btn');
+    chips.forEach(btn => {
+      if (btn.dataset.category === activeCategory) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
 
-// 5. Search Listener
-searchInput.addEventListener('input', (e) => {
-const term = e.target.value.toLowerCase().trim();
+  // 5. Search Listener
+  searchInput.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase().trim();
 
-if (term.length === 0) {
-// If search cleared...
-if (activeCategory) {
-// ...and a category was selected, show that category's events
-renderList(categoriesData[activeCategory], false);
-} else {
-// ...and nothing selected, hide panel or show hint
-panel.innerHTML = '';
-panel.classList.remove('visible');
-catHint.style.display = 'block';
-}
-return;
-}
+    if (term.length === 0) {
+      // If search cleared...
+      if (activeCategory) {
+        // ...and a category was selected, show that category's events
+        renderList(categoriesData[activeCategory], false);
+      } else {
+        // ...and nothing selected, hide panel or show hint
+        panel.innerHTML = '';
+        panel.classList.remove('visible');
+        catHint.style.display = 'block';
+      }
+      return;
+    }
 
-// Perform Search
-const matches = allEvents.filter(ev => ev.name.toLowerCase().includes(term));
-renderList(matches, true); // true = show category tags
-});
+    // Perform Search
+    const matches = allEvents.filter(ev => ev.name.toLowerCase().includes(term));
+    renderList(matches, true); // true = show category tags
+  });
 
-// 6. Chip Click Listener
-if (chipsContainer) {
+  // 6. Chip Click Listener
+  if (chipsContainer) {
     chipsContainer.addEventListener('click', e => {
-        const btn = e.target.closest('.cat-chip-btn');
-        if (!btn) return;
+      const btn = e.target.closest('.cat-chip-btn');
+      if (!btn) return;
 
-        const cat = btn.dataset.category;
+      const cat = btn.dataset.category;
 
-        activeCategory = cat;
-        if (searchInput) searchInput.value = ''; // Clear search when picking a specific category
-        updateChipsVisuals();
+      activeCategory = cat;
+      if (searchInput) searchInput.value = ''; // Clear search when picking a specific category
+      updateChipsVisuals();
 
-        // Add "|| []" to fallback to an empty list instead of undefined
-        renderList(categoriesData[cat] || [], false);
+      // Add "|| []" to fallback to an empty list instead of undefined
+      renderList(categoriesData[cat] || [], false);
     });
-}
+  }
 
-// 7. Initial Load State
-if (selectedEvent) {
-// Find which category this event belongs to
-const cat = eventToCategoryMap[selectedEvent];
-if (cat) {
-activeCategory = cat;
-updateChipsVisuals();
-renderList(categoriesData[cat], false);
-}
-}
-
-})();
-
-// ============================================================
-// TOUR SYSTEM — position:fixed spotlight + tooltip engine
-// ============================================================
-var _tourSteps = [
-{
-targetId: 'step-name-loc',
-title: '{{ translate("1. Campaign Name and Location") }}',
-text:'{{ translate("Start by giving your campaign a clear, memorable name. Then enter the venue — a full address, city name, or a virtual meeting link. Both fields are required.") }}'
-},
-{
-targetId: 'step-category',
-title: '{{ translate("2. Category and Event Type") }}',
-text:'{{ translate("Use the search bar to find your event type quickly, or tap a coloured chip to browse a category. Click any result to select it — the chip will highlight and your selection appears below in green.") }}'
-},
-{
-targetId: 'step-datetime',
-title: '{{ translate("3. Dates and Times") }}',
-text:'{{ translate("Set when your campaign starts and ends. Left side = dates, right side = times. If its a single-day event, set both dates the same.") }}'
-},
-{
-targetId: 'step-desc-ai',
-title: '{{ translate("4. Description and AI Helper") }}',
-text:'{{ translate("Write a short summary of your event. Stuck for words? Hit the ✨ Generate button — AI will create a few ready-to-use descriptions based on your details. Click any suggestion to auto-fill the box.") }}'
-},
-{
-targetId: 'step-actions',
-title: '{{ translate("5. Submit and Reset") }}',
-text:'{{ translate("Submit sends your campaign for admin review. Once approved it appears in the public campaign list. Reset clears all fields so you can start fresh.") }}',
-legend: [
-{ icon: '✅', label: '{{ translate("Submit") }}',desc: '{{ translate("Sends campaign for approval") }}' },
-{ icon: '🔄', label: '{{ translate("Reset") }}',desc: '{{ translate("Clears all form fields") }}' },
-{ icon: '✨', label: '{{ translate("AI Generate") }}', desc: '{{ translate("Auto-writes description for you") }}' },
-{ icon: 'ℹ️', label: '{{ translate("Info icons") }}',desc: '{{ translate("Hover for field-specific tips") }}' }
-]
-}
-];
-
-var _tourStep = 0;
-var _tourOpen = false;
-var _tEl = id => document.getElementById(id);
-
-    // Helper to clear highlights from previous steps
-    function _clearTourHighlights() {
-        document.querySelectorAll('.tour-highlight-target').forEach(el => {
-            el.classList.remove('tour-highlight-target');
-        });
+  // 7. Initial Load State
+  if (selectedEvent) {
+    // Find which category this event belongs to
+    const cat = eventToCategoryMap[selectedEvent];
+    if (cat) {
+      activeCategory = cat;
+      updateChipsVisuals();
+      renderList(categoriesData[cat], false);
     }
+  }
 
-function _tBuildDots() {
-const dots = _tEl('tourDots');
-dots.innerHTML = '';
-_tourSteps.forEach((_, i) => {
-const d = document.createElement('div');
-d.className = 't-dot' + (i === _tourStep ? ' active' : '');
-d.onclick = () => _tShowStep(i);
-dots.appendChild(d);
-});
-}
+}) ();
 
-function _tPositionSpotlight(rect, pad = 10) {
-const sp = _tEl('tourSpotlight');
-sp.style.top= (rect.top- pad) + 'px';
-sp.style.left= (rect.left- pad) + 'px';
-sp.style.width= (rect.width+ pad * 2) + 'px';
-sp.style.height = (rect.height + pad * 2) + 'px';
-}
+  // ============================================================
+  // TOUR SYSTEM — powered by /static/tour-engine.js
+  // ============================================================
+  /* ── Tour: page-specific steps only — engine lives in tour-engine.js ── */
+  window.ssTour = new SahyogTour({
+    highlightClass: 'sst-hl',
+    i18n: {
+      finish: '{{ translate("Finish") }} ✓',
+      next: '{{ translate("Next") }} →',
+    },
+    steps: [
+      {
+        targetId: 'step-name-loc',
+        title: '{{ translate("1. Campaign Name and Location") }}',
+        text: '{{ translate("Start by giving your campaign a clear, memorable name. Then enter the venue — a full address, city name, or a virtual meeting link. Both fields are required.") }}'
+      },
+      {
+        targetId: 'step-category',
+        title: '{{ translate("2. Category and Event Type") }}',
+        text: '{{ translate("Use the search bar to find your event type quickly, or tap a coloured chip to browse a category. Click any result to select it — the chip will highlight and your selection appears below in green.") }}'
+      },
+      {
+        targetId: 'step-datetime',
+        title: '{{ translate("3. Dates and Times") }}',
+        text: '{{ translate("Set when your campaign starts and ends. Left side = dates, right side = times. If its a single-day event, set both dates the same.") }}'
+      },
+      {
+        targetId: 'step-desc-ai',
+        title: '{{ translate("4. Description and AI Helper") }}',
+        text: '{{ translate("Write a short summary of your event. Stuck for words? Hit the ✨ Generate button — AI will create a few ready-to-use descriptions based on your details. Click any suggestion to auto-fill the box.") }}'
+      },
+      {
+        targetId: 'step-actions',
+        title: '{{ translate("5. Submit and Reset") }}',
+        text: '{{ translate("Submit sends your campaign for admin review. Once approved it appears in the public campaign list. Reset clears all fields so you can start fresh.") }}',
+        legend: [
+          { icon: '✅', label: '{{ translate("Submit") }}', desc: '{{ translate("Sends campaign for approval") }}' },
+          { icon: '🔄', label: '{{ translate("Reset") }}', desc: '{{ translate("Clears all form fields") }}' },
+          { icon: '✨', label: '{{ translate("AI Generate") }}', desc: '{{ translate("Auto-writes description for you") }}' },
+          { icon: 'ℹ️', label: '{{ translate("Info icons") }}', desc: '{{ translate("Hover for field-specific tips") }}' }
+        ]
+      }
+    ]
+  });
 
-function _tPositionTooltip(spotRect, pad = 10) {
-const tt = _tEl('tourTooltip');
-const TW = tt.offsetWidth;
-const TH = tt.offsetHeight;
-const VW = window.innerWidth;
-const VH = window.innerHeight;
-const MARGIN = 12;
-
-let top, arrowClass;
-const belowTop = spotRect.bottom + pad + MARGIN;
-const aboveTop = spotRect.top - pad - TH - MARGIN;
-
-if (belowTop + TH <= VH - 10)  { top = belowTop; arrowClass = 'arrow-top'; }
-else if (aboveTop >= 10)        { top = aboveTop; arrowClass = 'arrow-bottom'; }
-else                            { top = Math.max(10, Math.min(Math.round((VH - TH) / 2), VH - TH - 10)); arrowClass = ''; }
-
-// Center tooltip horizontally over the target, clamped to viewport
-const targetCenterX = spotRect.left + spotRect.width / 2;
-let left = Math.round(targetCenterX - TW / 2);
-left = Math.max(12, Math.min(left, VW - TW - 12));
-
-tt.style.top  = top  + 'px';
-tt.style.left = left + 'px';
-tt.className  = arrowClass;
-
-// Move the arrow so it actually points at the highlighted element
-if (arrowClass) {
-    const arrow = tt.querySelector('.t-arrow');
-    if (arrow) {
-        const arrowLeft = Math.max(12, Math.min(Math.round(targetCenterX - left - 9), TW - 30));
-        arrow.style.left = arrowLeft + 'px';
-    }
-}
-}
-
-function _tShowStep(index) {
-_tourStep = index;
-const step = _tourSteps[index];
-if (!step) { endTour(); return; }
-
-const target = _tEl(step.targetId);
-if (!target) { endTour(); return; }
-
-        // Remove old highlights and add to new target
-        _clearTourHighlights();
-        target.classList.add('tour-highlight-target');
-
-// Use 'instant' so getBoundingClientRect() always reads the correct
-// post-scroll position — smooth scroll is async and causes the spotlight
-// to land on the wrong coordinates on mobile.
-target.scrollIntoView({ behavior: 'instant', block: 'center' });
-
-_tEl('tourTitle').textContent = step.title;
-_tEl('tourText').textContent  = step.text;
-_tEl('tourPill').textContent  = `${index + 1} / ${_tourSteps.length}`;
-
-const legendEl = _tEl('tourLegend');
-if (step.legend && step.legend.length) {
-legendEl.style.display = 'grid';
-legendEl.innerHTML = step.legend.map(item => `
-<div class="t-legend-item">
-<div class="t-legend-icon">${item.icon}</div>
-<div class="t-legend-text">
-<div class="t-legend-label">${item.label}</div>
-<div class="t-legend-desc">${item.desc}</div>
-</div>
-</div>`).join('');
-} else {
-legendEl.style.display = 'none';
-legendEl.innerHTML = '';
-}
-
-_tEl('tourPrevBtn').style.visibility = index === 0 ? 'hidden' : 'visible';
-_tEl('tourNextBtn').textContent = index === _tourSteps.length - 1
-? '{{ translate("Finish") }} ✓'
-: '{{ translate("Next") }} →';
-
-_tBuildDots();
-
-// Double rAF: first frame lets the browser paint updated tooltip content,
-// second frame measures real offsetWidth/Height before positioning.
-requestAnimationFrame(() => {
-requestAnimationFrame(() => {
-const rect = target.getBoundingClientRect();
-_tPositionSpotlight(rect);
-_tEl('tourSpotlight').classList.add('visible');
-
-const tt = _tEl('tourTooltip');
-tt.style.display    = 'block';
-tt.style.visibility = 'hidden';
-tt.classList.remove('visible');
-
-requestAnimationFrame(() => {
-_tPositionTooltip(rect);
-tt.style.visibility = 'visible';
-tt.classList.add('visible');
-});
-});
-});
-}
-
-function startTour() {
-if (_tourOpen) return;
-_tourOpen = true;
-_tourStep = 0;
-const ov = _tEl('tourOverlay');
-ov.style.display = 'block';
-requestAnimationFrame(() => ov.classList.add('active', 'visible'));
-document.body.style.overflow = 'hidden';
-_tShowStep(0);
-}
-
-function endTour() {
-_tourOpen = false;
-const ov = _tEl('tourOverlay');
-ov.classList.remove('visible');
-setTimeout(() => { ov.classList.remove('active'); ov.style.display = 'none'; }, 350);
-_tEl('tourSpotlight').classList.remove('visible');
-const tt = _tEl('tourTooltip');
-tt.classList.remove('visible');
-setTimeout(() => { tt.style.display = 'none'; }, 300);
-document.body.style.overflow = '';
-
-        // Clear all highlights when tour ends
-        setTimeout(() => _clearTourHighlights(), 300);
-}
-
-function nextTourStep() {
-if (_tourStep < _tourSteps.length - 1) {
-_tEl('tourTooltip').classList.remove('visible');
-_tEl('tourSpotlight').classList.remove('visible');
-setTimeout(() => _tShowStep(_tourStep + 1), 180);
-} else { endTour(); }
-}
-
-function prevTourStep() {
-if (_tourStep > 0) {
-_tEl('tourTooltip').classList.remove('visible');
-_tEl('tourSpotlight').classList.remove('visible');
-setTimeout(() => _tShowStep(_tourStep - 1), 180);
-}
-}
-
-var _tResizeTimer;
-
-// Bind these events globally, but guarantee they only attach ONCE
-// so they survive multiple addevent.html fetches
-if (!window._tourEventsBound) {
-    // Keyboard nav
-    document.addEventListener('keydown', e => {
-        if (!_tourOpen) return;
-        if (e.key === 'Escape')endTour();
-        if (e.key === 'ArrowRight') nextTourStep();
-        if (e.key === 'ArrowLeft')prevTourStep();
-    });
-
-    // Reposition on resize — just re-measure and reposition, no full re-show
-    window.addEventListener('resize', () => {
-        if (!_tourOpen) return;
-        clearTimeout(_tResizeTimer);
-        _tResizeTimer = setTimeout(() => {
-            var step = _tourSteps[_tourStep];
-            if (!step) return;
-            var target = _tEl(step.targetId);
-            if (!target) return;
-            var rect = target.getBoundingClientRect();
-            _tPositionSpotlight(rect);
-            _tPositionTooltip(rect);
-        }, 150);
-    });
-
-    window._tourEventsBound = true;
-}
+  /* Global wrappers used by onclick attributes in the page body */
+  function startTour() { ssTour.start(); }
+  function endTour() { ssTour.end(); }
+  function nextTourStep() { ssTour.next(); }
+  function prevTourStep() { ssTour.prev(); }
 </script>

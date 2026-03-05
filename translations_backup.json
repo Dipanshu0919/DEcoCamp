@@ -2289,5 +2289,200 @@
     },
     "Download My Data": {
         "hi": "मेरा डेटा डाउनलोड करें"
+    },
+    "Explore\n                            Campaigns": {
+        "hi": "अन्वेषण करें\n                            अभियान"
+    },
+    "Unite, act, and create change. Join a campaign, volunteer your time, or start a\n                        movement — every effort weaves a stronger community.": {
+        "hi": "एकजुट हों, कार्य करें और परिवर्तन लाएँ। किसी अभियान में शामिल हों, स्वेच्छा से अपना समय दें, या शुरुआत करें\n                        आंदोलन - हर प्रयास एक मजबूत समुदाय को बुनता है।"
+    },
+    "Set up your own initiative to solve local problems. We provide multiple\n                                categories for adding your event details.": {
+        "hi": "स्थानीय समस्याओं के समाधान के लिए अपनी स्वयं की पहल स्थापित करें। हम एकाधिक प्रदान करते हैं\n                                आपके ईवेंट विवरण जोड़ने के लिए श्रेणियाँ।"
+    },
+    "Join efforts that resonate with you, track your impact, and collaborate\n                                seamlessly.": {
+        "hi": "उन प्रयासों में शामिल हों जो आपके अनुरूप हों, आपके प्रभाव को ट्रैक करें और सहयोग करें\n                                निर्बाध रूप से."
+    },
+    "Find community campaigns, social events, and volunteering opportunities\n                                near you.": {
+        "hi": "सामुदायिक अभियान, सामाजिक कार्यक्रम और स्वयंसेवा के अवसर खोजें\n                                तुम्हारे पास."
+    },
+    "Sort by\n                        Location": {
+        "hi": "क्रमबद्ध करें\n                        स्थान"
+    },
+    "Sort by\n                        Name": {
+        "hi": "क्रमबद्ध करें\n                        नाम"
+    },
+    "Share\n                on WhatsApp as:": {
+        "hi": "साझा करें\n                व्हाट्सएप पर इस प्रकार:"
+    },
+    "Sort\n                        by End Date": {
+        "hi": "क्रमबद्ध करें\n                        अंतिम तिथि तक"
+    },
+    "Sort by Event\n                        ID": {
+        "hi": "घटना के अनुसार क्रमबद्ध करें\n                        आईडी"
+    },
+    "Sort\n                        by End Time": {
+        "hi": "क्रमबद्ध करें\n                        अंत समय तक"
+    },
+    "ID": {
+        "hi": "पहचान"
+    },
+    "Page Guide": {
+        "hi": "पेज गाइड"
+    },
+    "Event": {
+        "hi": "आयोजन"
+    },
+    "Date & Time": {
+        "hi": "दिनांक समय"
+    },
+    "d": {
+        "hi": "डी"
+    },
+    "Ongoing": {
+        "hi": "चल रहे"
+    },
+    "At": {
+        "hi": "पर"
+    },
+    "Copied!": {
+        "hi": "नकल की गई!"
+    },
+    "Actions": {
+        "hi": "कार्रवाई"
+    },
+    "h": {
+        "hi": "एच"
+    },
+    "Upcoming": {
+        "hi": "आगामी"
+    },
+    "Translation failed.": {
+        "hi": "अनुवाद विफल."
+    },
+    "Translate Page": {
+        "hi": "पृष्ठ का अनुवाद करें"
+    },
+    "Share on WhatsApp": {
+        "hi": "व्हाट्सएप पर शेयर करें"
+    },
+    "Event Starts": {
+        "hi": "इवेंट प्रारंभ"
+    },
+    "Add to Calendar (.ics)": {
+        "hi": "कैलेंडर में जोड़ें (.ics)"
+    },
+    "Open Chat": {
+        "hi": "चैट खोलें"
+    },
+    "Cancel": {
+        "hi": "रद्द करना"
+    },
+    "Location": {
+        "hi": "जगह"
+    },
+    "Ended": {
+        "hi": "समाप्त"
+    },
+    "Delete Event?": {
+        "hi": "ईवेंट हटाएँ?"
+    },
+    "Liked": {
+        "hi": "पसंद किया"
+    },
+    "View Organiser": {
+        "hi": "आयोजक देखें"
+    },
+    "Event Ends": {
+        "hi": "इवेंट ख़त्म"
+    },
+    "Posted by": {
+        "hi": "के द्वारा प्रकाशित किया गया"
+    },
+    "This action cannot be undone.": {
+        "hi": "इस एक्शन को वापस नहीं किया जा सकता।"
+    },
+    "Show support for this event": {
+        "hi": "इस आयोजन के लिए समर्थन दिखाएं"
+    },
+    "Everything you can do with this event is here.": {
+        "hi": "इस इवेंट के साथ आप जो कुछ भी कर सकते हैं वह यहां है।"
+    },
+    "Tap the address below to open in Google Maps": {
+        "hi": "Google मानचित्र में खोलने के लिए नीचे दिए गए पते पर टैप करें"
+    },
+    "Failed": {
+        "hi": "असफल"
+    },
+    "Translating…": {
+        "hi": "अनुवाद हो रहा है..."
+    },
+    "This banner shows the event name, category badge, who posted it, and its unique ID. The organisers name is a clickable link to their profile.": {
+        "hi": "यह बैनर इवेंट का नाम, श्रेणी बैज, इसे पोस्ट करने वाले और इसकी विशिष्ट आईडी दिखाता है। आयोजकों का नाम उनकी प्रोफ़ाइल का एक क्लिक करने योग्य लिंक है।"
+    },
+    "3. Date and Time": {
+        "hi": "3. दिनांक और समय"
+    },
+    "Delete Event": {
+        "hi": "ईवेंट हटाएँ"
+    },
+    "2. Quick Stats": {
+        "hi": "2. त्वरित आँकड़े"
+    },
+    "5. Actions": {
+        "hi": "5. क्रियाएँ"
+    },
+    "At a glance: total likes this event has received, the total duration of the event, and its current status — Upcoming, Ongoing, or Ended. These update automatically.": {
+        "hi": "एक नज़र में: इस ईवेंट को प्राप्त कुल लाइक, ईवेंट की कुल अवधि, और इसकी वर्तमान स्थिति - आगामी, चालू, या समाप्त। ये स्वचालित रूप से अपडेट होते हैं."
+    },
+    "likes": {
+        "hi": "पसंद है"
+    },
+    "Start and end date/time shown side by side. Use the Add to Calendar button in Actions below to save these dates directly to your phone or computer calendar.": {
+        "hi": "प्रारंभ और समाप्ति तिथि/समय साथ-साथ दिखाया गया है। इन तिथियों को सीधे अपने फ़ोन या कंप्यूटर कैलेंडर में सहेजने के लिए नीचे दी गई कार्रवाइयों में कैलेंडर में जोड़ें बटन का उपयोग करें।"
+    },
+    "About this Event": {
+        "hi": "इस घटना के बारे में"
+    },
+    "4. Location": {
+        "hi": "4. स्थान"
+    },
+    "Download .ics file": {
+        "hi": ".ics फ़ाइल डाउनलोड करें"
+    },
+    "1. Event Overview": {
+        "hi": "1. घटना अवलोकन"
+    },
+    "See organiser's profile": {
+        "hi": "आयोजक की प्रोफ़ाइल देखें"
+    },
+    "WhatsApp or copy link": {
+        "hi": "व्हाट्सएप करें या लिंक कॉपी करें"
+    },
+    "Tap the address card to open it directly in Google Maps. Works for both physical venues and virtual meeting links.": {
+        "hi": "पता कार्ड को सीधे Google मानचित्र में खोलने के लिए उस पर टैप करें। भौतिक स्थानों और वर्चुअल मीटिंग लिंक दोनों के लिए काम करता है।"
+    },
+    "Translate content to your language": {
+        "hi": "सामग्री का अपनी भाषा में अनुवाद करें"
+    },
+    "3. Connect & Collaborate": {
+        "hi": "3. जुड़ें और सहयोग करें"
+    },
+    "1. Create a Campaign": {
+        "hi": "1. एक अभियान बनाएँ"
+    },
+    "Browse campaigns by category, search by keyword, and filter by what matters\n                                to you. Like events to show support, share them on WhatsApp, add them to your calendar,\n                                and translate them into your preferred language.": {
+        "hi": "अभियानों को श्रेणी के आधार पर ब्राउज़ करें, कीवर्ड के आधार पर खोजें और जो मायने रखता है उसके आधार पर फ़िल्टर करें\n                                तुम्हें. समर्थन दिखाने के लिए घटनाओं को पसंद करें, उन्हें व्हाट्सएप पर साझा करें, उन्हें अपने कैलेंडर में जोड़ें,\n                                और उन्हें अपनी पसंदीदा भाषा में अनुवाद करें।"
+    },
+    "2. Explore & Engage": {
+        "hi": "2. अन्वेषण करें और संलग्न रहें"
+    },
+    "Every campaign has a built-in group chat. Coordinate with organizers and\n                                other participants in real time. View organizer profiles, track top contributors on the\n                                leaderboard, and be part of the community.": {
+        "hi": "प्रत्येक अभियान में एक अंतर्निहित समूह चैट होती है। आयोजकों के साथ समन्वय करें और\n                                वास्तविक समय में अन्य प्रतिभागी। आयोजक प्रोफाइल देखें, शीर्ष योगदानकर्ताओं को ट्रैक करें\n                                लीडरबोर्ड, और समुदाय का हिस्सा बनें।"
+    },
+    "Submit a community campaign across 10 categories and 100+ event types —\n                                from environment drives to hackathons. Add your dates, location, and description — or\n                                let AI write it for you. Your event goes live after admin approval.": {
+        "hi": "10 श्रेणियों और 100+ ईवेंट प्रकारों में एक सामुदायिक अभियान सबमिट करें -\n                                पर्यावरण ड्राइव से लेकर हैकथॉन तक। अपनी तिथियाँ, स्थान और विवरण जोड़ें - या\n                                एआई को इसे आपके लिए लिखने दें। एडमिन की मंजूरी के बाद आपका इवेंट लाइव हो जाता है।"
+    },
+    "Coding & Robotics Bootcamp": {
+        "hi": "कोडिंग और रोबोटिक्स बूटकैंप"
     }
 }

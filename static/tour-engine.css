@@ -1,0 +1,291 @@
+/*
+ * tour-engine.css — Sahyog Sutra Shared Tour Styles
+ * ──────────────────────────────────────────────────
+ * All visual styles for the guided tour overlay, spotlight,
+ * tooltip, dots, legend and trigger buttons.
+ *
+ * Depends on standard DOM IDs:
+ *   #sstOverlay  #sstSpotlight  #sstTooltip
+ *
+ * Each page keeps only its own page-specific highlight overrides
+ * (background colours that match its local design tokens).
+ */
+
+/* ════════════════════════════════════════════════════
+   Tour trigger buttons
+   (used by: .how-to-btn in addevent/campaigns,
+             .tour-trigger-btn in viewevent)
+   ════════════════════════════════════════════════════ */
+
+.how-to-btn {
+  background: transparent;
+  border: 1px solid var(--primary-color, #d76a1e);
+  color: var(--primary-color, #d76a1e);
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.how-to-btn:hover {
+  background: var(--primary-color, #d76a1e);
+  color: #fff;
+}
+
+.tour-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.18s;
+}
+.tour-trigger-btn:hover {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background: rgba(215, 106, 30, 0.07);
+}
+
+/* ════════════════════════════════════════════════════
+   Overlay (dark backdrop)
+   ════════════════════════════════════════════════════ */
+
+#sstOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 30, 0.82);
+  z-index: 8990;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+#sstOverlay.active  { display: block; }
+#sstOverlay.visible { opacity: 1; }
+
+/* ════════════════════════════════════════════════════
+   Spotlight ring around the current target
+   ════════════════════════════════════════════════════ */
+
+#sstSpotlight {
+  position: fixed;
+  z-index: 8995;
+  border-radius: 14px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 4px  #d76a1e,
+    0 0 0 7px  rgba(215, 106, 30, 0.25),
+    0 0 40px   rgba(215, 106, 30, 0.15);
+  transition:
+    top    .4s cubic-bezier(.4, 0, .2, 1),
+    left   .4s cubic-bezier(.4, 0, .2, 1),
+    width  .4s cubic-bezier(.4, 0, .2, 1),
+    height .4s cubic-bezier(.4, 0, .2, 1),
+    opacity .3s ease;
+  opacity: 0;
+}
+#sstSpotlight.visible {
+  opacity: 1;
+  animation: sstSpotPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes sstSpotPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px  #d76a1e,
+      0 0 0 7px  rgba(215, 106, 30, 0.25),
+      0 0 40px   rgba(215, 106, 30, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px  #f08040,
+      0 0 0 10px rgba(215, 106, 30, 0.15),
+      0 0 55px   rgba(215, 106, 30, 0.2);
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   Tooltip card
+   ════════════════════════════════════════════════════ */
+
+#sstTooltip {
+  position: fixed;
+  z-index: 9000;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  background: #111827;
+  border: 1px solid rgba(215, 106, 30, 0.5);
+  border-radius: 14px;
+  padding: 0;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  display: none;
+  opacity: 0;
+  transition: opacity .3s ease, transform .3s ease;
+  transform: translateY(8px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+#sstTooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Arrow ─────────────────────────────────────── */
+
+#sstTooltip .sst-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 9px solid transparent;
+  pointer-events: none;
+  left: 28px;
+}
+#sstTooltip.arrow-top    .sst-arrow { top:    -18px; border-bottom-color: rgba(215, 106, 30, 0.5); }
+#sstTooltip.arrow-bottom .sst-arrow { bottom: -18px; border-top-color:    rgba(215, 106, 30, 0.5); }
+
+/* ── Header bar ────────────────────────────────── */
+
+.sst-hbar {
+  background: linear-gradient(135deg, #d76a1e, #c45a10);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sst-title {
+  color: #fff;
+  font-weight: 700;
+  font-size: .95rem;
+  flex: 1;
+}
+.sst-pill {
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+.sst-x {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  transition: background .2s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.sst-x:hover { background: rgba(0, 0, 0, 0.45); color: #fff; }
+
+/* ── Body ──────────────────────────────────────── */
+
+.sst-body {
+  padding: 14px 16px 10px;
+  overflow-y: auto;
+  max-height: 55vh;
+}
+.sst-text {
+  color: #cbd5e1;
+  font-size: .875rem;
+  line-height: 1.6;
+  margin: 0 0 10px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ── Legend grid ───────────────────────────────── */
+
+.sst-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+@media (max-width: 400px) { .sst-legend { grid-template-columns: 1fr; } }
+
+.sst-lg-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 7px 9px;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+.sst-lg-icon  { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.sst-lg-info  { display: flex; flex-direction: column; gap: 1px; }
+.sst-lg-label { font-size: .72rem; font-weight: 700; color: #f1f5f9; word-break: break-word; overflow-wrap: break-word; }
+.sst-lg-desc  { font-size: .68rem; color: #64748b; line-height: 1.3; word-break: break-word; overflow-wrap: break-word; }
+
+/* ── Footer ────────────────────────────────────── */
+
+.sst-footer {
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sst-dots { display: flex; gap: 5px; align-items: center; }
+.sst-dot  {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background .2s, transform .2s;
+  cursor: pointer;
+}
+.sst-dot.active { background: #d76a1e; transform: scale(1.3); }
+
+.sst-nav { display: flex; gap: 6px; }
+.sst-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .82rem;
+  font-weight: 600;
+  transition: all .2s;
+}
+.sst-btn:hover          { background: rgba(255, 255, 255, 0.14); }
+.sst-btn.primary        { background: #d76a1e; border-color: #d76a1e; color: #fff; }
+.sst-btn.primary:hover  { background: #c45a10; }
+
+/* ════════════════════════════════════════════════════
+   Base highlight — lifts the target above the overlay.
+   Each page adds its own colour/radius overrides below.
+   ════════════════════════════════════════════════════ */
+
+.sst-hl {
+  position: relative !important;
+  z-index: 8992 !important;        /* must sit above #sstOverlay (8990) */
+  border-radius: 12px !important;
+  transition: box-shadow 0.3s ease;
+}

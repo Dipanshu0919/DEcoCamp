@@ -11,59 +11,20 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/tour-engine.css">
     <link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
 
     <style>
-        #hTourOverlay { position: fixed; inset: 0; background: rgba(5, 8, 30, 0.82); z-index: 8990; display: none; opacity: 0; transition: opacity 0.35s ease; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
-        #hTourOverlay.active { display: block; }
-        #hTourOverlay.visible { opacity: 1; }
-        #hTourSpotlight { position: fixed; z-index: 8995; border-radius: 14px; pointer-events: none; box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); transition: top .4s cubic-bezier(.4,0,.2,1), left .4s cubic-bezier(.4,0,.2,1), width .4s cubic-bezier(.4,0,.2,1), height .4s cubic-bezier(.4,0,.2,1), opacity .3s ease; opacity: 0; }
-        #hTourSpotlight.visible { opacity: 1; animation: hSpotPulse 2.5s ease-in-out infinite; }
-        @keyframes hSpotPulse { 0%,100% { box-shadow: 0 0 0 4px #d76a1e, 0 0 0 7px rgba(215,106,30,0.25), 0 0 40px rgba(215,106,30,0.15); } 50% { box-shadow: 0 0 0 4px #f08040, 0 0 0 10px rgba(215,106,30,0.15), 0 0 55px rgba(215,106,30,0.2); } }
-        #hTourTooltip { position: fixed; z-index: 9000; width: 320px; max-width: calc(100vw - 24px); background: #111827; border: 1px solid rgba(215,106,30,0.5); border-radius: 14px; padding: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04); display: none; opacity: 0; transition: opacity .3s ease, transform .3s ease; transform: translateY(8px); overflow: hidden; }
-        #hTourTooltip.visible { opacity: 1; transform: translateY(0); }
-        #hTourTooltip .ht-arrow { position: absolute; width: 0; height: 0; border: 9px solid transparent; pointer-events: none; left: 28px; }
-        #hTourTooltip.arrow-top .ht-arrow { top: -18px; border-bottom-color: rgba(215,106,30,0.5); }
-        #hTourTooltip.arrow-bottom .ht-arrow { bottom: -18px; border-top-color: rgba(215,106,30,0.5); }
-        .ht-header-bar { background: linear-gradient(135deg, #d76a1e, #c45a10); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .ht-pill { background: rgba(0,0,0,0.25); color: #fff; font-size: .7rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
-        .ht-title { color: #fff; font-weight: 700; font-size: .95rem; flex: 1; }
-        .ht-x { background: rgba(0,0,0,0.2); border: none; color: rgba(255,255,255,0.85); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; line-height: 1; transition: background .2s; }
-        .ht-x:hover { background: rgba(0,0,0,0.45); }
-        .ht-body { padding: 14px 16px 10px; }
-        .ht-text { color: #cbd5e1; font-size: .875rem; line-height: 1.6; margin: 0 0 10px; word-break: break-word; overflow-wrap: break-word; }
-        .ht-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .ht-legend-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 7px 9px; display: flex; align-items: flex-start; gap: 7px; }
-        .ht-li { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-        .ht-lt { display: flex; flex-direction: column; gap: 1px; }
-        .ht-ll { font-size: .72rem; font-weight: 700; color: #f1f5f9; word-break: break-word; overflow-wrap: break-word; }
-        .ht-ld { font-size: .68rem; color: #64748b; line-height: 1.3; word-break: break-word; overflow-wrap: break-word; }
-        .ht-footer { padding: 10px 16px 14px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .ht-dots { display: flex; gap: 5px; }
-        .ht-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: background .2s, transform .2s; }
-        .ht-dot.active { background: #d76a1e; transform: scale(1.3); }
-        .ht-nav { display: flex; gap: 6px; }
-        .ht-btn { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: .82rem; font-weight: 600; transition: all .2s; }
-        .ht-btn:hover { background: rgba(255,255,255,0.14); }
-        .ht-btn.primary { background: #d76a1e; border-color: #d76a1e; color: #fff; }
-        .ht-btn.primary:hover { background: #c45a10; }
-
-        /* ============================================
-           TOUR SECTION HIGHLIGHT (Pulls target above blur)
-           ============================================ */
-        .h-tour-highlight-target {
-            position: relative !important;
-            z-index: 8992 !important;
+        /* ── Tour: page-specific highlight overrides only ── */
+        .sst-hl {
             background-color: var(--bg-light, #141828) !important;
-            border-radius: 12px !important;
             box-shadow: 0 0 0 12px var(--bg-light, #141828) !important;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Keep nav transparent/authentic if targeted */
-        #step-nav.h-tour-highlight-target {
-            background-color: rgba(10,10,14,0.95) !important;
-            box-shadow: 0 0 0 4px rgba(10,10,14,0.95) !important;
+        /* Keep nav transparent/authentic when targeted */
+        #step-nav.sst-hl {
+            background-color: rgba(10, 10, 14, 0.95) !important;
+            box-shadow: 0 0 0 4px rgba(10, 10, 14, 0.95) !important;
             border-radius: 0 !important;
         }
 
@@ -78,6 +39,7 @@
             margin: 0 auto 2rem auto;
             width: 100%;
         }
+
         .hiw-card {
             padding: 1.5rem;
             border-radius: 12px;
@@ -85,17 +47,20 @@
             border: 1px solid var(--border-color, #334155);
             text-align: center;
         }
+
         .hiw-card h3 {
             font-size: 1.1rem;
             margin-bottom: 0.5rem;
             color: var(--text-color);
         }
+
         .hiw-card p {
             font-size: 0.85rem;
             line-height: 1.5;
             color: var(--text-muted);
             margin: 0;
         }
+
         .hiw-icon {
             font-size: 2rem;
             margin-bottom: 0.8rem;
@@ -110,12 +75,14 @@
             padding: 1rem 0;
             box-sizing: border-box;
         }
+
         .account-container {
             width: 100% !important;
             max-width: 100% !important;
             margin: 0 auto;
             box-sizing: border-box;
         }
+
         /* Scroll Navigation */
         #scrollNav {
             position: fixed;
@@ -138,7 +105,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             transition: transform .2s, background .2s;
         }
 
@@ -156,44 +123,42 @@
 
 <body>
 
-<!-- Scroll Navigation Buttons -->
-<div id="scrollNav">
-    <!-- Go Up -->
-    <button id="scrollTopBtn" onclick="scrollToTop()" title="Go to Top">
-        <svg viewBox="0 0 24 24" width="22" height="22">
-            <path fill="currentColor"
-                d="M12 5l-7 7h4v7h6v-7h4z"/>
-        </svg>
-    </button>
+    <!-- Scroll Navigation Buttons -->
+    <div id="scrollNav">
+        <!-- Go Up -->
+        <button id="scrollTopBtn" onclick="scrollToTop()" title="Go to Top">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+                <path fill="currentColor" d="M12 5l-7 7h4v7h6v-7h4z" />
+            </svg>
+        </button>
 
-    <!-- Go Bottom -->
-    <button id="scrollBottomBtn" onclick="scrollToBottom()" title="Go to Bottom">
-        <svg viewBox="0 0 24 24" width="22" height="22">
-            <path fill="currentColor"
-                d="M12 19l7-7h-4V5H9v7H5z"/>
-        </svg>
-    </button>
-</div>
+        <!-- Go Bottom -->
+        <button id="scrollBottomBtn" onclick="scrollToBottom()" title="Go to Bottom">
+            <svg viewBox="0 0 24 24" width="22" height="22">
+                <path fill="currentColor" d="M12 19l7-7h-4V5H9v7H5z" />
+            </svg>
+        </button>
+    </div>
 
-    <!-- ====== HOME TOUR DOM ====== -->
-    <div id="hTourOverlay" onclick="hEndTour()"></div>
-    <div id="hTourSpotlight"></div>
-    <div id="hTourTooltip">
-        <div class="ht-arrow"></div>
-        <div class="ht-header-bar">
-            <div class="ht-title" id="hTourTitle">Step</div>
-            <div class="ht-pill"  id="hTourPill">1 / 4</div>
-            <button class="ht-x" onclick="hEndTour()" title="Close tour">✕</button>
+    <!-- ====== HOME TOUR DOM (shared structure — styled by tour-engine.css) ====== -->
+    <div id="sstOverlay" onclick="ssTour.end()"></div>
+    <div id="sstSpotlight"></div>
+    <div id="sstTooltip">
+        <div class="sst-arrow"></div>
+        <div class="sst-hbar">
+            <div class="sst-title" id="sstTitle"></div>
+            <div class="sst-pill" id="sstPill"></div>
+            <button class="sst-x" onclick="ssTour.end()" title="Close tour">✕</button>
         </div>
-        <div class="ht-body">
-            <p class="ht-text" id="hTourText"></p>
-            <div class="ht-legend" id="hTourLegend" style="display:none;"></div>
+        <div class="sst-body">
+            <p class="sst-text" id="sstText"></p>
+            <div class="sst-legend" id="sstLegend" style="display:none;"></div>
         </div>
-        <div class="ht-footer">
-            <div class="ht-dots" id="hTourDots"></div>
-            <div class="ht-nav">
-                <button class="ht-btn"         id="hTourPrevBtn" onclick="hPrevStep()">← {{ translate("Back") }}</button>
-                <button class="ht-btn primary"  id="hTourNextBtn" onclick="hNextStep()">{{ translate("Next") }} →</button>
+        <div class="sst-footer">
+            <div class="sst-dots" id="sstDots"></div>
+            <div class="sst-nav">
+                <button class="sst-btn" id="sstPrev" onclick="ssTour.prev()">← {{ translate("Back") }}</button>
+                <button class="sst-btn primary" id="sstNext" onclick="ssTour.next()">{{ translate("Next") }} →</button>
             </div>
         </div>
     </div>
@@ -262,86 +227,89 @@
     </div>
 
     <main>
-    <section id="home" class="active">
-                <div class="home-layout">
-                    <div class="home-hero" id="step-hero">
-                        <h1>{{ translate("Hey") }} {{ translate(fullname.split()[0], save_file=False) }}, {{
-                            translate("Welcome to") }} <span class="brand-highlight">{{ translate("Sahyog Sutra") }}
-                                !</span></h1>
-                        <p>{{ translate("Unite, act, and create change. Join a campaign, volunteer your time, or start a
-                            movement — every effort weaves a stronger community.") }}</p>
+        <section id="home" class="active">
+            <div class="home-layout">
+                <div class="home-hero" id="step-hero">
+                    <h1>{{ translate("Hey") }} {{ translate(fullname.split()[0], save_file=False) }}, {{
+                        translate("Welcome to") }} <span class="brand-highlight">{{ translate("Sahyog Sutra") }}
+                            !</span></h1>
+                    <p>{{ translate("Unite, act, and create change. Join a campaign, volunteer your time, or start a
+                        movement — every effort weaves a stronger community.") }}</p>
 
-                        <div class="hero-actions"
-                            style="margin: 2rem 0; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
-                            <button class="cta" style="margin: 0;" onclick="showSection('campaigns')">{{ translate("Explore
-                                Campaigns") }}</button>
-                            <button class="cta secondary"
-                                style="margin: 0; background: transparent; border: 2px solid var(--primary-color); color: var(--text-color);"
-                                onclick="document.getElementById('login-signup-section').scrollIntoView({behavior: 'smooth'})">{{
-                                translate("Join Community") }}</button>
-                            <button class="cta secondary"
-                                style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);"
-                                onclick="hStartTour()">💡 {{ translate("Quick Tour") }}</button>
-                        </div>
+                    <div class="hero-actions"
+                        style="margin: 2rem 0; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+                        <button class="cta" style="margin: 0;" onclick="showSection('campaigns')">{{ translate("Explore
+                            Campaigns") }}</button>
 
-                        <div class="sutra-divider"><span>सहयोग सूत्र</span></div>
-                        <div id="ndhome"></div>
-                        <script>
-                            // FIX: Use relative path to avoid Mixed Content error
-                            fetch("/static/quotes.json").then(r => r.json()).then(data => {
-                                const userLanguage = "{{ user_language }}" || "en";
-                                const quoteEl = document.getElementById('ndhome');
-                                const setQuote = () => {
-                                    const quoteKeys = Object.keys(data);
-                                    const randomQuoteKey = quoteKeys[Math.floor(Math.random() * quoteKeys.length)];
-                                    const quoteText = data[randomQuoteKey][userLanguage] || data[randomQuoteKey]["en"];
-                                    quoteEl.innerText = `{{ translate("Active Campaigns:") }} {{ active_events_length }}\n\n"${quoteText}"`;
-                                }; setQuote(); setInterval(setQuote, 6000);
-                            });
-                        </script>
-                        {% if top_organizers %}
-                        <div class="dash-card" style="margin-top: 2rem;">
-                            <h4>🏆 {{ translate("Top Organizers") }}</h4>
-                            <ul class="leaderboard-list">
-                                {% for org in top_organizers %}
-                                <li class="leaderboard-item">
-                                    <span class="leaderboard-rank">#{{ loop.index }}</span>
-                                    <img src="https://ui-avatars.com/api/?name={{ org.username }}&background=random&color=fff&size=128"
-                                        class="leaderboard-avatar">
-                                    <div style="flex-grow: 1;">
-                                        <div style="font-weight: 600; font-size: 0.9rem;">{{ org.name }}</div>
-                                        <div style="font-size: 0.8rem; color: var(--text-muted);">{{ org.count }} {{
-                                            translate("Events") }}</div>
-                                    </div>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
+                        <button class="cta secondary"
+                            style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);"
+                            onclick="hStartTour()">💡 {{ translate("Quick Tour") }}</button>
                     </div>
 
-                    <div id="how-it-works-section" class="hiw-container" style="margin: 0;">
-                        <h2 style="text-align: center; margin-bottom: 2rem;">{{ translate("How Sahyog Sutra Works") }}</h2>
-                        <div class="hiw-grid">
-                            <div class="hiw-card">
-                                <div class="hiw-icon">🔍</div>
-                                <h3>{{ translate("1. Discover") }}</h3>
-                                <p>{{ translate("Find community campaigns, social events, and volunteering opportunities near you.") }}</p>
-                            </div>
-                            <div class="hiw-card">
-                                <div class="hiw-icon">🤝</div>
-                                <h3>{{ translate("2. Volunteer") }}</h3>
-                                <p>{{ translate("Join efforts that resonate with you, track your impact, and collaborate seamlessly.") }}</p>
-                            </div>
-                            <div class="hiw-card">
-                                <div class="hiw-icon">📢</div>
-                                <h3>{{ translate("3. Organize") }}</h3>
-                                <p>{{ translate("Set up your own initiative to solve local problems. We provide multiple categories for adding your event details.") }}</p>
-                            </div>
+                    <div class="sutra-divider"><span>सहयोग सूत्र</span></div>
+                    <div id="ndhome"></div>
+                    <script>
+                        // FIX: Use relative path to avoid Mixed Content error
+                        fetch("/static/quotes.json").then(r => r.json()).then(data => {
+                            const userLanguage = "{{ user_language }}" || "en";
+                            const quoteEl = document.getElementById('ndhome');
+                            const setQuote = () => {
+                                const quoteKeys = Object.keys(data);
+                                const randomQuoteKey = quoteKeys[Math.floor(Math.random() * quoteKeys.length)];
+                                const quoteText = data[randomQuoteKey][userLanguage] || data[randomQuoteKey]["en"];
+                                quoteEl.innerText = `{{ translate("Active Campaigns:") }} {{ active_events_length }}\n\n"${quoteText}"`;
+                            }; setQuote(); setInterval(setQuote, 6000);
+                        });
+                    </script>
+                    {% if top_organizers %}
+                    <div class="dash-card" style="margin-top: 2rem;">
+                        <h4>🏆 {{ translate("Top Organizers") }}</h4>
+                        <ul class="leaderboard-list">
+                            {% for org in top_organizers %}
+                            <li class="leaderboard-item">
+                                <span class="leaderboard-rank">#{{ loop.index }}</span>
+                                <img src="https://ui-avatars.com/api/?name={{ org.username }}&background=random&color=fff&size=128"
+                                    class="leaderboard-avatar">
+                                <div style="flex-grow: 1;">
+                                    <div style="font-weight: 600; font-size: 0.9rem;">{{ org.name }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ org.count }} {{
+                                        translate("Events") }}</div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div id="how-it-works-section" class="hiw-container" style="margin: 0;">
+                    <h2 style="text-align: center; margin-bottom: 2rem;">{{ translate("How Sahyog Sutra Works") }}</h2>
+                    <div class="hiw-grid">
+                        <div class="hiw-card">
+                            <div class="hiw-icon">📢</div>
+                            <h3>{{ translate("1. Create a Campaign") }}</h3>
+                            <p>{{ translate("Submit a community campaign across 10 categories and 100+ event types —
+                                from environment drives to hackathons. Add your dates, location, and description — or
+                                let AI write it for you. Your event goes live after admin approval.") }}</p>
+                        </div>
+                        <div class="hiw-card">
+                            <div class="hiw-icon">🔍</div>
+                            <h3>{{ translate("2. Explore & Engage") }}</h3>
+                            <p>{{ translate("Browse campaigns by category, search by keyword, and filter by what matters
+                                to you. Like events to show support, share them on WhatsApp, add them to your calendar,
+                                and translate them into your preferred language.") }}</p>
+                        </div>
+                        <div class="hiw-card">
+                            <div class="hiw-icon">💬</div>
+                            <h3>{{ translate("3. Connect & Collaborate") }}</h3>
+                            <p>{{ translate("Every campaign has a built-in group chat. Coordinate with organizers and
+                                other participants in real time. View organizer profiles, track top contributors on the
+                                leaderboard, and be part of the community.") }}</p>
                         </div>
                     </div>
-                    <div id="login-signup-section" class="account-section-wrapper">
-                        <div class="account-container">
+                </div>
+                <div id="login-signup-section" class="account-section-wrapper">
+                    <div class="account-container">
                         {% if c_user == "None" %}
                         <div class="toggle-buttons">
                             <button id="login-tab-btn" class="active" style="flex: 1;">{{ translate("Login") }}</button>
@@ -349,13 +317,14 @@
                         </div>
                         <form class="auth-form active" id="loginpage">
                             <div class="form-group">
-                                <input type="text" name="loginusername" placeholder="{{ translate('Username or Email') }}"
-                                    required />
+                                <input type="text" name="loginusername"
+                                    placeholder="{{ translate('Username or Email') }}" required />
                             </div>
                             <div class="form-group">
                                 <input type="password" name="loginpassword" id="loginpassword"
                                     placeholder="{{ translate('Password') }}" required />
-                                <span class="toggle-password" onclick="togglePasswordVisibility('loginpassword')">👁️</span>
+                                <span class="toggle-password"
+                                    onclick="togglePasswordVisibility('loginpassword')">👁️</span>
                             </div>
                             <div class="forget-link-container">
                                 <button type="button" id="forget-pass-link" class="forget-link">{{ translate("Forgot
@@ -372,11 +341,12 @@
                             <div class="form-group otp-group full-width">
                                 <input type="email" name="email" id="email" placeholder="{{ translate('Email') }}"
                                     required />
-                                <button type="button" id="sendOtpBtn" class="otp-btn">{{ translate("Send OTP") }}</button>
+                                <button type="button" id="sendOtpBtn" class="otp-btn">{{ translate("Send OTP")
+                                    }}</button>
                             </div>
                             <div class="form-group full-width"><input type="number" name="signupotp"
-                                    placeholder="{{ translate('Enter OTP') }}" oninput="this.value=this.value.slice(0,4)"
-                                    required /></div>
+                                    placeholder="{{ translate('Enter OTP') }}"
+                                    oninput="this.value=this.value.slice(0,4)" required /></div>
 
                             <div class="form-group">
                                 <input type="password" name="password" id="signup_password"
@@ -398,7 +368,8 @@
                                 <input type="text" name="forgetemail" id="forgetemail"
                                     placeholder="{{ translate('Enter your email or username') }}" required />
                             </div>
-                            <button type="button" id="sendForgetOtpBtn" class="submit-btn" style="margin-bottom: 1rem;">{{
+                            <button type="button" id="sendForgetOtpBtn" class="submit-btn"
+                                style="margin-bottom: 1rem;">{{
                                 translate("Send OTP") }}</button>
 
                             <div id="forget-step-2" style="display:none; width: 100%;">
@@ -427,7 +398,8 @@
                         </form>
                         {% else %}
                         <div class="profile-card-header">
-                            <img src="https://ui-avatars.com/api/?name={{ c_user }}&background=e07b2a&color=fff&size=128" class="profile-avatar" alt="avatar">
+                            <img src="https://ui-avatars.com/api/?name={{ c_user }}&background=e07b2a&color=fff&size=128"
+                                class="profile-avatar" alt="avatar">
                             <div class="profile-card-header-text">
                                 <h3>{{ translate(fullname, save_file=False) }}</h3>
                                 <span>@{{ c_user }}</span>
@@ -440,48 +412,53 @@
                             </div>
                             {% if userdetails['events'] != None %}
                             <div class="profile-events-row">
-                                <span>{{ translate("Events") }}: <strong>{{ userdetails['events'].split(",") | length }} {{ translate("added") }}</strong></span>
-                                <button class="view-events-btn" onclick="viewyourevents('{{ c_user }}')">{{ translate("View Your Events") }}</button>
+                                <span>{{ translate("Events") }}: <strong>{{ userdetails['events'].split(",") | length }}
+                                        {{ translate("added") }}</strong></span>
+                                <button class="view-events-btn" onclick="viewyourevents('{{ c_user }}')">{{
+                                    translate("View Your Events") }}</button>
                             </div>
                             {% else %}
                             <div class="profile-info-row">
                                 <span class="info-label">{{ translate("Events") }}</span>
-                                <span class="info-value" style="color: var(--text-muted);">{{ translate("No events added yet.") }}</span>
+                                <span class="info-value" style="color: var(--text-muted);">{{ translate("No events added
+                                    yet.") }}</span>
                             </div>
                             {% endif %}
                         </div>
                         <div class="profile-card-footer">
-                            <button onclick="window.location.href='/user/{{ c_user }}'" class="submit-btn">{{ translate("View Profile") }}</button>
-                            <button onclick="window.location.href='/clearsession';" class="delete-btn">{{ translate("Logout") }}</button>
+                            <button onclick="window.location.href='/user/{{ c_user }}'" class="submit-btn">{{
+                                translate("View Profile") }}</button>
+                            <button onclick="window.location.href='/clearsession';" class="delete-btn">{{
+                                translate("Logout") }}</button>
                         </div>
                         {% endif %}
-                        </div>
                     </div>
                 </div>
-                {% if isadmin %}
-                <div style="margin-top: 3rem;">
-                    <h2>🛠️ System Health (Admin)</h2>
-                    <div class="dashboard-grid">
-                        <div class="dash-card">
-                            <h3>{{ admin_stats['total_users'] }}</h3>
-                            <p>Total Users</p>
-                        </div>
-                        <div class="dash-card">
-                            <h3>{{ admin_stats['total_events'] }}</h3>
-                            <p>Total Events</p>
-                        </div>
-                        <div class="dash-card">
-                            <h3>{{ admin_stats['pending_requests'] }}</h3>
-                            <p>Pending Requests</p>
-                        </div>
-                        <div class="dash-card">
-                            <h3>{{ admin_stats['active_threads'] }}</h3>
-                            <p>Active Threads</p>
-                        </div>
+            </div>
+            {% if isadmin %}
+            <div style="margin-top: 3rem;">
+                <h2>🛠️ System Health (Admin)</h2>
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <h3>{{ admin_stats['total_users'] }}</h3>
+                        <p>Total Users</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>{{ admin_stats['total_events'] }}</h3>
+                        <p>Total Events</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>{{ admin_stats['pending_requests'] }}</h3>
+                        <p>Pending Requests</p>
+                    </div>
+                    <div class="dash-card">
+                        <h3>{{ admin_stats['active_threads'] }}</h3>
+                        <p>Active Threads</p>
                     </div>
                 </div>
-                {% endif %}
-            </section>
+            </div>
+            {% endif %}
+        </section>
 
         <section id="campaigns">
             <div class="campaign-header">
@@ -536,6 +513,7 @@
     </main>
 
     <script src="/static/script.js"></script>
+    <script src="/static/tour-engine.js"></script>
     <script>
         window.SAHYOG_CONFIG = {
             currentUser: "{{ c_user }}",
@@ -586,256 +564,82 @@
         });
 
         /* ================================================================
-           HOME TOUR — position:fixed spotlight + tooltip
+           HOME TOUR — powered by /static/tour-engine.js
            ================================================================ */
-        const _hTourSteps = [
-            {
-                targetId: 'step-nav',
-                title: '{{ translate("1. Navigation Bar") }}',
-                text:  '{{ translate("Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly.") }}',
-                legend: [
-                    { icon: '🏠', label: '{{ translate("Home") }}',              desc: '{{ translate("Hero, leaderboard and account") }}' },
-                    { icon: '📋', label: '{{ translate("Explore Campaigns") }}',  desc: '{{ translate("Browse and filter all campaigns") }}' },
-                    { icon: '➕', label: '{{ translate("Create Event") }}',       desc: '{{ translate("Submit a new campaign") }}' },
-                    { icon: '🌐', label: '{{ translate("Language") }}',           desc: '{{ translate("Change site language instantly") }}' }
-                ]
+        window.ssTour = new SahyogTour({
+            highlightClass: 'sst-hl',
+            i18n: {
+                finish: '{{ translate("Finish") }} ✓',
+                next: '{{ translate("Next") }} →',
             },
-            {
-                targetId: 'login-signup-section',
-                title: '{{ translate("2. Your Account") }}',
-                text:  '{{ translate("Log in or sign up here. An account lets you like campaigns, track your events, join group chats, and use the AI description generator when creating events.") }}'
-            }
-        ];
-
-        let _hStep = 0, _hOpen = false;
-        const _hEl = id => document.getElementById(id);
-
-        function _hClearTourHighlights() {
-            document.querySelectorAll('.h-tour-highlight-target').forEach(el => {
-                el.classList.remove('h-tour-highlight-target');
-            });
-        }
-
-        function _hDots() {
-            const c = _hEl('hTourDots'); c.innerHTML = '';
-            _hTourSteps.forEach((_, i) => {
-                const d = document.createElement('div');
-                d.className = 'ht-dot' + (i === _hStep ? ' active' : '');
-                d.onclick = () => _hShow(i); c.appendChild(d);
-            });
-        }
-
-        function _hSpotlight(rect, p = 10) {
-            const s = _hEl('hTourSpotlight');
-            s.style.top    = (rect.top    - p) + 'px';
-            s.style.left   = (rect.left   - p) + 'px';
-            s.style.width  = (rect.width  + p * 2) + 'px';
-            s.style.height = (rect.height + p * 2) + 'px';
-        }
-
-        function _hPosition(rect, p = 10) {
-            const tt  = _hEl('hTourTooltip');
-            const TW  = tt.offsetWidth;
-            const TH  = tt.offsetHeight;
-            const VW  = window.innerWidth;
-            const VH  = window.innerHeight;
-            const M   = 12;
-
-            // Decide whether tooltip goes below or above the spotlight
-            const spBottom = rect.bottom + p + M;
-            const spTop    = rect.top    - p - M;
-            let top, arrowCls;
-
-            if (spBottom + TH <= VH - 10) {
-                top = spBottom;
-                arrowCls = 'arrow-top';
-            } else if (spTop - TH >= 10) {
-                top = spTop - TH;
-                arrowCls = 'arrow-bottom';
-            } else {
-                // Not enough room above or below — center vertically in viewport
-                top = Math.max(10, Math.min(Math.round((VH - TH) / 2), VH - TH - 10));
-                arrowCls = '';
-            }
-
-            // Center tooltip horizontally over the target, clamped to viewport
-            const targetCenterX = rect.left + rect.width / 2;
-            let left = Math.round(targetCenterX - TW / 2);
-            left = Math.max(12, Math.min(left, VW - TW - 12));
-
-            tt.style.top  = top  + 'px';
-            tt.style.left = left + 'px';
-            tt.className  = arrowCls;
-
-            // Move the arrow so it actually points at the highlighted element
-            if (arrowCls) {
-                const arrow = tt.querySelector('.ht-arrow');
-                if (arrow) {
-                    const arrowLeft = Math.max(12, Math.min(Math.round(targetCenterX - left - 9), TW - 30));
-                    arrow.style.left = arrowLeft + 'px';
+            steps: [
+                {
+                    targetId: 'step-nav',
+                    title: '{{ translate("1. Navigation Bar") }}',
+                    text: '{{ translate("Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly.") }}',
+                    legend: [
+                        { icon: '🏠', label: '{{ translate("Home") }}', desc: '{{ translate("Hero, leaderboard and account") }}' },
+                        { icon: '📋', label: '{{ translate("Explore Campaigns") }}', desc: '{{ translate("Browse and filter all campaigns") }}' },
+                        { icon: '➕', label: '{{ translate("Create Event") }}', desc: '{{ translate("Submit a new campaign") }}' },
+                        { icon: '🌐', label: '{{ translate("Language") }}', desc: '{{ translate("Change site language instantly") }}' }
+                    ]
+                },
+                {
+                    targetId: 'login-signup-section',
+                    title: '{{ translate("2. Your Account") }}',
+                    text: '{{ translate("Log in or sign up here. An account lets you like campaigns, track your events, join group chats, and use the AI description generator when creating events.") }}'
                 }
-            }
-        }
-
-        function _hShow(i) {
-            _hStep = i;
-            const step   = _hTourSteps[i];
-            const target = _hEl(step.targetId);
-            if (!target) { hEndTour(); return; }
-
-            _hClearTourHighlights();
-            target.classList.add('h-tour-highlight-target');
-
-            // Use 'instant' so getBoundingClientRect() always reads the correct
-            // post-scroll position — smooth scroll is async and causes the
-            // spotlight to land on the wrong coordinates on mobile.
-            target.scrollIntoView({ behavior: 'instant', block: 'center' });
-
-            _hEl('hTourTitle').textContent = step.title;
-            _hEl('hTourText').textContent  = step.text;
-            _hEl('hTourPill').textContent  = `${i + 1} / ${_hTourSteps.length}`;
-
-            const lg = _hEl('hTourLegend');
-            if (step.legend) {
-                lg.style.display = 'grid';
-                lg.innerHTML = step.legend.map(x =>
-                    `<div class="ht-legend-item"><div class="ht-li">${x.icon}</div><div class="ht-lt"><div class="ht-ll">${x.label}</div><div class="ht-ld">${x.desc}</div></div></div>`
-                ).join('');
-            } else {
-                lg.style.display = 'none';
-                lg.innerHTML = '';
-            }
-
-            _hEl('hTourPrevBtn').style.visibility = i === 0 ? 'hidden' : 'visible';
-            _hEl('hTourNextBtn').textContent = i === _hTourSteps.length - 1
-                ? '{{ translate("Finish") }} ✓'
-                : '{{ translate("Next") }} →';
-            _hDots();
-
-            // Double rAF: first ensures the updated tooltip content (text/legend)
-            // is painted, second ensures layout is computed so offsetWidth/Height
-            // are accurate before we position the tooltip.
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    const rect = target.getBoundingClientRect();
-                    _hSpotlight(rect);
-                    _hEl('hTourSpotlight').classList.add('visible');
-
-                    const tt = _hEl('hTourTooltip');
-                    tt.style.display    = 'block';
-                    tt.style.visibility = 'hidden';
-                    tt.classList.remove('visible');
-
-                    requestAnimationFrame(() => {
-                        _hPosition(rect);
-                        tt.style.visibility = 'visible';
-                        tt.classList.add('visible');
-                    });
-                });
-            });
-        }
-
-        function hStartTour() {
-            if (_hOpen) return; _hOpen = true; _hStep = 0;
-            const ov = _hEl('hTourOverlay');
-            ov.style.display = 'block';
-            requestAnimationFrame(() => ov.classList.add('active', 'visible'));
-            document.body.style.overflow = 'hidden';
-            _hShow(0);
-        }
-
-        function hEndTour() {
-            _hOpen = false;
-            const ov = _hEl('hTourOverlay');
-            ov.classList.remove('visible');
-            setTimeout(() => { ov.classList.remove('active'); ov.style.display = 'none'; }, 350);
-            _hEl('hTourSpotlight').classList.remove('visible');
-            const tt = _hEl('hTourTooltip');
-            tt.classList.remove('visible');
-            setTimeout(() => { tt.style.display = 'none'; }, 300);
-            document.body.style.overflow = '';
-            setTimeout(() => _hClearTourHighlights(), 300);
-        }
-
-        function hNextStep() {
-            if (_hStep < _hTourSteps.length-1) {
-                _hEl('hTourTooltip').classList.remove('visible');
-                _hEl('hTourSpotlight').classList.remove('visible');
-                setTimeout(() => _hShow(_hStep+1), 180);
-            } else { hEndTour(); }
-        }
-
-        function hPrevStep() {
-            if (_hStep > 0) {
-                _hEl('hTourTooltip').classList.remove('visible');
-                _hEl('hTourSpotlight').classList.remove('visible');
-                setTimeout(() => _hShow(_hStep-1), 180);
-            }
-        }
-
-        document.addEventListener('keydown', e => {
-            if (!_hOpen) return;
-            if (e.key === 'Escape')     hEndTour();
-            if (e.key === 'ArrowRight') hNextStep();
-            if (e.key === 'ArrowLeft')  hPrevStep();
+            ]
         });
 
-        <!-- ... existing code ... -->
-                let _hResizeT;
-                window.addEventListener('resize', () => {
-                    if (!_hOpen) return;
-                    clearTimeout(_hResizeT);
-                    _hResizeT = setTimeout(() => {
-                        const target = _hEl(_hTourSteps[_hStep].targetId);
-                        if (!target) return;
-                        const rect = target.getBoundingClientRect();
-                        _hSpotlight(rect);
-                        _hPosition(rect);
-                    }, 150);
-                });
+        /* Global wrappers used by onclick attributes in the page body */
+        function hStartTour() { ssTour.start(); }
+        function hEndTour() { ssTour.end(); }
+        function hNextStep() { ssTour.next(); }
+        function hPrevStep() { ssTour.prev(); }
 
-                const scrollTopBtn = document.getElementById("scrollTopBtn");
-                const scrollBottomBtn = document.getElementById("scrollBottomBtn");
+        const scrollTopBtn = document.getElementById("scrollTopBtn");
+        const scrollBottomBtn = document.getElementById("scrollBottomBtn");
 
-                function updateScrollButtons() {
-                    if (!scrollTopBtn || !scrollBottomBtn) return;
+        function updateScrollButtons() {
+            if (!scrollTopBtn || !scrollBottomBtn) return;
 
-                    const scrollY = window.scrollY || document.documentElement.scrollTop;
-                    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-                    // Show top button after scrolling down 200px
-                    scrollTopBtn.style.display = scrollY > 200 ? "flex" : "none";
+            // Show top button after scrolling down 200px
+            scrollTopBtn.style.display = scrollY > 200 ? "flex" : "none";
 
-                    // Show bottom button if there is enough scrollable content AND we are not at the bottom
-                    if (maxScroll > 100 && scrollY < maxScroll - 100) {
-                        scrollBottomBtn.style.display = "flex";
-                    } else {
-                        scrollBottomBtn.style.display = "none";
-                    }
-                }
-                window.addEventListener("scroll", updateScrollButtons, { passive: true });
-                window.addEventListener("resize", updateScrollButtons, { passive: true });
+            // Show bottom button if there is enough scrollable content AND we are not at the bottom
+            if (maxScroll > 100 && scrollY < maxScroll - 100) {
+                scrollBottomBtn.style.display = "flex";
+            } else {
+                scrollBottomBtn.style.display = "none";
+            }
+        }
+        window.addEventListener("scroll", updateScrollButtons, { passive: true });
+        window.addEventListener("resize", updateScrollButtons, { passive: true });
 
-                const domObserver = new MutationObserver(updateScrollButtons);
-                domObserver.observe(document.body, { childList: true, subtree: true });
+        const domObserver = new MutationObserver(updateScrollButtons);
+        domObserver.observe(document.body, { childList: true, subtree: true });
 
-                setTimeout(updateScrollButtons, 100);
-                updateScrollButtons();
+        setTimeout(updateScrollButtons, 100);
+        updateScrollButtons();
 
-                function scrollToTop() {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: "smooth"
-                    });
-                }
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
 
-                function scrollToBottom() {
-                    window.scrollTo({
-                        top: document.body.scrollHeight,
-                        behavior: "smooth"
-                    });
-                }
-            </script>
+        function scrollToBottom() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    </script>
 </body>
 
 </html>
