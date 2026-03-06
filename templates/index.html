@@ -141,14 +141,14 @@
     </div>
 
     <!-- ====== HOME TOUR DOM (shared structure — styled by tour-engine.css) ====== -->
-    <div id="sstOverlay" onclick="ssTour.end()"></div>
+    <div id="sstOverlay" onclick="ssIndexTour.end()"></div>
     <div id="sstSpotlight"></div>
     <div id="sstTooltip">
         <div class="sst-arrow"></div>
         <div class="sst-hbar">
             <div class="sst-title" id="sstTitle"></div>
             <div class="sst-pill" id="sstPill"></div>
-            <button class="sst-x" onclick="ssTour.end()" title="Close tour">✕</button>
+            <button class="sst-x" onclick="ssIndexTour.end()" title="Close tour">✕</button>
         </div>
         <div class="sst-body">
             <p class="sst-text" id="sstText"></p>
@@ -157,8 +157,8 @@
         <div class="sst-footer">
             <div class="sst-dots" id="sstDots"></div>
             <div class="sst-nav">
-                <button class="sst-btn" id="sstPrev" onclick="ssTour.prev()">← {{ translate("Back") }}</button>
-                <button class="sst-btn primary" id="sstNext" onclick="ssTour.next()">{{ translate("Next") }} →</button>
+                <button class="sst-btn" id="sstPrev" onclick="ssIndexTour.prev()">← {{ translate("Back") }}</button>
+                <button class="sst-btn primary" id="sstNext" onclick="ssIndexTour.next()">{{ translate("Next") }} →</button>
             </div>
         </div>
     </div>
@@ -566,7 +566,7 @@
         /* ================================================================
            HOME TOUR — powered by /static/tour-engine.js
            ================================================================ */
-        window.ssTour = new SahyogTour({
+        window.ssIndexTour = new SahyogTour({
             highlightClass: 'sst-hl',
             i18n: {
                 finish: '{{ translate("Finish") }} ✓',
@@ -593,10 +593,10 @@
         });
 
         /* Global wrappers used by onclick attributes in the page body */
-        function hStartTour() { ssTour.start(); }
-        function hEndTour() { ssTour.end(); }
-        function hNextStep() { ssTour.next(); }
-        function hPrevStep() { ssTour.prev(); }
+        function hStartTour() { ssIndexTour.start(); }
+        function hEndTour() { ssIndexTour.end(); }
+        function hNextStep() { ssIndexTour.next(); }
+        function hPrevStep() { ssIndexTour.prev(); }
 
         const scrollTopBtn = document.getElementById("scrollTopBtn");
         const scrollBottomBtn = document.getElementById("scrollBottomBtn");

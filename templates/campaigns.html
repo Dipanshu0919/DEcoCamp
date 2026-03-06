@@ -990,8 +990,13 @@
     /* ================================================================
        CAMPAIGNS TOUR — powered by /static/tour-engine.js
        ================================================================ */
+       // Clean up previous instance if reloaded
+       if (window.ssCampaignsTour) {
+               try { window.ssCampaignsTour.end(); window.ssCampaignsTour.destroy(); } catch(e) {}
+           }
 
-    window.ssTour = new SahyogTour({
+
+    window.ssCampaignsTour = new SahyogTour({
         highlightClass: 'sst-hl',
         i18n: {
             finish: '{{ translate("Finish") }} ✓',
@@ -1072,8 +1077,8 @@
     });
 
     /* Global wrappers used by onclick attributes in the page body */
-    function cStartTour() { ssTour.start(); }
-    function cEndTour() { ssTour.end(); }
-    function cNextStep() { ssTour.next(); }
-    function cPrevStep() { ssTour.prev(); }
+    function cStartTour() { ssCampaignsTour.start(); }
+    function cEndTour() { ssCampaignsTour.end(); }
+    function cNextStep() { ssCampaignsTour.next(); }
+    function cPrevStep() { ssCampaignsTour.prev(); }
 </script>

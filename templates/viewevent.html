@@ -922,14 +922,14 @@
 <body>
 
   <!-- ====== VIEW EVENT TOUR DOM (shared structure — styled by tour-engine.css) ====== -->
-  <div id="sstOverlay" onclick="ssTour.end()"></div>
+  <div id="sstOverlay" onclick="ssEventTour.end()"></div>
   <div id="sstSpotlight"></div>
   <div id="sstTooltip">
     <div class="sst-arrow"></div>
     <div class="sst-hbar">
       <div class="sst-title" id="sstTitle"></div>
       <div class="sst-pill" id="sstPill"></div>
-      <button class="sst-x" onclick="ssTour.end()" title="Close tour">✕</button>
+      <button class="sst-x" onclick="ssEventTour.end()" title="Close tour">✕</button>
     </div>
     <div class="sst-body">
       <p class="sst-text" id="sstText"></p>
@@ -938,8 +938,8 @@
     <div class="sst-footer">
       <div class="sst-dots" id="sstDots"></div>
       <div class="sst-nav">
-        <button class="sst-btn" id="sstPrev" onclick="ssTour.prev()">← {{ translate("Back") }}</button>
-        <button class="sst-btn primary" id="sstNext" onclick="ssTour.next()">{{ translate("Next") }} →</button>
+        <button class="sst-btn" id="sstPrev" onclick="ssEventTour.prev()">← {{ translate("Back") }}</button>
+        <button class="sst-btn primary" id="sstNext" onclick="ssEventTour.next()">{{ translate("Next") }} →</button>
       </div>
     </div>
   </div>
@@ -1509,7 +1509,7 @@
        VIEW EVENT TOUR — position:fixed spotlight + tooltip engine
        ================================================================ */
     /* ── Tour: page-specific steps only — engine lives in tour-engine.js ── */
-    window.ssTour = new SahyogTour({
+    window.ssEventTour = new SahyogTour({
       highlightClass: 'sst-hl',
       i18n: {
         finish: '{{ translate("Finish") }} ✓',
@@ -1554,10 +1554,10 @@
     });
 
     /* Global wrappers used by onclick attributes in the page body */
-    function vStartTour() { ssTour.start(); }
-    function vEndTour() { ssTour.end(); }
-    function vNextStep() { ssTour.next(); }
-    function vPrevStep() { ssTour.prev(); }
+    function vStartTour() { ssEventTour.start(); }
+    function vEndTour() { ssEventTour.end(); }
+    function vNextStep() { ssEventTour.next(); }
+    function vPrevStep() { ssEventTour.prev(); }
   </script>
 
 </body>

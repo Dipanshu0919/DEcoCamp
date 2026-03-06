@@ -457,11 +457,6 @@
     margin-bottom: 0;
   }
 
-  /* ============================================
-TOUR SYSTEM — position:fixed engine
-============================================ */
-  /* ── Tour: shared styles loaded from tour-engine.css ──────────────
-   Page-specific highlight overrides only: */
   .sst-hl {
     background-color: var(--bg-light, #141828) !important;
     box-shadow: 0 0 0 12px var(--bg-light, #141828) !important;
@@ -830,7 +825,14 @@ TOUR SYSTEM — position:fixed engine
   // TOUR SYSTEM — powered by /static/tour-engine.js
   // ============================================================
   /* ── Tour: page-specific steps only — engine lives in tour-engine.js ── */
-  window.ssTour = new SahyogTour({
+
+  // Clean up previous instance if reloaded
+  // Clean up previous instance if reloaded
+  if (window.ssAddTour) {
+       try { window.ssAddTour.end(); window.ssAddTour.destroy(); } catch(e) {}
+   }
+
+  window.ssAddTour = new SahyogTour({
     highlightClass: 'sst-hl',
     i18n: {
       finish: '{{ translate("Finish") }} ✓',
@@ -872,8 +874,8 @@ TOUR SYSTEM — position:fixed engine
   });
 
   /* Global wrappers used by onclick attributes in the page body */
-  function startTour() { ssTour.start(); }
-  function endTour() { ssTour.end(); }
-  function nextTourStep() { ssTour.next(); }
-  function prevTourStep() { ssTour.prev(); }
+  function startTour() { ssAddTour.start(); }
+  function endTour() { ssAddTour.end(); }
+  function nextTourStep() { ssAddTour.next(); }
+  function prevTourStep() { ssAddTour.prev(); }
 </script>

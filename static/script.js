@@ -308,7 +308,10 @@ const handleFormSubmit = async (form, callback) => {
 };
 
 const showSection = id => {
-    const target = id || 'home';
+  const target = id || 'home';
+  [window.ssIndexTour, window.ssCampaignsTour, window.ssAddTour, window.ssEventTour].forEach(tour => {
+          if (tour) try { tour.end(); } catch(e) {}
+      });
     $$('.navlink').forEach(l => l.classList.toggle('active', l.dataset.section === target));
     $$('main > section').forEach(s => s.classList.toggle('active', s.id === target));
     window.scrollTo(0, 0);
