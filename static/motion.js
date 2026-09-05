@@ -246,12 +246,18 @@
 
     // Initialize on DOM Ready
     function initAll() {
+        // Critical micro-interactions initialized immediately
         initRippleSystem();
         initCard3DTilt();
         initScrollReveals();
         initCountUp();
-        initHeroParticles();
-        initScrollParallax();
+
+        // Non-critical decorative motion deferred until after first paint
+        const runNonCritical = window.requestIdleCallback || function (cb) { setTimeout(cb, 60); };
+        runNonCritical(function () {
+            initHeroParticles();
+            initScrollParallax();
+        });
     }
 
     if (document.readyState === 'loading') {

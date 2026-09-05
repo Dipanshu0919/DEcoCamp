@@ -65,10 +65,15 @@ async def handle_api(request: Request, db: AsyncDB = Depends(get_db)):
     })
 
 
+SUPPORTED_LANGUAGES = {"en", "hi", "te", "kn", "ml", "gu", "bn", "pa", "mr", "or"}
+
 @router.post("/setlanguage/{lang}")
 async def handle_set_language(request: Request, lang: str):
     clean_lang = lang.strip().lower()[:10]
-    request.session["lang"] = clean_lang
+    if clean_lang in SUPPORTED_LANGUAGES:
+        request.session["lang"] = clean_lang
+    else:
+        request.session["lang"] = "en"
     return Response(content="Language Set", media_type="text/plain")
 
 

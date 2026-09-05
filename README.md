@@ -10,7 +10,7 @@ SahyogSutra brings people together by allowing users to create, discover, and pa
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-app.sahyogsutra.run.place-4f46e5?style=for-the-badge)](https://app.sahyogsutra.run.place)
+[![Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-sahyogsutra.run.place-4f46e5?style=for-the-badge)](https://sahyogsutra.run.place)
 
 <br/>
 

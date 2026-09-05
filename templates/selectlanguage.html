@@ -144,6 +144,12 @@
                 const lang = card.dataset.lang;
                 if (!lang) return;
 
+                const origText = btn.textContent;
+                btn.textContent = 'Loading...';
+                btn.disabled = true;
+                btn.style.opacity = '0.75';
+                btn.style.pointerEvents = 'none';
+
                 try {
                     const response = await fetch(`/setlanguage/${lang}`, {
                         method: 'POST',
@@ -151,12 +157,20 @@
                     });
 
                     if (response.ok) {
-                        window.location.reload();
+                        window.location.href = '/';
                     } else {
+                        btn.textContent = origText;
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                        btn.style.pointerEvents = '';
                         alert('Error selecting language. Please try again.');
                     }
                 } catch (error) {
                     console.error('Error:', error);
+                    btn.textContent = origText;
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = '';
                     alert('An error occurred. Please try again.');
                 }
             });

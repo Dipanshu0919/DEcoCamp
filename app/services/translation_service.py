@@ -23,6 +23,7 @@ _sem = asyncio.Semaphore(TRANSLATION_WORKERS)
 # Bounded in-memory translation storage (static UI strings)
 _MAX_TRANSLATION_ENTRIES = 1000
 _all_translations: Dict[str, Dict[str, str]] = {}
+_ui_language_dicts: Dict[str, Dict[str, str]] = {}
 _translations_dirty = False
 _translations_lock = threading.Lock()
 
@@ -39,8 +40,36 @@ _http_client: Optional[httpx.AsyncClient] = None
 _client_lock = asyncio.Lock()
 
 
+def _rebuild_ui_language_dicts():
+    """Builds fast per-language lookup dictionaries from _all_translations for instant page rendering."""
+    global _ui_language_dicts
+    new_dicts: Dict[str, Dict[str, str]] = {}
+    with _translations_lock:
+        for source_text, lang_map in _all_translations.items():
+            if not isinstance(lang_map, dict):
+                continue
+            for lang, trans_text in lang_map.items():
+                if lang not in new_dicts:
+                    new_dicts[lang] = {}
+                new_dicts[lang][source_text] = trans_text
+    _ui_language_dicts = new_dicts
+
+
+def get_ui_translation_dict(lang: str) -> Dict[str, str]:
+    """
+    Returns the precomputed in-memory page-level translation dictionary for the requested language.
+    For 'en', returns an empty dict (handled as zero-overhead identity).
+    For other languages, returns the source_text -> translated_text dictionary in O(1) time.
+    """
+    if not lang or lang == "en":
+        return {}
+    return _ui_language_dicts.get(lang, {})
+
+
 def get_cached_event_field(text: str, lang: str) -> Optional[str]:
     """Retrieves cached translation from bounded LRU cache if not expired."""
+    if not lang or lang == "en":
+        return text
     key = f"{lang}:{text.strip()}"
     with _event_cache_lock:
         if key in _event_cache:
@@ -63,13 +92,13 @@ def store_cached_event_field(text: str, lang: str, translated: str):
 
 
 async def get_translation_client() -> httpx.AsyncClient:
-    """Returns a shared, pooled AsyncClient for fast lightweight translation requests."""
+    """Returns a shared, pooled AsyncClient with strict 2.5s timeout to prevent hanging."""
     global _http_client
     if _http_client is None or _http_client.is_closed:
         async with _client_lock:
             if _http_client is None or _http_client.is_closed:
                 _http_client = httpx.AsyncClient(
-                    timeout=6.0,
+                    timeout=2.5,
                     limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
                     headers={
                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -100,7 +129,8 @@ def load_translations(filepath: str = "translations.json"):
                     _all_translations = dict(list(data.items())[-_MAX_TRANSLATION_ENTRIES:])
                 else:
                     _all_translations = data
-        logger.info("Loaded %d translation entries.", len(_all_translations))
+        _rebuild_ui_language_dicts()
+        logger.info("Loaded %d translation entries across %d language maps.", len(_all_translations), len(_ui_language_dicts))
     except Exception as e:
         logger.error("Error loading translations: %s", e)
 
@@ -125,6 +155,8 @@ def save_translations_if_dirty(filepath: str = "translations.json"):
 
 def get_cached_translation(text: str, lang: str) -> Optional[str]:
     """Retrieves cached translation if available."""
+    if not lang or lang == "en":
+        return text
     clean_text = " ".join(text.replace("\n", " ").split())
     with _translations_lock:
         entry = _all_translations.get(clean_text)
@@ -146,6 +178,10 @@ def store_cached_translation(text: str, lang: str, translated: str):
         entry = _all_translations.setdefault(clean_text, {})
         entry[lang] = translated
         _translations_dirty = True
+
+        if lang not in _ui_language_dicts:
+            _ui_language_dicts[lang] = {}
+        _ui_language_dicts[lang][clean_text] = translated
 
 
 async def translate_single(text: str, lang: str) -> str:
@@ -271,8 +307,8 @@ async def translate_dict_fields(data: Dict[str, Any], lang: str) -> Dict[str, st
 def sync_translate_text(text: str, lang: str = "en") -> str:
     """
     Synchronous lookup for Jinja template filter.
-    Returns cached translation instantly (0ms), or original text.
-    Asynchronously schedules background translation for missing keys without blocking.
+    Returns cached translation instantly (0ms), or original source text fallback.
+    Guarantees zero blocking and zero event loop congestion.
     """
     if not text or not lang or lang == "en":
         return text
@@ -280,13 +316,5 @@ def sync_translate_text(text: str, lang: str = "en") -> str:
     cached = get_cached_translation(clean_text, lang) or get_cached_event_field(clean_text, lang)
     if cached:
         return cached
-
-    # Schedule non-blocking async background translation if event loop is running
-    try:
-        loop = asyncio.get_running_loop()
-        loop.create_task(translate_single(clean_text, lang))
-    except RuntimeError:
-        pass
-
     return text
 

@@ -26,6 +26,7 @@ from app.services.event_service import (
 )
 from app.services.translation_service import (
     sync_translate_text,
+    get_ui_translation_dict,
     translate_event_data,
     translate_events_batch
 )
@@ -46,6 +47,17 @@ def invalidate_campaigns_cache():
     global _campaigns_cache, _events_count_cache
     _campaigns_cache["ts"] = 0
     _events_count_cache["ts"] = 0
+
+async def _async_refresh_event_count():
+    """Background task to refresh event count cache without blocking visitor requests."""
+    global _events_count_cache
+    try:
+        from app.database import run_query
+        cnt_res = await run_query("SELECT COUNT(*) as count FROM eventdetail", fetchmode="one")
+        if cnt_res and "count" in cnt_res:
+            _events_count_cache = {"count": cnt_res["count"], "ts": time.time()}
+    except Exception as e:
+        logger.debug("Failed background event count refresh: %s", e)
 
 async def prewarm_event_count(db: AsyncDB):
     """Pre-warms the active event count cache during startup to avoid query delay on first visitor."""
@@ -97,8 +109,12 @@ async def home_page(
         active_events_length = admin_stats["total_events"]
     elif _campaigns_cache["data"] and (time.time() - _campaigns_cache["ts"] < CAMPAIGNS_CACHE_TTL):
         active_events_length = len(_campaigns_cache["data"].get("edetailslist", []))
-    elif _events_count_cache["ts"] and (time.time() - _events_count_cache["ts"] < COUNT_CACHE_TTL):
+    elif _events_count_cache["ts"]:
         active_events_length = _events_count_cache["count"]
+        # Trigger background refresh if TTL elapsed without blocking the HTTP response
+        if time.time() - _events_count_cache["ts"] >= COUNT_CACHE_TTL:
+            import asyncio
+            asyncio.create_task(_async_refresh_event_count())
     else:
         cnt_res = await db.fetchone("SELECT COUNT(*) as count FROM eventdetail")
         active_events_length = cnt_res["count"] if cnt_res else 0
@@ -107,8 +123,14 @@ async def home_page(
     template_name = session.get("template", "index.html")
     lang_to_use = user_lang or "en"
 
-    def bound_translate(text: str, save_file: bool = True) -> str:
-        return sync_translate_text(text.strip(), lang=lang_to_use)
+    # Fast Zero-Translation Path for English (0ms) & Page-level dictionary for other languages
+    if lang_to_use == "en":
+        bound_translate = lambda text, *args, **kwargs: text
+    else:
+        page_dict = get_ui_translation_dict(lang_to_use)
+        def bound_translate(text: str, *args, **kwargs) -> str:
+            clean = text.strip()
+            return page_dict.get(clean, text)
 
     return templates.TemplateResponse(request, template_name, {
         "active_events_length": active_events_length,
