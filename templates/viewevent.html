@@ -8,9 +8,10 @@
     endif %}</title>
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="/static/tour-engine.css">
+  <link rel="stylesheet" href="/static/style.css?v=20260905-4">
+  <link rel="stylesheet" href="/static/tour-engine.css?v=20260905-4">
   <link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
+  <script defer src="/static/motion.js?v=20260905-4"></script>
   <style>
     *,
     *::before,
@@ -18,10 +19,31 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    *::-webkit-scrollbar,
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+      -webkit-appearance: none !important;
     }
 
     html,
-    body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-color); -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-color);
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
 
     .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(10, 10, 14, 0.92); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-color); padding: 0 3%; height: 56px; }
 
@@ -63,15 +85,8 @@
 
     .event-card { width: 100%; max-width: 1400px; display: grid; grid-template-columns: 50% 50%; border-radius: 1.4rem; border: 1px solid var(--border-color); overflow: hidden; background: var(--bg-light); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); height: 100%; min-height: 0; }
 
-    .ev-left { display: flex; flex-direction: column; border-right: 1px solid var(--border-color); overflow-y: auto; height: 100%; min-height: 0; overscroll-behavior: contain; }
-
-    .ev-left::-webkit-scrollbar { width: 6px; }
-
-    .ev-left::-webkit-scrollbar-track { background: transparent; }
-
-    .ev-left::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-
-    .ev-left::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+    .ev-left { display: flex; flex-direction: column; border-right: 1px solid var(--border-color); overflow-y: auto; height: 100%; min-height: 0; overscroll-behavior: contain; scrollbar-width: none !important; -ms-overflow-style: none !important; }
+    .ev-left::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
     .ev-hero { padding: 1.5rem 1.4rem 1.1rem; background: linear-gradient(150deg, rgba(215, 106, 30, 0.09) 0%, transparent 65%); border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
 
@@ -284,6 +299,7 @@
 </head>
 
 <body>
+  {% include "partials/icons.html" %}
 
   <!-- ====== VIEW EVENT TOUR DOM (shared structure — styled by tour-engine.css) ====== -->
   <div id="sstOverlay"></div>
@@ -293,7 +309,7 @@
     <div class="sst-hbar">
       <div class="sst-title" id="sstTitle"></div>
       <div class="sst-pill" id="sstPill"></div>
-      <button class="sst-x" title="Close tour">✕</button>
+      <button class="sst-x" title="Close tour" aria-label="Close tour"><svg class="ss-icon" aria-hidden="true" style="width:12px;height:12px;"><use href="#icon-close"></use></svg></button>
     </div>
     <div class="sst-body">
       <p class="sst-text" id="sstText"></p>
@@ -319,7 +335,7 @@
           <div class="b2">{{ translate("Weaving Communities Together") }}</div>
         </div>
       </a>
-      <button class="tour-trigger-btn" onclick="vStartTour()">💡 {{ translate("Page Guide") }}</button>
+      <button class="tour-trigger-btn" onclick="vStartTour()"><svg class="ss-icon ss-icon-inline" width="14" height="14" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> {{ translate("Page Guide") }}</button>
     </div>
   </header>
 
@@ -478,7 +494,7 @@
           </div>
           <div class="actions-grid">
 
-            {% if c_user == "None" %}
+            {% if c_user == "None" or not c_user %}
             {% set loginalertmsg = translate("Login to like this event.") %}
             <button id="likeevent-{{ eventdetails.eventid }}" class="ab like"
               onclick="showAlert('{{ loginalertmsg }}', 'warning')">
@@ -606,7 +622,7 @@
   <!-- ── Share Modal ─────────────────────────────────────────────────── -->
   <div id="shareModal" class="mbg">
     <div class="mbox">
-      <button class="mclose" onclick="closeM('shareModal')">×</button>
+      <button class="mclose" onclick="closeM('shareModal')" aria-label="{{ translate("Close") }}"><svg class="ss-icon" aria-hidden="true" style="width:16px;height:16px;"><use href="#icon-close"></use></svg></button>
       <div class="mhead">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <circle cx="18" cy="5" r="3" />
@@ -652,7 +668,7 @@
   {% if eventdetails %}
   <div id="deleteModal" class="mbg">
     <div class="mbox" style="max-width:300px;">
-      <button class="mclose" onclick="closeM('deleteModal')">×</button>
+      <button class="mclose" onclick="closeM('deleteModal')" aria-label="{{ translate("Close") }}"><svg class="ss-icon" aria-hidden="true" style="width:16px;height:16px;"><use href="#icon-close"></use></svg></button>
       <div class="mhead">
         <svg style="color:#ef4444;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round"
@@ -664,8 +680,9 @@
       <div style="display:flex;gap:8px;margin-top:0.5rem;">
         <button onclick="closeM('deleteModal')" class="ab" style="flex:1;padding:10px 0;">{{ translate("Cancel")
           }}</button>
-        <a href="/deleteevent/{{ eventdetails.eventid }}" class="ab del" style="flex:1;padding:10px 0;">{{
-          translate("Delete") }}</a>
+        <form action="/deleteevent/{{ eventdetails.eventid }}" method="POST" style="flex:1;margin:0;">
+          <button type="submit" class="ab del" style="width:100%;padding:10px 0;">{{ translate("Delete") }}</button>
+        </form>
       </div>
     </div>
   </div>
@@ -752,17 +769,17 @@
         const endedIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
 
         if (now < startDT) {
-          if (statusEl) { statusEl.className = 'icell-val orange'; statusEl.textContent = '⏳ {{ translate("Upcoming") }}'; }
+          if (statusEl) { statusEl.className = 'icell-val orange'; statusEl.textContent = '{{ translate("Upcoming") }}'; }
           if (chipText) chipText.textContent = '{{ translate("Upcoming") }}';
           if (chip) { chip.className = 'stat-chip st-orange'; }
           if (chipIcon) chipIcon.innerHTML = upcomingIcon;
         } else if (now >= startDT && now <= endDT) {
-          if (statusEl) { statusEl.className = 'icell-val green'; statusEl.textContent = '🟢 {{ translate("Ongoing") }}'; }
+          if (statusEl) { statusEl.className = 'icell-val green'; statusEl.textContent = '{{ translate("Ongoing") }}'; }
           if (chipText) chipText.textContent = '{{ translate("Ongoing") }}';
           if (chip) { chip.className = 'stat-chip st-green'; }
           if (chipIcon) chipIcon.innerHTML = ongoingIcon;
         } else {
-          if (statusEl) { statusEl.className = 'icell-val red'; statusEl.textContent = '✓ {{ translate("Ended") }}'; }
+          if (statusEl) { statusEl.className = 'icell-val red'; statusEl.textContent = '{{ translate("Ended") }}'; }
           if (chipText) chipText.textContent = '{{ translate("Ended") }}';
           if (chip) { chip.className = 'stat-chip st-red'; }
           if (chipIcon) chipIcon.innerHTML = endedIcon;
@@ -788,6 +805,7 @@
       if (type === 'add') {
         btn.classList.add('liked');
         btn.setAttribute('onclick', `changelike(${id},'remove')`);
+        if (window.triggerLikeEffect) window.triggerLikeEffect(btn);
       } else {
         btn.classList.remove('liked');
         btn.setAttribute('onclick', `changelike(${id},'add')`);
@@ -801,7 +819,7 @@
     function shareWA() {
       if (!EVENTID) return;
       const link = `${location.origin}/event/${EVENTID}`;
-      window.open('https://wa.me/?text=' + encodeURIComponent(`*${EVENTNAME}*\n📅 ${EVENTDATE} at ${EVENTTIME}\n📍 ${EVENTLOC}\n\n🔗 ${link}`), '_blank');
+      window.open('https://wa.me/?text=' + encodeURIComponent(`*${EVENTNAME}*\nDate: ${EVENTDATE} at ${EVENTTIME}\nLocation: ${EVENTLOC}\n\nLink: ${link}`), '_blank');
       closeM('shareModal');
     }
     function copyLink() {
@@ -832,8 +850,6 @@
         document.getElementById('desc-main').textContent = ORIG_DESC;
         const locEl = document.querySelector('.loc-text');
         if (locEl) locEl.textContent = EVENTLOC;
-        const startEl = document.getElementById('ev-startdate');
-        if (startEl) startEl.textContent = EVENTDATE;
         btn.classList.remove('act-tr');
         btn.innerHTML = GLOBE_SVG + ' {{ translate("Translate Page") }}';
         translated = false;
@@ -847,7 +863,7 @@
         const resp = await fetch('/translate_event', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ eventname: EVENTNAME, description: ORIG_DESC, location: EVENTLOC, startdate: EVENTDATE, enddate: EVENTENDDATETIME })
+          body: JSON.stringify({ eventname: EVENTNAME, description: ORIG_DESC, location: EVENTLOC })
         });
         if (!resp.ok) throw new Error('failed');
         const data = await resp.json();
@@ -856,8 +872,6 @@
         if (data.description) document.getElementById('desc-main').textContent = data.description;
         const locEl = document.querySelector('.loc-text');
         if (locEl && data.location) locEl.textContent = data.location;
-        const startEl = document.getElementById('ev-startdate');
-        if (startEl && data.startdate) startEl.textContent = data.startdate;
 
         translated = true;
         btn.classList.remove('loading');
@@ -876,7 +890,7 @@
     window.ssEventTour = new SahyogTour({
       highlightClass: 'sst-hl',
       i18n: {
-        finish: '{{ translate("Finish") }} ✓',
+        finish: '{{ translate("Finish") }}',
         next: '{{ translate("Next") }} →',
       },
       steps: [
@@ -905,14 +919,13 @@
           title: '{{ translate("5. Actions") }}',
           text: '{{ translate("Everything you can do with this event is here.") }}',
           legend: [
-            { icon: '❤️', label: '{{ translate("Like") }}', desc: '{{ translate("Show support for this event") }}' },
-            { icon: '↗️', label: '{{ translate("Share") }}', desc: '{{ translate("WhatsApp or copy link") }}' },
-            { icon: '📅', label: '{{ translate("Add to Calendar") }}', desc: '{{ translate("Download .ics file") }}' },
-            { icon: '💬', label: '{{ translate("Open Chat") }}', desc: '{{ translate("Join the event group chat") }}' },
-            {
-              icon: '👤', label: '{{ translate("View Organiser") }}', desc: '{{ translate("See organiser's profile") }}' },
-        { icon: '🌐', label: '{{ translate("Translate") }}', desc: '{{ translate("Translate content to your language") }}' }
-      ]
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-heart"></use></svg>', label: '{{ translate("Like") }}', desc: '{{ translate("Show support for this event") }}' },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-share"></use></svg>', label: '{{ translate("Share") }}', desc: '{{ translate("WhatsApp or copy link") }}' },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>', label: '{{ translate("Add to Calendar") }}', desc: '{{ translate("Download .ics file") }}' },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-chat"></use></svg>', label: '{{ translate("Open Chat") }}', desc: '{{ translate("Join the event group chat") }}' },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-user"></use></svg>', label: '{{ translate("View Organiser") }}', desc: '{{ translate("See organiser\'s profile") }}' },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: '{{ translate("Translate") }}', desc: '{{ translate("Translate content to your language") }}' }
+          ]
         }
       ]
     });

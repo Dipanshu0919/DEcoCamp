@@ -21,7 +21,7 @@
  *                                          (used when elements must be resolved at tour-start)
  * @param {string}   cfg.highlightClass    CSS class to lift the target above the overlay
  * @param {Object}  [cfg.i18n]             Localised button labels
- * @param {string}  [cfg.i18n.finish]      e.g. 'Finish ✓'
+ * @param {string}  [cfg.i18n.finish]      e.g. 'Finish'
  * @param {string}  [cfg.i18n.next]        e.g. 'Next →'
  */
 if (!window.SahyogTour) {
@@ -223,7 +223,7 @@ if (!window.SahyogTour) {
       // Navigation button states
       this._el('sstPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
       this._el('sstNext').textContent = i === this._steps.length - 1
-        ? (this._cfg.i18n && this._cfg.i18n.finish || 'Finish ✓')
+        ? (this._cfg.i18n && this._cfg.i18n.finish || 'Finish')
         : (this._cfg.i18n && this._cfg.i18n.next || 'Next →');
 
       this._buildDots();

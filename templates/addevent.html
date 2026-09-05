@@ -1,9 +1,9 @@
-<link rel="stylesheet" href="/static/tour-engine.css">
+<link rel="stylesheet" href="/static/tour-engine.css?v=20260905-4">
 <style>
-  .add-event-wrapper,
-  .add-event-wrapper * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; scrollbar-width: none !important; -ms-overflow-style: none !important; }
+  *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; -webkit-appearance: none !important; }
 
-  .add-event-wrapper { color: var(--text-color, #f1f5f9); width: 100%; max-width: 100%; overflow-x: hidden; position: relative; }
+  .add-event-wrapper { color: var(--text-color, #f1f5f9); width: 100%; max-width: 100%; overflow-x: hidden; position: relative; scrollbar-width: none !important; -ms-overflow-style: none !important; }
   .add-event-grid { display: flex; flex-direction: column; gap: 1.5rem; width: 100%; margin: 0; }
   .add-event-form-container { background: var(--bg-light, #141828); border: 1px solid var(--border-color, #334155); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); width: 100%; }
   .styled-input-group { margin-bottom: 1.25rem; width: 100%; }
@@ -68,7 +68,7 @@
 
   .event-search-box:focus { outline: none; border-color: var(--primary-color, #d76a1e); }
 
-  .event-list-panel { max-height: 200px; overflow-y: auto; border-top: 1px solid var(--border-color, #333); padding-top: 10px; display: none; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 10px; }
+  .event-list-panel { max-height: 200px; overflow-y: auto; border-top: 1px solid var(--border-color, #333); padding-top: 10px; display: none; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 10px; scrollbar-width: none !important; -ms-overflow-style: none !important; }
 
   .event-list-panel.visible { display: grid; }
 
@@ -80,9 +80,7 @@
 
   .event-cat-tag { font-size: 0.7em; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: auto; color: #94a3b8; }
 
-  .event-list-panel::-webkit-scrollbar { width: 6px; }
-
-  .event-list-panel::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  .event-list-panel::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
   .tips-dropdown { background: rgba(215, 106, 30, 0.08); border: 1px solid rgba(215, 106, 30, 0.3); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; margin-bottom: 0.5rem; width: 100%; }
 
@@ -131,20 +129,21 @@
 <!-- Tour DOM removed to prevent duplicate IDs since it's loaded in index.html -->
 
 <div class="add-event-wrapper">
+  {% include "partials/icons.html" %}
   <div style="text-align: center; margin-bottom: 2rem;">
     <h1 style="margin-bottom: 0.5rem;">{{ translate("Create a New Campaign") }}</h1>
     <p style="color: var(--text-muted, #94a3b8); margin-bottom: 1rem;">{{ translate("Add details for your campaign
       below. Once approved,
       it will appear in the campaign list for everyone to see.") }}</p>
 
-    <button class="how-to-btn" onclick="startTour()">💡 {{ translate("How to Use this Form") }}</button>
+    <button class="how-to-btn" onclick="startTour()"><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> {{ translate("How to Use this Form") }}</button>
   </div>
 
   <div class="add-event-grid">
     <!-- TIPS DROPDOWN -->
     <details class="tips-dropdown">
       <summary>
-        <span>💡 {{ translate("Tips for Success") }}</span>
+        <span><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> {{ translate("Tips for Success") }}</span>
       </summary>
       <div class="tips-content">
         <ul>
@@ -166,7 +165,7 @@
             <div class="label-row">
               <label>{{ translate("Campaign Name") }}</label>
               <div class="info-icon-wrapper" tabindex="0">
-                <svg class="info-icon-svg" viewBox="0 0 24 24">
+                <svg class="info-icon-svg" width="16" height="16" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10"></circle>
                   <line x1="12" y1="16" x2="12" y2="12"></line>
                   <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -182,7 +181,7 @@
             <div class="label-row">
               <label>{{ translate("Location of where event is going to happen") }}</label>
               <div class="info-icon-wrapper" tabindex="0">
-                <svg class="info-icon-svg" viewBox="0 0 24 24">
+                <svg class="info-icon-svg" width="16" height="16" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10"></circle>
                   <line x1="12" y1="16" x2="12" y2="12"></line>
                   <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -225,7 +224,7 @@
 
           <div id="selectedDisplay"
             style="margin-top:10px; color:#22c55e; font-size:0.9rem; font-weight:600; min-height:1.2em;">
-            {% if fvalues['category'] %}✓ {{ translate("Selected") }}: {{ translate(fvalues['category'],
+            {% if fvalues['category'] %}<svg class="ss-icon ss-icon-inline" width="16" height="16" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: {{ translate(fvalues['category'],
             save_file=False) }}{% endif %}
           </div>
         </div>
@@ -273,7 +272,7 @@
             <div class="label-row" style="margin-bottom:0;">
               <label>{{ translate("Description of the event") }}</label>
               <div class="info-icon-wrapper" tabindex="0">
-                <svg class="info-icon-svg" viewBox="0 0 24 24">
+                <svg class="info-icon-svg" width="16" height="16" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10"></circle>
                   <line x1="12" y1="16" x2="12" y2="12"></line>
                   <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -287,7 +286,7 @@
               <p class="ai-hint" style="display: none; sm:display: block;">{{ translate("Need help?") }}ㅤ
               </p>
               <button type="button" class="ai-btn-fancy" id="aiBtn" onclick="generateDescription()">
-                ✨ {{ translate("Generate description from AI") }}
+                <svg class="ss-icon ss-icon-inline ss-icon-spin" width="16" height="16" aria-hidden="true"><use href="#icon-sparkles"></use></svg> {{ translate("Generate description from AI") }}
               </button>
             </div>
           </div>
@@ -397,7 +396,7 @@
   function selectEvent(evName, categoryName) {
     selectedEvent = evName;
     hiddenInput.value = evName;
-    selectedDisplay.innerHTML = `✓ {{ translate("Selected") }}: ${evName}`;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: ${evName}`;
 
     // Update visuals in the list
     const allItems = panel.querySelectorAll('.event-radio-label');
@@ -493,7 +492,7 @@
   window.ssAddTour = new SahyogTour({
     highlightClass: 'sst-hl',
     i18n: {
-      finish: '{{ translate("Finish") }} ✓',
+      finish: '{{ translate("Finish") }}',
       next: '{{ translate("Next") }} →',
     },
     steps: [
@@ -515,17 +514,17 @@
       {
         targetId: 'step-desc-ai',
         title: '{{ translate("4. Description and AI Helper") }}',
-        text: '{{ translate("Write a short summary of your event. Stuck for words? Hit the ✨ Generate button — AI will create a few ready-to-use descriptions based on your details. Click any suggestion to auto-fill the box.") }}'
+        text: '{{ translate("Write a short summary of your event. Stuck for words? Hit the Generate button — AI will create a few ready-to-use descriptions based on your details. Click any suggestion to auto-fill the box.") }}'
       },
       {
         targetId: 'step-actions',
         title: '{{ translate("5. Submit and Reset") }}',
         text: '{{ translate("Submit sends your campaign for admin review. Once approved it appears in the public campaign list. Reset clears all fields so you can start fresh.") }}',
         legend: [
-          { icon: '✅', label: '{{ translate("Submit") }}', desc: '{{ translate("Sends campaign for approval") }}' },
-          { icon: '🔄', label: '{{ translate("Reset") }}', desc: '{{ translate("Clears all form fields") }}' },
-          { icon: '✨', label: '{{ translate("AI Generate") }}', desc: '{{ translate("Auto-writes description for you") }}' },
-          { icon: 'ℹ️', label: '{{ translate("Info icons") }}', desc: '{{ translate("Hover for field-specific tips") }}' }
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-check"></use></svg>', label: '{{ translate("Submit") }}', desc: '{{ translate("Sends campaign for approval") }}' },
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg>', label: '{{ translate("Reset") }}', desc: '{{ translate("Clears all form fields") }}' },
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>', label: '{{ translate("AI Generate") }}', desc: '{{ translate("Auto-writes description for you") }}' },
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-info"></use></svg>', label: '{{ translate("Info icons") }}', desc: '{{ translate("Hover for field-specific tips") }}' }
         ]
       }
     ]

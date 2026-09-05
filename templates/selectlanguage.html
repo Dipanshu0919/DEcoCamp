@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Language - Sahyog Sutra</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=20260905-4">
+    <script defer src="/static/motion.js?v=20260905-4"></script>
     <style>
+        *, *::before, *::after { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; -webkit-appearance: none !important; }
+        html, body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
         .language-select-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2rem; background: var(--bg-dark); }
         .language-select-wrapper { width: 100%; max-width: 98%; text-align: center; }
         .language-select-header { margin-bottom: 3rem; margin-top: 2rem; }
@@ -15,7 +19,7 @@
         .language-card { background: var(--bg-light); border: 2px solid var(--border-color); border-radius: var(--radius); padding: 2rem 1.5rem; cursor: pointer; transition: all 0.3s var(--ease); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; position: relative; }
         .language-card:hover { border-color: var(--primary-color); background: rgba(224, 123, 42, 0.08); transform: translateY(-4px); box-shadow: 0 12px 24px rgba(224, 123, 42, 0.15); }
         .language-card.selected { border-color: var(--primary-color); background: rgba(224, 123, 42, 0.12); box-shadow: 0 0 20px rgba(224, 123, 42, 0.3); transform: translateY(0); cursor: default; }
-        .language-card.selected::after { content: '✓'; position: absolute; top: 10px; right: 15px; width: 28px; height: 28px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; }
+        .language-card.selected::after { content: ''; position: absolute; top: 12px; right: 15px; width: 26px; height: 26px; background-color: var(--primary-color); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; background-size: 15px 15px; border-radius: 50%; box-shadow: 0 2px 8px rgba(215, 106, 30, 0.4); }
         .language-native { font-size: 1.5rem; font-weight: 700; color: var(--text-color); margin-bottom: 0.8rem; }
         .language-code-english { display: flex; align-items: center; justify-content: center; gap: 0.3rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
         .language-english { font-size: 0.95rem; color: var(--text-muted); }
@@ -31,9 +35,15 @@
     </style>
 </head>
 <body>
+    <!-- Ambient Floating Spheres -->
+    <div class="ambient-glow-bg" aria-hidden="true">
+        <div class="ambient-sphere sphere-1"></div>
+        <div class="ambient-sphere sphere-2"></div>
+    </div>
+
     <div class="language-select-container">
         <div class="language-select-wrapper">
-            <div class="language-select-header">
+            <div class="language-select-header reveal">
                 <h1>Select Your Language</h1>
                 <p>Choose a language to continue with Sahyog Sutra</p>
             </div>

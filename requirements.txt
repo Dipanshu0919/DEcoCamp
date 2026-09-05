@@ -13,3 +13,4 @@ legacy-cgi
 httpx
 resend
 google-genai
+argon2-cffi

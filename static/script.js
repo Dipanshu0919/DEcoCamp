@@ -75,7 +75,13 @@ function toggleDescription(id, action) {
 
 function togglePasswordVisibility(id) {
     const field = $(`#${id}`);
-    if (field) field.type = field.type === 'password' ? 'text' : 'password';
+    if (!field) return;
+    const isPass = field.type === 'password';
+    field.type = isPass ? 'text' : 'password';
+    const toggleBtn = field.parentElement?.querySelector('.toggle-password');
+    if (toggleBtn) {
+        toggleBtn.innerHTML = `<svg class="ss-icon" aria-hidden="true"><use href="#icon-${isPass ? 'eye-off' : 'eye'}"></use></svg>`;
+    }
 }
 
 function filterCampaigns(searchInput) {
@@ -94,11 +100,37 @@ function declineEvent(eventId) {
         reason = prompt(SAHYOG_CONFIG.trans.declineReason);
         if (reason === null) { showAlert(SAHYOG_CONFIG.trans.declineCancelled, 'info'); return; }
     }
-    window.location.href = `/decline_event/${eventId}/${encodeURIComponent(reason)}`;
+    fetch(`/decline_event/${eventId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: reason })
+    }).then(res => {
+        if (res.ok) {
+            showAlert("Event declined.", 'info');
+            setTimeout(() => { contentLoaders.pending.loaded = false; loadPendingEvents(); }, 800);
+        } else {
+            showAlert("Failed to decline event.", 'error');
+        }
+    }).catch(err => {
+        showAlert("Error declining event.", 'error');
+    });
 }
 
 window.asktodelete = id => {
-    if (confirm(SAHYOG_CONFIG.trans.areYouSure)) { window.location.href = `deleteevent/${id}`; }
+    if (confirm(SAHYOG_CONFIG.trans.areYouSure)) {
+        fetch(`/deleteevent/${id}`, { method: 'POST' })
+            .then(res => res.text())
+            .then(text => {
+                if (text.includes("REDIRECT_HOME")) {
+                    window.location.href = "/";
+                } else {
+                    showAlert(text, 'info');
+                }
+            })
+            .catch(err => {
+                showAlert("Error deleting event.", 'error');
+            });
+    }
 };
 
 // --- AI Generation Logic ---
@@ -112,6 +144,7 @@ async function generateDescription() {
     const requiredFields = ['eventname', 'location', 'category', 'eventstartdate', 'eventenddate', 'eventstarttime', 'eventendtime'];
     const missing = requiredFields.filter(key => !formData.get(key));
     if (missing.length > 0) {
+        if (window.shakeInput) window.shakeInput('#aiBtn');
         showAlert(SAHYOG_CONFIG.trans.fillFieldsAI, 'warning');
         return;
     }
@@ -119,7 +152,8 @@ async function generateDescription() {
     const originalText = btn.innerHTML;
     const resultsContainer = $('#aiResults');
     btn.disabled = true;
-    btn.innerHTML = `✨ ${SAHYOG_CONFIG.trans.generating}`;
+    btn.classList.add('generating');
+    btn.innerHTML = `<svg class="ss-icon ss-icon-inline ss-icon-spin" aria-hidden="true"><use href="#icon-sparkles"></use></svg>${SAHYOG_CONFIG.trans.generating}`;
     try {
         const response = await fetch('/generate_ai_description', { method: 'POST', body: formData });
         if (response.status === 429) {
@@ -153,6 +187,7 @@ async function generateDescription() {
         showAlert(SAHYOG_CONFIG.trans.aiFailed, 'warning');
     } finally {
         btn.disabled = false;
+        btn.classList.remove('generating');
         btn.innerHTML = originalText;
     }
 }
@@ -185,14 +220,25 @@ async function loadContent(type, url, loadingId, contentId, retryFn) {
     const content = $(contentId);
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Failed to load ${type}`);
         content.innerHTML = await response.text();
         rerunScripts(content);
+        if (type === 'campaigns') {
+            const meta = content.querySelector('#campaigns-meta');
+            const titleEl = $('#campaignsTitle');
+            if (meta && titleEl) {
+                const count = meta.dataset.totalCount;
+                const viewUser = meta.dataset.viewUser;
+                const baseText = titleEl.textContent.split('(')[0].trim();
+                titleEl.textContent = viewUser ? `${baseText} ( ${count} ) - ${viewUser}` : `${baseText} ( ${count} )`;
+            }
+        }
         content.style.display = 'block';
         loadingState.style.display = 'none';
         contentLoaders[type].loaded = true;
         contentLoaders[type].callback?.();
+        if (window.reinitMotion) window.reinitMotion();
     } catch (error) {
         console.error(`Error loading ${type}:`, error);
         loadingState.innerHTML = `
@@ -204,7 +250,13 @@ async function loadContent(type, url, loadingId, contentId, retryFn) {
     }
 }
 
-const loadCampaigns = () => loadContent('campaigns', '/show_campaigns', '#campaignsLoadingState', '#campaignsContent', 'loadCampaigns()');
+const loadCampaigns = (user) => {
+    let url = '/show_campaigns';
+    if (user && user !== 'None' && user !== 'all') {
+        url += `?user=${encodeURIComponent(user)}`;
+    }
+    return loadContent('campaigns', url, '#campaignsLoadingState', '#campaignsContent', `loadCampaigns(${user ? `'${user}'` : ''})`);
+};
 const loadAddForm = () => loadContent('addForm', '/show_add_form', '#addFormLoadingState', '#addFormContent', 'loadAddForm()');
 const loadPendingEvents = () => loadContent('pending', '/show_pending_events', '#pendingLoadingState', '#pendingContent', 'loadPendingEvents()');
 
@@ -304,9 +356,13 @@ const handleFormSubmit = async (form, callback) => {
         const text = await response.text();
         const type = text.includes('Success') || text.includes('Registered') ? 'success' :
             text.includes('Error') || text.includes('Invalid') ? 'error' : 'info';
+        if (type === 'error' && window.shakeInput) {
+            window.shakeInput(form);
+        }
         showAlert(text, type);
         callback?.(text);
     } catch (error) {
+        if (window.shakeInput) window.shakeInput(form);
         showAlert(SAHYOG_CONFIG.trans.errorOccurred, 'error');
         console.error(error);
     } finally {
@@ -356,34 +412,68 @@ window.toggleView = function (view) {
     }
 };
 
+function loadFullCalendar(callback) {
+    if (window.FullCalendar) {
+        callback();
+        return;
+    }
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js";
+    script.onload = callback;
+    script.onerror = () => showAlert('Failed to load calendar module.', 'error');
+    document.head.appendChild(script);
+}
+
 function initCalendar() {
     const calendarEl = document.getElementById('calendar');
-    calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' },
-        events: function (info, successCallback, failureCallback) {
-            fetch('/api').then(r => r.json()).then(data => {
-                const events = data['active events'].map(e => ({
-                    title: e.eventname,
-                    start: e.eventstartdate + (e.eventstarttime ? 'T' + e.eventstarttime : ''),
-                    url: '#',
-                    extendedProps: { description: e.description, location: e.location }
-                }));
-                successCallback(events);
-            }).catch(failureCallback);
-        },
-        eventClick: function (info) {
-            info.jsEvent.preventDefault();
-            showAlert(`${info.event.title}\n📍 ${info.event.extendedProps.location}\n📅 ${info.event.start.toLocaleDateString()}`, 'info');
-        }
+    if (!calendarEl) return;
+    loadFullCalendar(() => {
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listWeek' },
+            events: function (info, successCallback, failureCallback) {
+                fetch('/api').then(r => r.json()).then(data => {
+                    const events = (data['active events'] || []).map(e => ({
+                        title: e.eventname,
+                        start: e.eventstartdate + (e.eventstarttime ? 'T' + e.eventstarttime : ''),
+                        url: '#',
+                        extendedProps: { description: e.description, location: e.location }
+                    }));
+                    successCallback(events);
+                }).catch(failureCallback);
+            },
+            eventClick: function (info) {
+                info.jsEvent.preventDefault();
+                showAlert(`${info.event.title} • ${info.event.extendedProps.location} • ${info.event.start.toLocaleDateString()}`, 'info');
+            }
+        });
+        calendar.render();
     });
-    calendar.render();
 }
 
 // --- Global Globals / Exports ---
 window.changetemplate = () => fetch("/changetemplate").then(() => location.reload());
-window.viewyourevents = username => fetch(`/viewyourevents/${username}`, { method: 'POST' })
-    .then(() => { window.location.href = '#campaigns'; location.reload(); });
+window.viewyourevents = username => {
+    if (!username || username === 'None') return Promise.resolve();
+    return fetch(`/viewyourevents/${encodeURIComponent(username)}`, { method: 'POST' })
+        .then(() => {
+            contentLoaders.campaigns.loaded = false;
+            if (location.hash !== '#campaigns') {
+                location.hash = '#campaigns';
+            }
+            showSection('campaigns');
+            return loadCampaigns(username);
+        });
+};
+window.viewAllCampaigns = () => {
+    return fetch('/viewyourevents/all', { method: 'POST' })
+        .catch(() => {})
+        .then(() => {
+            contentLoaders.campaigns.loaded = false;
+            showSection('campaigns');
+            return loadCampaigns();
+        });
+};
 window.sendsortreq = sortby => fetch(`/setsortby/${sortby}`, { method: 'POST' })
     .then(() => { window.location.href = '#campaigns'; location.reload(); });
 

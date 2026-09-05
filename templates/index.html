@@ -5,23 +5,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sahyog Sutra — Weaving Communities Together</title>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/tour-engine.css">
+    <script defer src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css?v=20260905-4">
+    <link rel="stylesheet" href="/static/tour-engine.css?v=20260905-4">
     <link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
+    <script defer src="/static/motion.js?v=20260905-4"></script>
 
     <style>
+        *, *::before, *::after { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        *::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; -webkit-appearance: none !important; }
+        html, body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
         .sst-hl { background-color: var(--bg-light, #141828) !important; box-shadow: 0 0 0 12px var(--bg-light, #141828) !important; }
         #step-nav.sst-hl { background-color: rgba(10, 10, 14, 0.95) !important; box-shadow: 0 0 0 4px rgba(10, 10, 14, 0.95) !important; border-radius: 0 !important; }
-        .hiw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; max-width: 100%; margin: 0 auto 2rem auto; width: 100%; }
-        .hiw-card { padding: 1.5rem; border-radius: 12px; background: var(--bg-dark, #0a0c20); border: 1px solid var(--border-color, #334155); text-align: center; }
+        .hiw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 1.5rem; max-width: 100%; margin: 0 auto 2rem auto; width: 100%; box-sizing: border-box; }
+        .hiw-card { padding: 1.5rem 1.25rem; border-radius: 12px; background: var(--bg-dark, #0a0c20); border: 1px solid var(--border-color, #334155); text-align: center; box-sizing: border-box; }
         .hiw-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-color); }
         .hiw-card p { font-size: 0.85rem; line-height: 1.5; color: var(--text-muted); margin: 0; }
-        .hiw-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+        .hiw-icon { display: flex; align-items: center; justify-content: center; height: 48px; margin-bottom: 0.8rem; }
+        .hiw-icon svg, .hiw-icon .ss-icon { width: 36px !important; height: 36px !important; max-width: 36px !important; max-height: 36px !important; }
         /* Fix for login/signup section width and position */
         #login-signup-section { width: 100% !important; display: flex; justify-content: center; align-items: center; padding: 1rem 0; box-sizing: border-box; }
         .account-container { width: 100% !important; max-width: 100% !important; margin: 0 auto; box-sizing: border-box; }
@@ -37,6 +41,13 @@
 </head>
 
 <body>
+    {% include "partials/icons.html" %}
+
+    <!-- Ambient Floating Spheres (Pure CSS, GPU-composited) -->
+    <div class="ambient-glow-bg" aria-hidden="true">
+        <div class="ambient-sphere sphere-1"></div>
+        <div class="ambient-sphere sphere-2"></div>
+    </div>
 
     <!-- Scroll Navigation Buttons -->
     <div id="scrollNav">
@@ -56,7 +67,7 @@
         <div class="sst-hbar">
             <div class="sst-title" id="sstTitle"></div>
             <div class="sst-pill" id="sstPill"></div>
-            <button class="sst-x" title="Close tour">✕</button>
+            <button class="sst-x" title="Close tour"><svg class="ss-icon ss-icon-sm" aria-hidden="true"><use href="#icon-close"></use></svg></button>
         </div>
         <div class="sst-body">
             <p class="sst-text" id="sstText"></p>
@@ -115,7 +126,7 @@
         <div class="alert-content">
             <div class="alert-text-wrapper">
                 <span class="alert-text" id="alertText"></span>
-                <button class="alert-close" id="alertCloseBtn" onclick="closeAlert()" title="{{ translate('Close') }}">✕</button>
+                <button class="alert-close" id="alertCloseBtn" onclick="closeAlert()" title="{{ translate('Close') }}"><svg class="ss-icon ss-icon-sm" aria-hidden="true"><use href="#icon-close"></use></svg></button>
             </div>
             <div class="alert-buttons" id="alertButtons" style="display: none;">
                 <button class="alert-action-btn reload-btn" onclick="window.location.reload()" title="{{ translate('Reload') }}">{{ translate('Reload Page') }}</button>
@@ -128,7 +139,7 @@
     <div id="sideChatDrawer" class="chat-drawer">
         <div class="chat-header">
             <h3>{{ translate("Event Chat") }}</h3>
-            <button class="close-chat" onclick="closeEventChat()">×</button>
+            <button class="close-chat" onclick="closeEventChat()"><svg class="ss-icon ss-icon-sm" aria-hidden="true"><use href="#icon-close"></use></svg></button>
         </div>
         <iframe id="globalChatIframe" class="chat-iframe"></iframe>
     </div>
@@ -137,20 +148,55 @@
         <section id="home" class="active">
             <div class="home-layout">
                 <div class="home-hero" id="step-hero">
-                    <h1>{{ translate("Hey there! We're glad you're here. Welcome to") }} <span class="brand-highlight">{{ translate("Sahyog Sutra") }}!</span></h1>
-                    <p>{{ translate("Unite, act, and create change. Join a campaign, volunteer your time, or start a movement — every effort weaves a stronger community.") }}</p>
+                    <h1 class="reveal stagger-1">{{ translate("Hey there! We're glad you're here. Welcome to") }} <span class="brand-highlight">{{ translate("Sahyog Sutra") }}!</span></h1>
+                    <p class="reveal stagger-1">{{ translate("Unite, act, and create change. Join a campaign, volunteer your time, or start a movement — every effort weaves a stronger community.") }}</p>
 
-                    <div class="hero-actions" style="margin: 2rem 0; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+                    <div class="hero-actions reveal stagger-2" style="margin: 2rem 0; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
                         <button class="cta" style="margin: 0;" onclick="showSection('campaigns')">{{ translate("Explore Campaigns") }}</button>
-                        <button class="cta secondary" style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);" onclick="hStartTour()">💡 {{ translate("Quick Tour") }}</button>
+                        <button class="cta secondary" style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);" onclick="hStartTour()"><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg>{{ translate("Quick Tour") }}</button>
                     </div>
 
-                    <div class="sutra-divider"><span>सहयोग सूत्र</span></div>
-                    <div id="ndhome"></div>
+                    <!-- Continuous Multi-Layer 3D Hero Sculpture -->
+                    <div class="hero-stage-container reveal stagger-2">
+                        <div class="hero-grid-perspective" aria-hidden="true"></div>
+                        <div class="hero-light-beam" aria-hidden="true"></div>
+                        <div class="hero-particles-field" aria-hidden="true"></div>
+
+                        <div class="hero-orbit-ring-1" aria-hidden="true">
+                            <div class="hero-orbit-node-1"></div>
+                        </div>
+                        <div class="hero-orbit-ring-2" aria-hidden="true">
+                            <div class="hero-orbit-node-2"></div>
+                        </div>
+
+                        <div class="hero-3d-turntable">
+                            <div class="hero-3d-levitator">
+                                <div class="hero-3d-monolith">
+                                    <div class="hero-layer-bg"></div>
+                                    <div class="hero-layer-content">
+                                        <div class="hero-layer-badge">
+                                            <svg class="ss-icon ss-icon-gold" width="16" height="16" aria-hidden="true"><use href="#icon-sparkles"></use></svg>
+                                            <span>{{ translate("Verified Community Network") }}</span>
+                                        </div>
+                                        <h3 class="hero-layer-title">
+                                            {{ translate("Community Powered Impact") }}
+                                        </h3>
+                                        <div class="hero-layer-stats">
+                                            <svg class="ss-icon ss-icon-gold" width="16" height="16" aria-hidden="true"><use href="#icon-handshake"></use></svg>
+                                            <span class="count-up" data-count-to="{{ active_events_length }}">{{ active_events_length }}</span>+ {{ translate("Active Initiatives") }} • 100% {{ translate("Volunteer Driven") }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sutra-divider reveal stagger-3"><span>सहयोग सूत्र</span></div>
+                    <div id="ndhome" class="reveal stagger-3"></div>
 
                     <!-- ===== LEADERBOARD (lazy-loaded via JS) ===== -->
-                    <div class="dash-card" style="margin-top: 2rem;" id="leaderboard-card">
-                        <h4>🏆 {{ translate("Top Organizers") }}</h4>
+                    <div class="dash-card reveal stagger-3" style="margin-top: 2rem;" id="leaderboard-card">
+                        <h4><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-trophy"></use></svg>{{ translate("Top Organizers") }}</h4>
                         <ul class="leaderboard-list" id="leaderboard-list">
                             <!-- Skeleton rows shown while fetching -->
                             {% for _ in range(3) %}
@@ -168,30 +214,30 @@
                     <!-- ===== END LEADERBOARD ===== -->
                 </div>
 
-                <div id="how-it-works-section" class="hiw-container" style="margin: 0;">
+                <div id="how-it-works-section" class="hiw-container reveal" style="margin: 0;">
                     <h2 style="text-align: center; margin-bottom: 2rem;">{{ translate("How Sahyog Sutra Works") }}</h2>
                     <div class="hiw-grid">
-                        <div class="hiw-card">
-                            <div class="hiw-icon">📢</div>
+                        <div class="hiw-card reveal stagger-1">
+                            <div class="hiw-icon"><svg class="ss-icon ss-icon-gold" width="36" height="36" aria-hidden="true"><use href="#icon-megaphone"></use></svg></div>
                             <h3>{{ translate("1. Create a Campaign") }}</h3>
                             <p>{{ translate("Submit a community campaign across 10 categories and 100+ event types — from environment drives to hackathons. Add your dates, location, and description — or let AI write it for you. Your event goes live after admin approval.") }}</p>
                         </div>
-                        <div class="hiw-card">
-                            <div class="hiw-icon">🔍</div>
+                        <div class="hiw-card reveal stagger-2">
+                            <div class="hiw-icon"><svg class="ss-icon ss-icon-gold" width="36" height="36" aria-hidden="true"><use href="#icon-search"></use></svg></div>
                             <h3>{{ translate("2. Explore & Engage") }}</h3>
                             <p>{{ translate("Browse campaigns by category, search by keyword, and filter by what matters to you. Like events to show support, share them on WhatsApp, add them to your calendar, and translate them into your preferred language.") }}</p>
                         </div>
-                        <div class="hiw-card">
-                            <div class="hiw-icon">💬</div>
+                        <div class="hiw-card reveal stagger-3">
+                            <div class="hiw-icon"><svg class="ss-icon ss-icon-gold" width="36" height="36" aria-hidden="true"><use href="#icon-chat"></use></svg></div>
                             <h3>{{ translate("3. Connect & Collaborate") }}</h3>
                             <p>{{ translate("Every campaign has a built-in group chat. Coordinate with organizers and other participants in real time. View organizer profiles, track top contributors on the leaderboard, and be part of the community.") }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div id="login-signup-section" class="account-section-wrapper">
+                <div id="login-signup-section" class="account-section-wrapper reveal">
                     <div class="account-container">
-                        {% if c_user == "None" %}
+                        {% if c_user == "None" or not c_user %}
                         <div class="toggle-buttons">
                             <button id="login-tab-btn" class="active" style="flex: 1;">{{ translate("Login") }}</button>
                             <button id="signup-tab-btn" style="flex: 1;">{{ translate("Sign Up") }}</button>
@@ -202,7 +248,7 @@
                             </div>
                             <div class="form-group">
                                 <input type="password" name="loginpassword" id="loginpassword" placeholder="{{ translate('Password') }}" required />
-                                <span class="toggle-password" onclick="togglePasswordVisibility('loginpassword')">👁️</span>
+                                <span class="toggle-password" onclick="togglePasswordVisibility('loginpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                             </div>
                             <div class="forget-link-container">
                                 <button type="button" id="forget-pass-link" class="forget-link">{{ translate("Forgot Password?") }}</button>
@@ -219,11 +265,11 @@
                             <div class="form-group full-width"><input type="number" name="signupotp" placeholder="{{ translate('Enter OTP') }}" oninput="this.value=this.value.slice(0,4)" required /></div>
                             <div class="form-group">
                                 <input type="password" name="password" id="signup_password" placeholder="{{ translate('Password') }}" required />
-                                <span class="toggle-password" onclick="togglePasswordVisibility('signup_password')">👁️</span>
+                                <span class="toggle-password" onclick="togglePasswordVisibility('signup_password')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                             </div>
                             <div class="form-group">
                                 <input type="password" name="cpassword" id="signup_cpassword" placeholder="{{ translate('Confirm Password') }}" required />
-                                <span class="toggle-password" onclick="togglePasswordVisibility('signup_cpassword')">👁️</span>
+                                <span class="toggle-password" onclick="togglePasswordVisibility('signup_cpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                             </div>
                             <button type="submit" class="submit-btn">{{ translate("Sign Up") }}</button>
                         </form>
@@ -239,11 +285,11 @@
                                 </div>
                                 <div class="form-group">
                                     <input type="password" name="newpassword" id="newpassword" placeholder="{{ translate('New Password') }}" required />
-                                    <span class="toggle-password" onclick="togglePasswordVisibility('newpassword')">👁️</span>
+                                    <span class="toggle-password" onclick="togglePasswordVisibility('newpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                                 </div>
                                 <div class="form-group">
                                     <input type="password" name="confirmnewpassword" id="confirmnewpassword" placeholder="{{ translate('Confirm New Password') }}" required />
-                                    <span class="toggle-password" onclick="togglePasswordVisibility('confirmnewpassword')">👁️</span>
+                                    <span class="toggle-password" onclick="togglePasswordVisibility('confirmnewpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                                 </div>
                                 <button type="submit" class="submit-btn">{{ translate("Reset Password") }}</button>
                             </div>
@@ -253,10 +299,10 @@
                         </form>
                         {% else %}
                         <div class="profile-card-header">
-                            <img src="https://ui-avatars.com/api/?name={{ c_user }}&background=e07b2a&color=fff&size=128" class="profile-avatar" alt="avatar">
+                            <img src="https://ui-avatars.com/api/?name={{ userdetails['name'] }}&background=d76a1e&color=fff&size=128" alt="{{ userdetails['name'] }}" class="profile-avatar">
                             <div class="profile-card-header-text">
-                                <h3>{{ translate(fullname, save_file=False) }}</h3>
-                                <span>@{{ c_user }}</span>
+                                <h3>{{ userdetails['name'] }}</h3>
+                                <span>@{{ userdetails['username'] }}</span>
                             </div>
                         </div>
                         <div class="profile-card-body">
@@ -264,17 +310,14 @@
                                 <span class="info-label">{{ translate("Email") }}</span>
                                 <span class="info-value">{{ userdetails['email'] }}</span>
                             </div>
-                            {% if userdetails['events'] != None %}
-                            <div class="profile-events-row">
-                                <span>{{ translate("Events") }}: <strong>{{ userdetails['events'] }} {{ translate("added") }}</strong></span>
-                                <button class="view-events-btn" onclick="viewyourevents('{{ c_user }}')">{{ translate("View Your Events") }}</button>
-                            </div>
-                            {% else %}
                             <div class="profile-info-row">
-                                <span class="info-label">{{ translate("Events") }}</span>
-                                <span class="info-value" style="color: var(--text-muted);">{{ translate("No events added yet.") }}</span>
+                                <span class="info-label">{{ translate("Role") }}</span>
+                                <span class="info-value" style="text-transform: capitalize;">{{ userdetails['role'] }}</span>
                             </div>
-                            {% endif %}
+                            <div class="profile-events-row">
+                                <span>{{ translate("Events created:") }} <strong>{{ userdetails['events'].split(',')|length if userdetails['events'] else 0 }}</strong></span>
+                                <button class="view-events-btn" onclick="window.viewUserCampaigns ? window.viewUserCampaigns('{{ userdetails['username'] }}') : (showSection('campaigns'), loadCampaigns('{{ userdetails['username'] }}'))">{{ translate("View your events") }}</button>
+                            </div>
                         </div>
                         <div class="profile-card-footer">
                             <button onclick="window.location.href='/user/{{ c_user }}'" class="submit-btn">{{ translate("View Profile") }}</button>
@@ -287,7 +330,7 @@
 
             {% if isadmin %}
             <div style="margin-top: 3rem;">
-                <h2>🛠️ System Health (Admin)</h2>
+                <h2><svg class="ss-icon ss-icon-inline" aria-hidden="true"><use href="#icon-tools"></use></svg>{{ translate("System Health (Admin)") }}</h2>
                 <div class="dashboard-grid">
                     <div class="dash-card"><h3>{{ admin_stats['total_users'] }}</h3><p>Total Users</p></div>
                     <div class="dash-card"><h3>{{ admin_stats['total_events'] }}</h3><p>Total Events</p></div>
@@ -342,7 +385,7 @@
             <div class="form-container">
                 <h1>{{ translate("Contact Us") }}</h1>
                 <p class="intro">
-                    {{ translate("Have a question, suggestion, or want to collaborate? We'd love to hear from you. Email us at: ") }} <a href="mailto:hu1243009@sjchs.edu.in">hu1243009@sjchs.edu.in</a>
+                    {{ translate("Have a question, suggestion, or want to collaborate? We'd love to hear from you. Email us at: ") }} <a href="mailto:dipanshu0919@gmail.com">dipanshu0919@gmail.com</a>
                 </p>
             </div>
         </section>
@@ -396,10 +439,14 @@
                         if (card) card.style.display = "none";
                         return;
                     }
-                    const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+                    const medalIcons = [
+                        '<svg class="ss-icon ss-icon-gold ss-icon-md" aria-hidden="true"><use href="#icon-medal-gold"></use></svg>',
+                        '<svg class="ss-icon ss-icon-silver ss-icon-md" aria-hidden="true"><use href="#icon-medal-silver"></use></svg>',
+                        '<svg class="ss-icon ss-icon-bronze ss-icon-md" aria-hidden="true"><use href="#icon-medal-bronze"></use></svg>'
+                    ];
                     list.innerHTML = data.map((org, i) => `
                         <li class="leaderboard-item">
-                            <span class="leaderboard-rank">${medals[i] || "#" + (i + 1)}</span>
+                            <span class="leaderboard-rank">${medalIcons[i] || `<span style="font-size:0.85rem;font-weight:700;">#${i + 1}</span>`}</span>
                             <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(org.username)}&background=random&color=fff&size=128" class="leaderboard-avatar">
                             <div style="flex-grow:1;">
                                 <div style="font-weight:600;font-size:0.9rem;">${org.name}</div>
@@ -435,7 +482,7 @@
         window.ssTour = new SahyogTour({
             highlightClass: 'sst-hl',
             i18n: {
-                finish: '{{ translate("Finish") }} ✓',
+                finish: '{{ translate("Finish") }}',
                 next: '{{ translate("Next") }} →',
             },
             steps: [
@@ -444,10 +491,10 @@
                     title: '{{ translate("1. Navigation Bar") }}',
                     text: '{{ translate("Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly.") }}',
                     legend: [
-                        { icon: '🏠', label: '{{ translate("Home") }}', desc: '{{ translate("Hero, leaderboard and account") }}' },
-                        { icon: '📋', label: '{{ translate("Explore Campaigns") }}', desc: '{{ translate("Browse and filter all campaigns") }}' },
-                        { icon: '➕', label: '{{ translate("Create Event") }}', desc: '{{ translate("Submit a new campaign") }}' },
-                        { icon: '🌐', label: '{{ translate("Language") }}', desc: '{{ translate("Change site language instantly") }}' }
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-home"></use></svg>', label: '{{ translate("Home") }}', desc: '{{ translate("Hero, leaderboard and account") }}' },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-campaign"></use></svg>', label: '{{ translate("Explore Campaigns") }}', desc: '{{ translate("Browse and filter all campaigns") }}' },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-plus"></use></svg>', label: '{{ translate("Create Event") }}', desc: '{{ translate("Submit a new campaign") }}' },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: '{{ translate("Language") }}', desc: '{{ translate("Change site language instantly") }}' }
                     ]
                 },
                 {

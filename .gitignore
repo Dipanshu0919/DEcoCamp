@@ -1,15 +1,99 @@
-# Python virtual environments
+# ==============================================================================
+# SahyogSutra — .gitignore
+# ==============================================================================
+
+# --- Python Virtual Environments ---
 venv/
-env/
 .venv/
+env/
 .env/
+ENV/
+env.bak/
+venv.bak/
 
+# --- Environment Variables & Secrets ---
 .env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
 
-fortest.py
-fortest2.py
-
-# Python cache
+# --- Python Bytecode & Cache ---
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Testing & Code Coverage ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# --- Temporary, Backup & Log Files ---
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+crash.dump
+
+# --- Local Databases ---
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# --- OS Generated Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# --- IDE & Editor Settings ---
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+.directory
+
+# --- Scratch / Local Test Scripts ---
+fortest*.py
+test_scratch*.py
+scratch/
