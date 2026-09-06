@@ -722,7 +722,9 @@
         closeShareModal();
     }
 
-    if (!window.socket) window.socket = io();
+    if (!window.socket && typeof io === 'function') {
+        try { window.socket = io(); } catch(e) { console.warn('Socket.IO init failed:', e); }
+    }
 
     function changelike(eventid, type) {
         const btns = document.querySelectorAll(`#likeevent-${eventid}, #likeevent-trending-${eventid}`);
@@ -739,12 +741,16 @@
                 btn.setAttribute('onclick', `changelike(${eventid}, 'add')`);
             }
         });
-        socket.emit("addeventlike", { eventid, byuser: "{{ c_user }}", type });
+        if (window.socket) {
+            window.socket.emit("addeventlike", { eventid, byuser: "{{ c_user }}", type });
+        }
     }
 
-    socket.on("update_like", data => {
-        document.querySelectorAll(`#eventlike-${data.eventid}, #eventlike-trending-${data.eventid}`).forEach(s => { s.innerText = data.likes; });
-    });
+    if (window.socket) {
+        window.socket.on("update_like", data => {
+            document.querySelectorAll(`#eventlike-${data.eventid}, #eventlike-trending-${data.eventid}`).forEach(s => { s.innerText = data.likes; });
+        });
+    }
 
     function openEventModal(eventid) {
         const modal = document.createElement('div');

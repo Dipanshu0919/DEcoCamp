@@ -106,15 +106,32 @@
   /* English = zero bundle download, zero DOM translation */
   if (lang === 'en' || SUPPORTED.indexOf(lang) === -1) return;
 
-  /* If bundle was already loaded via head <script>, apply as soon as DOM is ready */
-  if (window.SS_I18N && window.SS_I18N.data) {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () {
-        applyToRoot(document, window.SS_I18N.data);
-      });
-    } else {
-      applyToRoot(document, window.SS_I18N.data);
+  function tryApply() {
+    if (!window.SS_I18N || !window.SS_I18N.data) return;
+    var target = document.body || document.documentElement;
+    if (target) {
+      applyToRoot(target, window.SS_I18N.data);
     }
+  }
+
+  // 1. Try immediately (in case body or root element is already present)
+  tryApply();
+
+  // 2. Try on readystatechange (interactive fires as soon as HTML is parsed, before defer scripts)
+  document.addEventListener('readystatechange', function () {
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      tryApply();
+    }
+  });
+
+  // 3. Try on DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', tryApply);
+
+  // 4. Try on window load as final safety net
+  window.addEventListener('load', tryApply);
+
+  /* If bundle was already loaded via head <script>, we are done */
+  if (window.SS_I18N && window.SS_I18N.data) {
     return;
   }
 
@@ -126,15 +143,7 @@
   script.async = false;
 
   script.onload = function () {
-    if (!window.SS_I18N) return;
-    var d = window.SS_I18N.data;
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () {
-        applyToRoot(document, d);
-      });
-    } else {
-      applyToRoot(document, d);
-    }
+    tryApply();
   };
 
   script.onerror = function () {

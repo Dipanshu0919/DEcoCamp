@@ -201,12 +201,16 @@ const contentLoaders = {
 
 function rerunScripts(container) {
     container.querySelectorAll('script').forEach(oldScript => {
-        const newScript = document.createElement('script');
-        oldScript.getAttributeNames().forEach(attr =>
-            newScript.setAttribute(attr, oldScript.getAttribute(attr))
-        );
-        newScript.textContent = oldScript.textContent;
-        oldScript.parentNode.replaceChild(newScript, oldScript);
+        try {
+            const newScript = document.createElement('script');
+            oldScript.getAttributeNames().forEach(attr =>
+                newScript.setAttribute(attr, oldScript.getAttribute(attr))
+            );
+            newScript.textContent = oldScript.textContent;
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        } catch (err) {
+            console.warn('[rerunScripts] Script execution error:', err);
+        }
     });
 }
 

@@ -3,17 +3,17 @@
 
 <head>
     <meta name="ss-lang" content="{{ lang }}">
-    <meta name="ss-static-v" content="20260906-3">
+    <meta name="ss-static-v" content="20260906-4">
     {% if lang and lang != "en" %}
-    <script src="/static/i18n/{{ lang }}.js?v=20260906-3"></script>
+    <script src="/static/i18n/{{ lang }}.js?v=20260906-4"></script>
     {% endif %}
-    <script src="/static/i18n.js?v=20260906-3"></script>
+    <script src="/static/i18n.js?v=20260906-4"></script>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% if eventdetails %}{{ eventdetails.eventname }} — Sahyog Sutra{% else %}Event Not Found — Sahyog Sutra{%
     endif %}</title>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="/static/socket.io.min.js?v=20260906-4"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css?v=20260905-4">
   <link rel="stylesheet" href="/static/tour-engine.css?v=20260905-4">
@@ -694,9 +694,12 @@
   </div>
   {% endif %}
 
-  <script src="/static/tour-engine.js"></script>
   <script>
-    const socket = io();
+    if (window.SahyogI18n) window.SahyogI18n.apply();
+  </script>
+  <script src="/static/tour-engine.js?v=20260906-4"></script>
+  <script>
+    const socket = (typeof io === 'function') ? io() : null;
     {% if eventdetails %}
     const EVENTID = {{ eventdetails.eventid }};
     const EVENTNAME = {{ eventdetails.eventname | tojson }};
@@ -816,11 +819,15 @@
         btn.classList.remove('liked');
         btn.setAttribute('onclick', `changelike(${id},'add')`);
       }
-      socket.emit('addeventlike', { eventid: id, byuser: C_USER, type });
+      if (socket) {
+        socket.emit('addeventlike', { eventid: id, byuser: C_USER, type });
+      }
     }
-    socket.on('update_like', d => {
-      if (d.eventid == EVENTID) allLikeEls().forEach(el => el.innerText = d.likes);
-    });
+    if (socket) {
+      socket.on('update_like', d => {
+        if (d.eventid == EVENTID) allLikeEls().forEach(el => el.innerText = d.likes);
+      });
+    }
 
     function shareWA() {
       if (!EVENTID) return;
