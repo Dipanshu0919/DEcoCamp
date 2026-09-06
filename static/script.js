@@ -288,19 +288,70 @@ function initializeCampaignListeners() {
 function initializeAddFormListeners() {
     const form = $('#addEventForm');
     if (!form) return;
+
+    const DRAFT_KEY = 'ss_addevent_draft';
+    const DRAFT_FIELDS = ['eventname', 'location', 'category', 'description',
+                          'eventstartdate', 'eventenddate', 'eventstarttime', 'eventendtime'];
+
+    // --- Restore draft from localStorage (only if field is currently empty) ---
+    function restoreDraft() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
+            DRAFT_FIELDS.forEach(name => {
+                if (!saved[name]) return;
+                const el = form.querySelector(`[name="${name}"]`);
+                if (el && !el.value) el.value = saved[name];
+            });
+        } catch (e) {}
+    }
+
+    // --- Persist a single field to localStorage immediately ---
+    function saveDraftField(name, value) {
+        try {
+            const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
+            if (value) saved[name] = value;
+            else delete saved[name];
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(saved));
+        } catch (e) {}
+    }
+
+    // --- Clear the entire draft ---
+    function clearDraft() {
+        try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+    }
+
+    // Restore on load
+    restoreDraft();
+
+    // Save any field change to localStorage (no network call)
+    form.addEventListener('input', e => {
+        if (e.target.name && DRAFT_FIELDS.includes(e.target.name)) {
+            saveDraftField(e.target.name, e.target.value);
+        }
+    });
+    // 'change' catches selects/date pickers that don't fire 'input'
+    form.addEventListener('change', e => {
+        if (e.target.name && DRAFT_FIELDS.includes(e.target.name)) {
+            saveDraftField(e.target.name, e.target.value);
+        }
+    });
+
+    // On submit success → clear draft
     form.addEventListener('submit', e => {
         e.preventDefault();
         e.target.dataset.url = '/addeventreq';
         handleFormSubmit(e.target, text => {
             if (text.includes('Please Login')) showSection('home');
-            if (text.includes('Registered')) setTimeout(() => location.reload(), 4000);
+            if (text.includes('Registered')) {
+                clearDraft();
+                setTimeout(() => location.reload(), 4000);
+            }
         });
     });
-    form.addEventListener('change', e => {
-        const fd = new FormData();
-        fd.append('field', e.target.name);
-        fd.append('value', e.target.value);
-        fetch('/save_draft', { method: 'POST', body: fd });
+
+    // On reset → clear draft and clear fields
+    form.addEventListener('reset', () => {
+        clearDraft();
     });
 }
 

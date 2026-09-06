@@ -86,17 +86,8 @@ async def handle_change_template(request: Request):
 
 @router.post("/save_draft")
 async def handle_save_draft(request: Request):
-    form_data = await request.form()
-    field = str(form_data.get("field") or "")[:50]
-    value = str(form_data.get("value") or "")[:500]
-    # Allow saving only whitelisted event creation fields in draft session
-    allowed_fields = {
-        "eventname", "location", "category", "description",
-        "eventstartdate", "eventenddate", "eventstarttime", "eventendtime"
-    }
-    if field in allowed_fields and value.strip():
-        request.session[f"draft_{field}"] = value.strip()
-    return Response(content="DRAFT", media_type="text/plain")
+    # Draft storage moved to client-side localStorage — this endpoint is a no-op kept for backwards compat.
+    return Response(content="OK", media_type="text/plain")
 
 
 @router.post("/generate_ai_description")

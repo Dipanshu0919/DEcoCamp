@@ -393,10 +393,19 @@
   }
 
   // 4. Selection Logic
+  const DRAFT_KEY = 'ss_addevent_draft';
+
   function selectEvent(evName, categoryName) {
     selectedEvent = evName;
     hiddenInput.value = evName;
     selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: ${evName}`;
+
+    // Persist category to localStorage
+    try {
+      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
+      saved['category'] = evName;
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(saved));
+    } catch (e) {}
 
     // Update visuals in the list
     const allItems = panel.querySelectorAll('.event-radio-label');
@@ -466,7 +475,17 @@
     });
   }
 
-  // 7. Initial Load State
+  // 7. Initial Load State — prefer server-side fvalues, fall back to localStorage
+  if (!selectedEvent) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}');
+      if (saved['category']) {
+        hiddenInput.value = saved['category'];
+        selectedEvent = saved['category'];
+      }
+    } catch (e) {}
+  }
+
   if (selectedEvent) {
     // Find which category this event belongs to
     const cat = eventToCategoryMap[selectedEvent];
@@ -475,6 +494,7 @@
       updateChipsVisuals();
       renderList(categoriesData[cat], false);
     }
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: ${selectedEvent}`;
   }
 
 }) ();
