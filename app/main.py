@@ -32,8 +32,6 @@ from app.models import initialize_schema, migrate_legacy_messages
 from app.services.email_service import close_http_client
 from app.services.event_service import process_expired_events
 from app.services.translation_service import (
-    load_translations,
-    save_translations_if_dirty,
     close_translation_client,
 )
 
@@ -73,10 +71,7 @@ async def lifespan(app: FastAPI):
     # 1. Initialize strictly bounded DB pool with 1 eager connection
     init_db_pool(eager_count=1)
 
-    # 2. Load translations into bounded cache
-    load_translations()
-
-    # 3. Initialize schema & migrate legacy data
+    # 2. Initialize schema & migrate legacy data
     conn = acquire_connection()
     db = AsyncDB(conn)
     try:
@@ -87,7 +82,7 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
 
-    # 4. Launch single background task for expired events
+    # 3. Launch single background task for expired events
     task = asyncio.create_task(expired_events_background_job())
 
     logger.info("SahyogSutra startup completed successfully.")
@@ -101,7 +96,6 @@ async def lifespan(app: FastAPI):
     except asyncio.CancelledError:
         pass
 
-    save_translations_if_dirty()
     await close_http_client()
     await close_translation_client()
     close_db_pool()

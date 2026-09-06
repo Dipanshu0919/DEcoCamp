@@ -157,6 +157,10 @@
                     });
 
                     if (response.ok) {
+                        try {
+                            localStorage.setItem('language', lang);
+                            localStorage.setItem('selectedLanguage', lang);
+                        } catch (e) {}
                         window.location.href = '/';
                     } else {
                         btn.textContent = origText;

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ lang }}" data-lang="{{ lang }}">
 
 <head>
     <meta name="ss-lang" content="{{ lang }}">
@@ -743,9 +743,9 @@
         const days = Math.floor(ms / 86400000);
         const hours = Math.floor((ms % 86400000) / 3600000);
         let out = '';
-        if (days > 0) out += days + 'SahyogI18n.t("d", "d") ';
-        if (hours > 0) out += hours + 'SahyogI18n.t("h", "h")';
-        if (!out) out = '< 1SahyogI18n.t("h", "h")';
+        if (days > 0) out += days + SahyogI18n.t("d", "d") + ' ';
+        if (hours > 0) out += hours + SahyogI18n.t("h", "h");
+        if (!out) out = '< 1' + SahyogI18n.t("h", "h");
         const el = document.getElementById('ev-duration');
         if (el) el.textContent = out.trim();
         const chipEl = document.getElementById('event-duration-chip');
@@ -894,12 +894,12 @@
       highlightClass: 'sst-hl',
       i18n: {
         finish: SahyogI18n.t("finish", "Finish"),
-        next: 'SahyogI18n.t("next", "Next") →',
+        next: SahyogI18n.t("next", "Next") + ' →',
       },
       steps: [
         {
           targetId: 'step-ev-hero',
-          title: 'SahyogI18n.t("1_event_overview", "1. Event Overview")',
+          title: SahyogI18n.t("1_event_overview", "1. Event Overview"),
           text: SahyogI18n.t("this_banner_shows_the_event_name_category_badge_who_posted", "This banner shows the event name, category badge, who posted it, and its unique ID. The organisers name is a clickable link to their profile.")
         },
         {

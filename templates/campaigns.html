@@ -784,14 +784,14 @@
         highlightClass: 'sst-hl',
         i18n: {
             finish: SahyogI18n.t("finish", "Finish"),
-            next: 'SahyogI18n.t("next", "Next") →',
+            next: SahyogI18n.t("next", "Next") + ' →',
         },
         /* stepBuilder resolves elements at tour-start (some are dynamic/conditional) */
         stepBuilder: () => {
             const defs = [
                 {
                     buildId: 'step-campaigns-search',
-                    title: 'SahyogI18n.t("1_global_search", "1. Global Search")',
+                    title: SahyogI18n.t("1_global_search", "1. Global Search"),
                     text: SahyogI18n.t("type_any_keyword_here_to_instantly_search_across_all", "Type any keyword here to instantly search across all campaigns — by name, location, or description. Results update live as you type.")
                 },
                 {

@@ -13,8 +13,32 @@
   'use strict';
 
   function getLang() {
-    var meta = document.querySelector('meta[name="ss-lang"]');
-    return meta ? meta.getAttribute('content') : 'en';
+    // 1. Authoritative source: server-provided html[lang], html[data-lang], or meta[name="ss-lang"]
+    var html = document.documentElement;
+    var serverLang = html ? (html.getAttribute('lang') || html.getAttribute('data-lang')) : null;
+    if (!serverLang || serverLang === 'auto') {
+      var meta = document.querySelector('meta[name="ss-lang"]');
+      serverLang = meta ? meta.getAttribute('content') : null;
+    }
+
+    if (serverLang && serverLang !== 'auto' && serverLang !== '') {
+      var cleanServer = serverLang.toLowerCase().trim();
+      // Sync authoritative server language to client-side localStorage optimization
+      try {
+        localStorage.setItem('language', cleanServer);
+      } catch (e) {}
+      return cleanServer;
+    }
+
+    // 2. Client-side optimization fallback: localStorage['language']
+    try {
+      var localLang = localStorage.getItem('language') || localStorage.getItem('selectedLanguage');
+      if (localLang && typeof localLang === 'string') {
+        return localLang.toLowerCase().trim();
+      }
+    } catch (e) {}
+
+    return 'en';
   }
 
   var lang = getLang();

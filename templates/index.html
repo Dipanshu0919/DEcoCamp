@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="{{ lang }}" data-lang="{{ lang }}">
 
 <head>
     <meta name="ss-lang" content="{{ lang }}">
@@ -498,12 +498,12 @@
             highlightClass: 'sst-hl',
             i18n: {
                 finish: SahyogI18n.t("finish", "Finish"),
-                next: 'SahyogI18n.t("next", "Next") →',
+                next: SahyogI18n.t("next", "Next") + ' →',
             },
             steps: [
                 {
                     targetId: 'step-nav',
-                    title: 'SahyogI18n.t("1_navigation_bar", "1. Navigation Bar")',
+                    title: SahyogI18n.t("1_navigation_bar", "1. Navigation Bar"),
                     text: SahyogI18n.t("jump_between_pages_using_these_links_the_language_button", "Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly."),
                     legend: [
                         { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-home"></use></svg>', label: SahyogI18n.t("home", "Home"), desc: SahyogI18n.t("hero_leaderboard_and_account", "Hero, leaderboard and account") },

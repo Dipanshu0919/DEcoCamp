@@ -693,7 +693,10 @@ document.addEventListener('DOMContentLoaded', () => {
             option.addEventListener('click', async e => {
                 const langCode = e.target.dataset.lang;
                 const langName = e.target.textContent;
-                localStorage.setItem('selectedLanguage', langCode);
+                try {
+                    localStorage.setItem('language', langCode);
+                    localStorage.setItem('selectedLanguage', langCode);
+                } catch (e) {}
                 try {
                     showAlert(`${SAHYOG_CONFIG.trans.changingLangTo} ${langName}...`, 'info', 0);
                     const response = await fetch(`/setlanguage/${langCode}`, { method: 'POST' });
