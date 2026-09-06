@@ -888,9 +888,9 @@
             const count = meta.dataset.totalCount;
             const viewUser = meta.dataset.viewUser;
             if (viewUser) {
-                titleEl.textContent = `SahyogI18n.t("campaigns", "Campaigns") ( ${count} ) - ${viewUser}`;
+                titleEl.textContent = `${SahyogI18n.t("campaigns", "Campaigns")} ( ${count} ) - ${viewUser}`;
             } else {
-                titleEl.textContent = `SahyogI18n.t("campaigns", "Campaigns") ( ${count} )`;
+                titleEl.textContent = `${SahyogI18n.t("campaigns", "Campaigns")} ( ${count} )`;
             }
         }
         if (meta && window.SAHYOG_CONFIG) {

@@ -398,7 +398,7 @@
   function selectEvent(evName, categoryName) {
     selectedEvent = evName;
     hiddenInput.value = evName;
-    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> SahyogI18n.t("selected", "Selected"): ${evName}`;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> ${SahyogI18n.t("selected", "Selected")}: ${evName}`;
 
     // Persist category to localStorage
     try {
@@ -494,7 +494,7 @@
       updateChipsVisuals();
       renderList(categoriesData[cat], false);
     }
-    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> SahyogI18n.t("selected", "Selected"): ${selectedEvent}`;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> ${SahyogI18n.t("selected", "Selected")}: ${selectedEvent}`;
   }
 
 }) ();
