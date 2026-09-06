@@ -112,9 +112,12 @@ p { color: var(--text-muted); margin-bottom: 1rem; word-break: break-word; overf
 .view-events-btn { padding: 7px 14px; font-size: 0.82rem; background: linear-gradient(135deg, var(--primary-color), #d97706); color: #ffffff !important; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0; box-shadow: 0 2px 6px rgba(215, 106, 30, 0.3); }
 .view-events-btn, .view-events-btn span { color: #ffffff !important; font-weight: 700; }
 .view-events-btn:hover { background: linear-gradient(135deg, var(--primary-hover), #b45309); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(215, 106, 30, 0.4); }
-.profile-card-footer { padding: 1rem 1.75rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.75rem; background: rgba(0,0,0,0.15); }
-.profile-card-footer .submit-btn { flex: 1; padding: 10px; font-size: 0.9rem; }
-.profile-card-footer .delete-btn { padding: 10px 18px; font-size: 0.9rem; }
+.profile-card-footer { padding: 1rem 1.75rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.75rem; background: rgba(0,0,0,0.15); align-items: center; }
+.profile-card-footer .submit-btn { flex: 1.3; padding: 11px 16px; font-size: 0.92rem; font-weight: 700; border-radius: 8px; margin: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.logout-btn { flex: 1; padding: 11px 16px; font-size: 0.92rem; font-weight: 700; border-radius: 8px; background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase; }
+.logout-btn:hover { background: #ef4444; color: #ffffff; border-color: #ef4444; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35); }
+.logout-btn:hover svg, .logout-btn:hover .ss-icon { color: #ffffff !important; fill: #ffffff !important; }
+.logout-btn svg, .logout-btn .ss-icon { width: 15px; height: 15px; display: block; flex-shrink: 0; color: inherit; fill: currentColor; }
 
 .toggle-buttons { display: flex; gap: 1rem; background: var(--bg-dark); padding: 8px; border-radius: 8px; }
 .account-container .toggle-buttons { margin: 1.5rem 1.5rem 0; }
