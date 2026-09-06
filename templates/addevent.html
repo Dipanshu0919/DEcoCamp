@@ -131,26 +131,26 @@
 <div class="add-event-wrapper">
   {% include "partials/icons.html" %}
   <div style="text-align: center; margin-bottom: 2rem;">
-    <h1 style="margin-bottom: 0.5rem;">{{ translate("Create a New Campaign") }}</h1>
+    <h1 style="margin-bottom: 0.5rem;"><span data-i18n="create_a_new_campaign">Create a New Campaign</span></h1>
     <p style="color: var(--text-muted, #94a3b8); margin-bottom: 1rem;">{{ translate("Add details for your campaign
       below. Once approved,
       it will appear in the campaign list for everyone to see.") }}</p>
 
-    <button class="how-to-btn" onclick="startTour()"><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> {{ translate("How to Use this Form") }}</button>
+    <button class="how-to-btn" onclick="startTour()"><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> <span data-i18n="how_to_use_this_form">How to Use this Form</span></button>
   </div>
 
   <div class="add-event-grid">
     <!-- TIPS DROPDOWN -->
     <details class="tips-dropdown">
       <summary>
-        <span><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> {{ translate("Tips for Success") }}</span>
+        <span><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> <span data-i18n="tips_for_success">Tips for Success</span></span>
       </summary>
       <div class="tips-content">
         <ul>
-          <li>{{ translate("Use clear, concise titles.") }}</li>
-          <li>{{ translate("Add the location or place id for clarity.") }}</li>
-          <li>{{ translate("Choose the correct category.") }}</li>
-          <li>{{ translate("Short descriptions work best!") }}</li>
+          <li><span data-i18n="use_clear_concise_titles">Use clear, concise titles.</span></li>
+          <li><span data-i18n="add_the_location_or_place_id_for_clarity">Add the location or place id for clarity.</span></li>
+          <li><span data-i18n="choose_the_correct_category">Choose the correct category.</span></li>
+          <li><span data-i18n="short_descriptions_work_best">Short descriptions work best!</span></li>
         </ul>
       </div>
     </details>
@@ -163,7 +163,7 @@
         <div class="input-row" id="step-name-loc">
           <div class="styled-input-group">
             <div class="label-row">
-              <label>{{ translate("Campaign Name") }}</label>
+              <label><span data-i18n="campaign_name">Campaign Name</span></label>
               <div class="info-icon-wrapper" tabindex="0">
                 <svg class="info-icon-svg" width="16" height="16" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -175,11 +175,11 @@
               </div>
             </div>
             <input type="text" class="styled-input" name="eventname" value="{{ fvalues['eventname'] }}"
-              placeholder="{{ translate('e.g., Summer Charity Gala 2024') }}" required />
+              data-i18n-placeholder="e_g_summer_charity_gala_2024" placeholder="e.g., Summer Charity Gala 2024" required />
           </div>
           <div class="styled-input-group">
             <div class="label-row">
-              <label>{{ translate("Location of where event is going to happen") }}</label>
+              <label><span data-i18n="location_of_where_event_is_going_to_happen">Location of where event is going to happen</span></label>
               <div class="info-icon-wrapper" tabindex="0">
                 <svg class="info-icon-svg" width="16" height="16" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -191,20 +191,20 @@
               </div>
             </div>
             <input type="text" class="styled-input" name="location" value="{{ fvalues['location'] }}"
-              placeholder="{{ translate('e.g., Central Park, NY or Zoom Meeting ID') }}" required />
+              data-i18n-placeholder="e_g_central_park_ny_or_zoom_meeting_id" placeholder="e.g., Central Park, NY or Zoom Meeting ID" required />
           </div>
         </div>
 
         <!-- Category Section -->
         <div class="category-box" id="step-category">
           <label style="display:block; margin-bottom:10px; font-weight:600; color:var(--text-color);">
-            {{ translate("Category & Event Type") }}
+            <span data-i18n="category_and_event_type">Category & Event Type</span>
           </label>
           <input type="hidden" id="categoryHiddenInput" name="category" value="{{ fvalues['category'] }}" required>
 
           <!-- Search Input -->
           <input type="text" id="eventSearchInput" class="event-search-box"
-            placeholder="{{ translate('Type here to find an event category (e.g., Yoga, Meeting, Workshop)...') }}">
+            data-i18n-placeholder="type_here_to_find_an_event_category_e_g_yoga_meeting" placeholder="Type here to find an event category (e.g., Yoga, Meeting, Workshop)...">
 
           <!-- Chips -->
           <div class="cat-chips-container" id="catChips">
@@ -216,7 +216,7 @@
           </div>
 
           <p id="catHint" style="font-size:0.85rem; color:var(--text-muted); font-style:italic; margin:0;">
-            {{ translate("Search above or pick a category to see options") }}
+            <span data-i18n="search_above_or_pick_a_category_to_see_options">Search above or pick a category to see options</span>
           </p>
 
           <!-- List Panel -->
@@ -224,7 +224,7 @@
 
           <div id="selectedDisplay"
             style="margin-top:10px; color:#22c55e; font-size:0.9rem; font-weight:600; min-height:1.2em;">
-            {% if fvalues['category'] %}<svg class="ss-icon ss-icon-inline" width="16" height="16" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: {{ translate(fvalues['category'],
+            {% if fvalues['category'] %}<svg class="ss-icon ss-icon-inline" width="16" height="16" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> <span data-i18n="selected">Selected</span>: {{ translate(fvalues['category'],
             save_file=False) }}{% endif %}
           </div>
         </div>
@@ -234,12 +234,12 @@
           <!-- Dates Block -->
           <div class="dt-block">
             <div class="styled-input-group">
-              <label>{{ translate("Date when event Starts") }}</label>
+              <label><span data-i18n="date_when_event_starts">Date when event Starts</span></label>
               <input type="date" class="styled-input" name="eventstartdate" value="{{fvalues['eventstartdate']}}"
                 required />
             </div>
             <div class="styled-input-group">
-              <label>{{ translate("Date when event Ends") }}</label>
+              <label><span data-i18n="date_when_event_ends">Date when event Ends</span></label>
               <input type="date" class="styled-input" name="eventenddate" value="{{fvalues['eventenddate']}}"
                 required />
             </div>
@@ -251,12 +251,12 @@
           <!-- Times Block -->
           <div class="dt-block">
             <div class="styled-input-group">
-              <label>{{ translate("Time when event Starts") }}</label>
+              <label><span data-i18n="time_when_event_starts">Time when event Starts</span></label>
               <input type="time" class="styled-input" name="eventstarttime" value="{{fvalues['eventstarttime']}}"
                 required />
             </div>
             <div class="styled-input-group">
-              <label>{{ translate("Time when event Ends") }}</label>
+              <label><span data-i18n="time_when_event_ends">Time when event Ends</span></label>
               <input type="time" class="styled-input" name="eventendtime" value="{{fvalues['eventendtime']}}"
                 required />
             </div>
@@ -270,7 +270,7 @@
             style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">
 
             <div class="label-row" style="margin-bottom:0;">
-              <label>{{ translate("Description of the event") }}</label>
+              <label><span data-i18n="description_of_the_event">Description of the event</span></label>
               <div class="info-icon-wrapper" tabindex="0">
                 <svg class="info-icon-svg" width="16" height="16" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -283,10 +283,10 @@
             </div>
 
             <div style="display: flex; align-items: center;">
-              <p class="ai-hint" style="display: none; sm:display: block;">{{ translate("Need help?") }}ㅤ
+              <p class="ai-hint" style="display: none; sm:display: block;"><span data-i18n="need_help">Need help?</span>ㅤ
               </p>
               <button type="button" class="ai-btn-fancy" id="aiBtn" onclick="generateDescription()">
-                <svg class="ss-icon ss-icon-inline ss-icon-spin" width="16" height="16" aria-hidden="true"><use href="#icon-sparkles"></use></svg> {{ translate("Generate description from AI") }}
+                <svg class="ss-icon ss-icon-inline ss-icon-spin" width="16" height="16" aria-hidden="true"><use href="#icon-sparkles"></use></svg> <span data-i18n="generate_description_from_ai">Generate description from AI</span>
               </button>
             </div>
           </div>
@@ -294,19 +294,19 @@
           <!-- AI Options Container -->
           <h4 id="aiInstruction"
             style="text-align:center; margin: 10px 0; display:none; color:var(--text-muted); font-size: 0.9rem;">
-            {{ translate("Click any option below to auto-fill the description") }}
+            <span data-i18n="click_any_option_below_to_auto_fill_the_description">Click any option below to auto-fill the description</span>
           </h4>
 
           <div id="aiResults" class="ai-options-container" style="margin-bottom:10px;"></div>
 
           <textarea class="styled-input" id="descriptionField" name="description" rows="3"
-            placeholder="{{ translate('e.g., Join us for a community gathering to support local artists with live music...') }}"
+            data-i18n-placeholder="e_g_join_us_for_a_community_gathering_to_support_local" placeholder="e.g., Join us for a community gathering to support local artists with live music..."
             required>{{ fvalues['description'] }}</textarea>
         </div>
 
         <div class="form-actions" id="step-actions">
-          <button type="submit" class="btn-submit">{{ translate("Submit campaign for Approval") }}</button>
-          <button type="reset" class="btn-reset">{{ translate("Reset Fields") }}</button>
+          <button type="submit" class="btn-submit"><span data-i18n="submit_campaign_for_approval">Submit campaign for Approval</span></button>
+          <button type="reset" class="btn-reset"><span data-i18n="reset_fields">Reset Fields</span></button>
         </div>
       </form>
     </div>
@@ -398,7 +398,7 @@
   function selectEvent(evName, categoryName) {
     selectedEvent = evName;
     hiddenInput.value = evName;
-    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: ${evName}`;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> SahyogI18n.t("selected", "Selected"): ${evName}`;
 
     // Persist category to localStorage
     try {
@@ -494,7 +494,7 @@
       updateChipsVisuals();
       renderList(categoriesData[cat], false);
     }
-    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> {{ translate("Selected") }}: ${selectedEvent}`;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> SahyogI18n.t("selected", "Selected"): ${selectedEvent}`;
   }
 
 }) ();
@@ -512,39 +512,39 @@
   window.ssAddTour = new SahyogTour({
     highlightClass: 'sst-hl',
     i18n: {
-      finish: '{{ translate("Finish") }}',
-      next: '{{ translate("Next") }} →',
+      finish: SahyogI18n.t("finish", "Finish"),
+      next: 'SahyogI18n.t("next", "Next") →',
     },
     steps: [
       {
         targetId: 'step-name-loc',
-        title: '{{ translate("1. Campaign Name and Location") }}',
-        text: '{{ translate("Start by giving your campaign a clear, memorable name. Then enter the venue — a full address, city name, or a virtual meeting link. Both fields are required.") }}'
+        title: 'SahyogI18n.t("1_campaign_name_and_location", "1. Campaign Name and Location")',
+        text: SahyogI18n.t("start_by_giving_your_campaign_a_clear_memorable_name_then", "Start by giving your campaign a clear, memorable name. Then enter the venue — a full address, city name, or a virtual meeting link. Both fields are required.")
       },
       {
         targetId: 'step-category',
-        title: '{{ translate("2. Category and Event Type") }}',
-        text: '{{ translate("Use the search bar to find your event type quickly, or tap a coloured chip to browse a category. Click any result to select it — the chip will highlight and your selection appears below in green.") }}'
+        title: SahyogI18n.t("2_category_and_event_type", "2. Category and Event Type"),
+        text: SahyogI18n.t("use_the_search_bar_to_find_your_event_type_quickly_or_tap_a", "Use the search bar to find your event type quickly, or tap a coloured chip to browse a category. Click any result to select it — the chip will highlight and your selection appears below in green.")
       },
       {
         targetId: 'step-datetime',
-        title: '{{ translate("3. Dates and Times") }}',
-        text: '{{ translate("Set when your campaign starts and ends. Left side = dates, right side = times. If its a single-day event, set both dates the same.") }}'
+        title: SahyogI18n.t("3_dates_and_times", "3. Dates and Times"),
+        text: SahyogI18n.t("set_when_your_campaign_starts_and_ends_left_side_dates", "Set when your campaign starts and ends. Left side = dates, right side = times. If its a single-day event, set both dates the same.")
       },
       {
         targetId: 'step-desc-ai',
-        title: '{{ translate("4. Description and AI Helper") }}',
-        text: '{{ translate("Write a short summary of your event. Stuck for words? Hit the Generate button — AI will create a few ready-to-use descriptions based on your details. Click any suggestion to auto-fill the box.") }}'
+        title: SahyogI18n.t("4_description_and_ai_helper", "4. Description and AI Helper"),
+        text: SahyogI18n.t("write_a_short_summary_of_your_event_stuck_for_words_hit_the", "Write a short summary of your event. Stuck for words? Hit the Generate button — AI will create a few ready-to-use descriptions based on your details. Click any suggestion to auto-fill the box.")
       },
       {
         targetId: 'step-actions',
-        title: '{{ translate("5. Submit and Reset") }}',
-        text: '{{ translate("Submit sends your campaign for admin review. Once approved it appears in the public campaign list. Reset clears all fields so you can start fresh.") }}',
+        title: SahyogI18n.t("5_submit_and_reset", "5. Submit and Reset"),
+        text: SahyogI18n.t("submit_sends_your_campaign_for_admin_review_once_approved", "Submit sends your campaign for admin review. Once approved it appears in the public campaign list. Reset clears all fields so you can start fresh."),
         legend: [
-          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-check"></use></svg>', label: '{{ translate("Submit") }}', desc: '{{ translate("Sends campaign for approval") }}' },
-          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg>', label: '{{ translate("Reset") }}', desc: '{{ translate("Clears all form fields") }}' },
-          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>', label: '{{ translate("AI Generate") }}', desc: '{{ translate("Auto-writes description for you") }}' },
-          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-info"></use></svg>', label: '{{ translate("Info icons") }}', desc: '{{ translate("Hover for field-specific tips") }}' }
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-check"></use></svg>', label: SahyogI18n.t("submit", "Submit"), desc: SahyogI18n.t("sends_campaign_for_approval", "Sends campaign for approval") },
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg>', label: SahyogI18n.t("reset", "Reset"), desc: SahyogI18n.t("clears_all_form_fields", "Clears all form fields") },
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>', label: SahyogI18n.t("ai_generate", "AI Generate"), desc: SahyogI18n.t("auto_writes_description_for_you", "Auto-writes description for you") },
+          { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-info"></use></svg>', label: SahyogI18n.t("info_icons", "Info icons"), desc: SahyogI18n.t("hover_for_field_specific_tips", "Hover for field-specific tips") }
         ]
       }
     ]

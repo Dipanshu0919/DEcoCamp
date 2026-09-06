@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+    <meta name="ss-lang" content="{{ lang }}">
+    <meta name="ss-static-v" content="20260906-1">
+    <script src="/static/i18n.js?v=20260906-1"></script>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% if eventdetails %}{{ eventdetails.eventname }} — Sahyog Sutra{% else %}Event Not Found — Sahyog Sutra{%
@@ -318,8 +322,8 @@
     <div class="sst-footer">
       <div class="sst-dots" id="sstDots"></div>
       <div class="sst-nav">
-        <button class="sst-btn" id="sstPrev">← {{ translate("Back") }}</button>
-        <button class="sst-btn primary" id="sstNext">{{ translate("Next") }} →</button>
+        <button class="sst-btn" id="sstPrev">← <span data-i18n="back">Back</span></button>
+        <button class="sst-btn primary" id="sstNext"><span data-i18n="next">Next</span> →</button>
       </div>
     </div>
   </div>
@@ -331,11 +335,11 @@
       <a href="/" class="brand">
         <img src="/static/sahyog_sutra_logo.png" alt="Sahyog Sutra">
         <div class="brand-text">
-          <div class="b1">{{ translate("Sahyog Sutra") }}</div>
-          <div class="b2">{{ translate("Weaving Communities Together") }}</div>
+          <div class="b1"><span data-i18n="sahyog_sutra">Sahyog Sutra</span></div>
+          <div class="b2"><span data-i18n="weaving_communities_together">Weaving Communities Together</span></div>
         </div>
       </a>
-      <button class="tour-trigger-btn" onclick="vStartTour()"><svg class="ss-icon ss-icon-inline" width="14" height="14" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> {{ translate("Page Guide") }}</button>
+      <button class="tour-trigger-btn" onclick="vStartTour()"><svg class="ss-icon ss-icon-inline" width="14" height="14" aria-hidden="true"><use href="#icon-lightbulb"></use></svg> <span data-i18n="page_guide">Page Guide</span></button>
     </div>
   </header>
 
@@ -358,7 +362,7 @@
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            {{ translate("Event") }} &middot; {{ eventdetails.category }}
+            <span data-i18n="event">Event</span> &middot; {{ eventdetails.category }}
           </div>
           <h1 class="ev-title">{{ eventdetails.eventname }}</h1>
           <div class="ev-meta-line">
@@ -366,13 +370,13 @@
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            {{ translate("Posted by") }}
+            <span data-i18n="posted_by">Posted by</span>
             <a href="/user/{{ eventdetails.username }}">{{ eventdetails.username }}</a>
             <span class="ev-dot"></span>
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
             </svg>
-            {{ translate("ID") }} #{{ eventdetails.eventid }}
+            <span data-i18n="id">ID</span> #{{ eventdetails.eventid }}
           </div>
         </div>
 
@@ -382,7 +386,7 @@
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
-            <span id="like-pill">{{ eventdetails.likes or 0 }}</span>&thinsp;{{ translate("likes") }}
+            <span id="like-pill">{{ eventdetails.likes or 0 }}</span>&thinsp;<span data-i18n="likes">likes</span>
           </div>
           <div class="stat-chip">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -407,7 +411,7 @@
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            {{ translate("Date & Time") }}
+            <span data-i18n="date_and_time">Date & Time</span>
           </div>
           <div class="date-grid">
             <div class="dc">
@@ -416,7 +420,7 @@
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 8 14" />
                 </svg>
-                {{ translate("Event Starts") }}
+                <span data-i18n="event_starts">Event Starts</span>
               </div>
               <div class="dc-date-val" id="ev-startdate">{{ eventdetails.eventstartdate | datetimeformat }}</div>
               <div class="dc-time-val">
@@ -424,7 +428,7 @@
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                {{ translate("At") }} {{ eventdetails.eventstarttime }}
+                <span data-i18n="at">At</span> {{ eventdetails.eventstarttime }}
               </div>
             </div>
             <div class="dc">
@@ -432,14 +436,14 @@
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                {{ translate("Event Ends") }}
+                <span data-i18n="event_ends">Event Ends</span>
               </div>
               <div class="dc-date-val" id="ev-enddate">{{ eventdetails.eventenddate | datetimeformat }}</div>
               <div class="dc-time-val">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                {{ translate("At") }} {{ eventdetails.eventendtime }}
+                <span data-i18n="at">At</span> {{ eventdetails.eventendtime }}
               </div>
             </div>
           </div>
@@ -452,7 +456,7 @@
                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {{ translate("Location") }}
+            <span data-i18n="location">Location</span>
           </div>
           <div class="loc-hint">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -460,7 +464,7 @@
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            {{ translate("Tap the address below to open in Google Maps") }}
+            <span data-i18n="tap_the_address_below_to_open_in_google_maps">Tap the address below to open in Google Maps</span>
           </div>
           <a href="https://www.google.com/maps/search/?api=1&query={{ eventdetails.location | urlencode }}"
             target="_blank" class="loc-link">
@@ -480,7 +484,7 @@
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {{ translate("About this Event") }}
+            <span data-i18n="about_this_event">About this Event</span>
           </div>
           <p class="desc-text" id="desc-main">{{ eventdetails.description }}</p>
         </div>
@@ -490,7 +494,7 @@
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            {{ translate("Actions") }}
+            <span data-i18n="actions">Actions</span>
           </div>
           <div class="actions-grid">
 
@@ -502,7 +506,7 @@
                 <path
                   d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-              {{ translate("Like") }} (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0
+              <span data-i18n="like">Like</span> (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0
                 }}</span>)
             </button>
             {% else %}
@@ -514,7 +518,7 @@
                 <path
                   d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-              {{ translate("Liked") }} (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0
+              <span data-i18n="liked">Liked</span> (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0
                 }}</span>)
             </button>
             {% else %}
@@ -524,7 +528,7 @@
                 <path
                   d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
-              {{ translate("Like") }} (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0
+              <span data-i18n="like">Like</span> (<span id="eventlike-{{ eventdetails.eventid }}">{{ eventdetails.likes or 0
                 }}</span>)
             </button>
             {% endif %}
@@ -538,7 +542,7 @@
                 <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
                 <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
               </svg>
-              {{ translate("Share Event") }}
+              <span data-i18n="share_event">Share Event</span>
             </button>
 
             <a href="/download_ics/{{ eventdetails.eventid }}" class="ab">
@@ -548,7 +552,7 @@
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              {{ translate("Add to Calendar") }}
+              <span data-i18n="add_to_calendar">Add to Calendar</span>
             </a>
 
             <a href="/group-chat/from-event/{{ eventdetails.eventid }}" class="ab">
@@ -556,7 +560,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              {{ translate("Open Chat") }}
+              <span data-i18n="open_chat">Open Chat</span>
             </a>
 
             <a href="/user/{{ eventdetails.username }}" class="ab" target="_top">
@@ -564,7 +568,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              {{ translate("View Organiser") }}
+              <span data-i18n="view_organiser">View Organiser</span>
             </a>
 
             {% if user_language != "en" %}
@@ -574,7 +578,7 @@
                 <line x1="2" y1="12" x2="22" y2="12" />
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
-              {{ translate("Translate Page") }}
+              <span data-i18n="translate_page">Translate Page</span>
             </button>
             {% endif %}
 
@@ -586,7 +590,7 @@
                 <path d="M10 11v6M14 11v6" />
                 <path d="M9 6V4h6v2" />
               </svg>
-              {{ translate("Delete Event") }}
+              <span data-i18n="delete_event">Delete Event</span>
             </button>
             {% endif %}
 
@@ -607,13 +611,13 @@
         <path stroke-linecap="round" stroke-linejoin="round"
           d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <h2>{{ translate("Event Not Found") }}</h2>
-      <p>{{ translate("The event you're looking for doesn't exist or has been removed.") }}</p>
+      <h2><span data-i18n="event_not_found">Event Not Found</span></h2>
+      <p><span data-i18n="the_event_you_re_looking_for_doesn_t_exist_or_has_been">The event you're looking for doesn't exist or has been removed.</span></p>
       <a href="/">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        {{ translate("Back to Home") }}
+        <span data-i18n="back_to_home">Back to Home</span>
       </a>
     </div>
     {% endif %}
@@ -622,7 +626,7 @@
   <!-- ── Share Modal ─────────────────────────────────────────────────── -->
   <div id="shareModal" class="mbg">
     <div class="mbox">
-      <button class="mclose" onclick="closeM('shareModal')" aria-label="{{ translate("Close") }}"><svg class="ss-icon" aria-hidden="true" style="width:16px;height:16px;"><use href="#icon-close"></use></svg></button>
+      <button class="mclose" onclick="closeM('shareModal')" data-i18n-aria-label="close" aria-label="Close"><svg class="ss-icon" aria-hidden="true" style="width:16px;height:16px;"><use href="#icon-close"></use></svg></button>
       <div class="mhead">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <circle cx="18" cy="5" r="3" />
@@ -631,7 +635,7 @@
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
         </svg>
-        <h3>{{ translate("Share") }}</h3>
+        <h3><span data-i18n="share">Share</span></h3>
         <p id="share-event-name">{{ eventdetails.eventname if eventdetails else "" }}</p>
       </div>
       <div class="mopts">
@@ -640,14 +644,14 @@
             <path
               d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
           </svg>
-          {{ translate("Share on WhatsApp") }}
+          <span data-i18n="share_on_whatsapp">Share on WhatsApp</span>
         </button>
         <button class="mopt" onclick="copyLink()">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>
-          {{ translate("Copy Link") }}
+          <span data-i18n="copy_link">Copy Link</span>
         </button>
         {% if eventdetails %}
         <a href="/download_ics/{{ eventdetails.eventid }}" class="mopt" onclick="closeM('shareModal')">
@@ -657,7 +661,7 @@
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          {{ translate("Add to Calendar (.ics)") }}
+          <span data-i18n="add_to_calendar_ics">Add to Calendar (.ics)</span>
         </a>
         {% endif %}
       </div>
@@ -668,20 +672,19 @@
   {% if eventdetails %}
   <div id="deleteModal" class="mbg">
     <div class="mbox" style="max-width:300px;">
-      <button class="mclose" onclick="closeM('deleteModal')" aria-label="{{ translate("Close") }}"><svg class="ss-icon" aria-hidden="true" style="width:16px;height:16px;"><use href="#icon-close"></use></svg></button>
+      <button class="mclose" onclick="closeM('deleteModal')" data-i18n-aria-label="close" aria-label="Close"><svg class="ss-icon" aria-hidden="true" style="width:16px;height:16px;"><use href="#icon-close"></use></svg></button>
       <div class="mhead">
         <svg style="color:#ef4444;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <h3 style="color:#f87171;">{{ translate("Delete Event?") }}</h3>
-        <p>{{ translate("This action cannot be undone.") }}</p>
+        <h3 style="color:#f87171;"><span data-i18n="delete_event_2">Delete Event?</span></h3>
+        <p><span data-i18n="this_action_cannot_be_undone">This action cannot be undone.</span></p>
       </div>
       <div style="display:flex;gap:8px;margin-top:0.5rem;">
-        <button onclick="closeM('deleteModal')" class="ab" style="flex:1;padding:10px 0;">{{ translate("Cancel")
-          }}</button>
+        <button onclick="closeM('deleteModal')" class="ab" style="flex:1;padding:10px 0;"><span data-i18n="cancel">Cancel</span></button>
         <form action="/deleteevent/{{ eventdetails.eventid }}" method="POST" style="flex:1;margin:0;">
-          <button type="submit" class="ab del" style="width:100%;padding:10px 0;">{{ translate("Delete") }}</button>
+          <button type="submit" class="ab del" style="width:100%;padding:10px 0;"><span data-i18n="delete">Delete</span></button>
         </form>
       </div>
     </div>
@@ -740,9 +743,9 @@
         const days = Math.floor(ms / 86400000);
         const hours = Math.floor((ms % 86400000) / 3600000);
         let out = '';
-        if (days > 0) out += days + '{{ translate("d") }} ';
-        if (hours > 0) out += hours + '{{ translate("h") }}';
-        if (!out) out = '< 1{{ translate("h") }}';
+        if (days > 0) out += days + 'SahyogI18n.t("d", "d") ';
+        if (hours > 0) out += hours + 'SahyogI18n.t("h", "h")';
+        if (!out) out = '< 1SahyogI18n.t("h", "h")';
         const el = document.getElementById('ev-duration');
         if (el) el.textContent = out.trim();
         const chipEl = document.getElementById('event-duration-chip');
@@ -769,18 +772,18 @@
         const endedIcon = '<path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
 
         if (now < startDT) {
-          if (statusEl) { statusEl.className = 'icell-val orange'; statusEl.textContent = '{{ translate("Upcoming") }}'; }
-          if (chipText) chipText.textContent = '{{ translate("Upcoming") }}';
+          if (statusEl) { statusEl.className = 'icell-val orange'; statusEl.textContent = SahyogI18n.t("upcoming", "Upcoming"); }
+          if (chipText) chipText.textContent = SahyogI18n.t("upcoming", "Upcoming");
           if (chip) { chip.className = 'stat-chip st-orange'; }
           if (chipIcon) chipIcon.innerHTML = upcomingIcon;
         } else if (now >= startDT && now <= endDT) {
-          if (statusEl) { statusEl.className = 'icell-val green'; statusEl.textContent = '{{ translate("Ongoing") }}'; }
-          if (chipText) chipText.textContent = '{{ translate("Ongoing") }}';
+          if (statusEl) { statusEl.className = 'icell-val green'; statusEl.textContent = SahyogI18n.t("ongoing", "Ongoing"); }
+          if (chipText) chipText.textContent = SahyogI18n.t("ongoing", "Ongoing");
           if (chip) { chip.className = 'stat-chip st-green'; }
           if (chipIcon) chipIcon.innerHTML = ongoingIcon;
         } else {
-          if (statusEl) { statusEl.className = 'icell-val red'; statusEl.textContent = '{{ translate("Ended") }}'; }
-          if (chipText) chipText.textContent = '{{ translate("Ended") }}';
+          if (statusEl) { statusEl.className = 'icell-val red'; statusEl.textContent = SahyogI18n.t("ended", "Ended"); }
+          if (chipText) chipText.textContent = SahyogI18n.t("ended", "Ended");
           if (chip) { chip.className = 'stat-chip st-red'; }
           if (chipIcon) chipIcon.innerHTML = endedIcon;
         }
@@ -829,12 +832,12 @@
         const ta = document.createElement('textarea');
         ta.value = link; ta.style.cssText = 'position:fixed;left:-9999px';
         document.body.appendChild(ta); ta.select();
-        try { document.execCommand('copy'); showAlert('{{ translate("Copied!") }}', 'success'); }
-        catch { showAlert('{{ translate("Failed") }}', 'error'); }
+        try { document.execCommand('copy'); showAlert(SahyogI18n.t("copied", "Copied!"), 'success'); }
+        catch { showAlert(SahyogI18n.t("failed", "Failed"), 'error'); }
         document.body.removeChild(ta);
       };
       navigator.clipboard && window.isSecureContext
-        ? navigator.clipboard.writeText(link).then(() => showAlert('{{ translate("Copied!") }}', 'success')).catch(fb)
+        ? navigator.clipboard.writeText(link).then(() => showAlert(SahyogI18n.t("copied", "Copied!"), 'success')).catch(fb)
         : fb();
       closeM('shareModal');
     }
@@ -851,13 +854,13 @@
         const locEl = document.querySelector('.loc-text');
         if (locEl) locEl.textContent = EVENTLOC;
         btn.classList.remove('act-tr');
-        btn.innerHTML = GLOBE_SVG + ' {{ translate("Translate Page") }}';
+        btn.innerHTML = GLOBE_SVG + ' SahyogI18n.t("translate_page", "Translate Page")';
         translated = false;
         return;
       }
 
       btn.classList.add('loading');
-      btn.innerHTML = SPINNER_SVG + ' {{ translate("Translating…") }}';
+      btn.innerHTML = SPINNER_SVG + ' SahyogI18n.t("translating", "Translating…")';
 
       try {
         const resp = await fetch('/translate_event', {
@@ -876,11 +879,11 @@
         translated = true;
         btn.classList.remove('loading');
         btn.classList.add('act-tr');
-        btn.innerHTML = GLOBE_SVG + ' {{ translate("Show Original") }}';
+        btn.innerHTML = GLOBE_SVG + ' SahyogI18n.t("show_original", "Show Original")';
       } catch (err) {
         btn.classList.remove('loading', 'act-tr');
-        btn.innerHTML = GLOBE_SVG + ' {{ translate("Translate Page") }}';
-        showAlert('{{ translate("Translation failed.") }}', 'error');
+        btn.innerHTML = GLOBE_SVG + ' SahyogI18n.t("translate_page", "Translate Page")';
+        showAlert(SahyogI18n.t("translation_failed", "Translation failed."), 'error');
       }
     }
     /* ================================================================
@@ -890,41 +893,41 @@
     window.ssEventTour = new SahyogTour({
       highlightClass: 'sst-hl',
       i18n: {
-        finish: '{{ translate("Finish") }}',
-        next: '{{ translate("Next") }} →',
+        finish: SahyogI18n.t("finish", "Finish"),
+        next: 'SahyogI18n.t("next", "Next") →',
       },
       steps: [
         {
           targetId: 'step-ev-hero',
-          title: '{{ translate("1. Event Overview") }}',
-          text: '{{ translate("This banner shows the event name, category badge, who posted it, and its unique ID. The organisers name is a clickable link to their profile.") }}'
+          title: 'SahyogI18n.t("1_event_overview", "1. Event Overview")',
+          text: SahyogI18n.t("this_banner_shows_the_event_name_category_badge_who_posted", "This banner shows the event name, category badge, who posted it, and its unique ID. The organisers name is a clickable link to their profile.")
         },
         {
           targetId: 'step-ev-stats',
-          title: '{{ translate("2. Quick Stats") }}',
-          text: '{{ translate("At a glance: total likes this event has received, the total duration of the event, and its current status — Upcoming, Ongoing, or Ended. These update automatically.") }}'
+          title: SahyogI18n.t("2_quick_stats", "2. Quick Stats"),
+          text: SahyogI18n.t("at_a_glance_total_likes_this_event_has_received_the_total", "At a glance: total likes this event has received, the total duration of the event, and its current status — Upcoming, Ongoing, or Ended. These update automatically.")
         },
         {
           targetId: 'step-ev-dates',
-          title: '{{ translate("3. Date and Time") }}',
-          text: '{{ translate("Start and end date/time shown side by side. Use the Add to Calendar button in Actions below to save these dates directly to your phone or computer calendar.") }}'
+          title: SahyogI18n.t("3_date_and_time", "3. Date and Time"),
+          text: SahyogI18n.t("start_and_end_date_time_shown_side_by_side_use_the_add_to", "Start and end date/time shown side by side. Use the Add to Calendar button in Actions below to save these dates directly to your phone or computer calendar.")
         },
         {
           targetId: 'step-ev-location',
-          title: '{{ translate("4. Location") }}',
-          text: '{{ translate("Tap the address card to open it directly in Google Maps. Works for both physical venues and virtual meeting links.") }}'
+          title: SahyogI18n.t("4_location", "4. Location"),
+          text: SahyogI18n.t("tap_the_address_card_to_open_it_directly_in_google_maps", "Tap the address card to open it directly in Google Maps. Works for both physical venues and virtual meeting links.")
         },
         {
           targetId: 'step-ev-actions',
-          title: '{{ translate("5. Actions") }}',
-          text: '{{ translate("Everything you can do with this event is here.") }}',
+          title: SahyogI18n.t("5_actions", "5. Actions"),
+          text: SahyogI18n.t("everything_you_can_do_with_this_event_is_here", "Everything you can do with this event is here."),
           legend: [
-            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-heart"></use></svg>', label: '{{ translate("Like") }}', desc: '{{ translate("Show support for this event") }}' },
-            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-share"></use></svg>', label: '{{ translate("Share") }}', desc: '{{ translate("WhatsApp or copy link") }}' },
-            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>', label: '{{ translate("Add to Calendar") }}', desc: '{{ translate("Download .ics file") }}' },
-            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-chat"></use></svg>', label: '{{ translate("Open Chat") }}', desc: '{{ translate("Join the event group chat") }}' },
-            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-user"></use></svg>', label: '{{ translate("View Organiser") }}', desc: '{{ translate("See organiser\'s profile") }}' },
-            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: '{{ translate("Translate") }}', desc: '{{ translate("Translate content to your language") }}' }
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-heart"></use></svg>', label: SahyogI18n.t("like", "Like"), desc: SahyogI18n.t("show_support_for_this_event", "Show support for this event") },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-share"></use></svg>', label: SahyogI18n.t("share", "Share"), desc: SahyogI18n.t("whatsapp_or_copy_link", "WhatsApp or copy link") },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>', label: SahyogI18n.t("add_to_calendar", "Add to Calendar"), desc: SahyogI18n.t("download_ics_file", "Download .ics file") },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-chat"></use></svg>', label: SahyogI18n.t("open_chat", "Open Chat"), desc: SahyogI18n.t("join_the_event_group_chat", "Join the event group chat") },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-user"></use></svg>', label: SahyogI18n.t("view_organiser", "View Organiser"), desc: SahyogI18n.t("see_organiser_s_profile", "See organiser\\'s profile") },
+            { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: SahyogI18n.t("translate", "Translate"), desc: SahyogI18n.t("translate_content_to_your_language", "Translate content to your language") }
           ]
         }
       ]

@@ -123,14 +123,16 @@ async def home_page(
     template_name = session.get("template", "index.html")
     lang_to_use = user_lang or "en"
 
-    # Fast Zero-Translation Path for English (0ms) & Page-level dictionary for other languages
+    # Minimal translate for remaining dynamic content (category names etc.)
+    # Static UI now handled client-side via data-i18n + /static/i18n/<lang>.js
     if lang_to_use == "en":
         bound_translate = lambda text, *args, **kwargs: text
     else:
         page_dict = get_ui_translation_dict(lang_to_use)
         def bound_translate(text: str, *args, **kwargs) -> str:
-            clean = text.strip()
-            return page_dict.get(clean, text)
+            if not text or not isinstance(text, str):
+                return text or ""
+            return page_dict.get(text.strip(), text)
 
     return templates.TemplateResponse(request, template_name, {
         "active_events_length": active_events_length,
@@ -139,6 +141,7 @@ async def home_page(
         "isadmin": is_admin,
         "userdetails": user or {},
         "translate": bound_translate,
+        "lang": lang_to_use,
         "user_language": lang_to_use,
         "fvalues": {},
         "top_organizers": [],  # Fetched client-side via /api/leaderboard
@@ -233,6 +236,7 @@ async def show_campaigns(
         "user_event_count": user_event_count,
         "translate": bound_translate,
         "trending_events": trending_events,
+        "lang": user_lang,
         "user_language": user_lang
     })
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -267,6 +271,7 @@ async def event_detail_page(
         "c_user": current_uname,
         "eventdetails": event,
         "translate": bound_translate,
+        "lang": user_lang,
         "user_language": user_lang,
         "userdetails": user or {}
     })
@@ -297,6 +302,7 @@ async def show_add_form(request: Request):
     return templates.TemplateResponse(request, "addevent.html", {
         "fvalues": fv,
         "translate": bound_translate,
+        "lang": user_lang,
         "categories": categories
     })
 
@@ -534,6 +540,8 @@ async def handle_user_profile(
     return templates.TemplateResponse(request, "userprofile.html", {
         "userdetails": dict(target_user),
         "translate": bound_translate,
+        "lang": user_lang,
+        "user_language": user_lang,
         "is_own_profile": bool(is_own_profile)
     })
 

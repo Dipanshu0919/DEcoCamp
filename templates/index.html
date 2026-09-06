@@ -2,6 +2,10 @@
 <html>
 
 <head>
+    <meta name="ss-lang" content="{{ lang }}">
+    <meta name="ss-static-v" content="20260906-1">
+    <script src="/static/i18n.js?v=20260906-1"></script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sahyog Sutra — Weaving Communities Together</title>
@@ -75,8 +79,8 @@
         <div class="sst-footer">
             <div class="sst-dots" id="sstDots"></div>
             <div class="sst-nav">
-                <button class="sst-btn" id="sstPrev">← {{ translate("Back") }}</button>
-                <button class="sst-btn primary" id="sstNext">{{ translate("Next") }} →</button>
+                <button class="sst-btn" id="sstPrev">← <span data-i18n="back">Back</span></button>
+                <button class="sst-btn primary" id="sstNext"><span data-i18n="next">Next</span> →</button>
             </div>
         </div>
     </div>
@@ -88,20 +92,20 @@
                 <img src="/static/sahyog_sutra_logo.png" alt="Sahyog Sutra Logo"
                     style="width:44px;height:44px;border-radius:8px;object-fit:cover;box-shadow:0 4px 12px rgba(215,106,30,0.35);">
                 <div class="brand-text">
-                    <div>{{ translate('Sahyog Sutra') }}</div>
-                    <div>{{ translate('Weaving Communities Together') }}</div>
+                    <div><span data-i18n="sahyog_sutra">Sahyog Sutra</span></div>
+                    <div><span data-i18n="weaving_communities_together">Weaving Communities Together</span></div>
                 </div>
             </a>
             <nav>
-                <a class="navlink active" href="#home" data-section="home">{{ translate("Home") }}</a>
-                <a class="navlink" href="#campaigns" data-section="campaigns">{{ translate("Explore Campaigns") }}</a>
-                <a class="navlink" href="#add" data-section="add">{{ translate("Create Event") }}</a>
+                <a class="navlink active" href="#home" data-section="home"><span data-i18n="home">Home</span></a>
+                <a class="navlink" href="#campaigns" data-section="campaigns"><span data-i18n="explore_campaigns">Explore Campaigns</span></a>
+                <a class="navlink" href="#add" data-section="add"><span data-i18n="create_event">Create Event</span></a>
                 {% if isadmin %}
-                <a class="navlink" href="#pending" data-section="pending">{{ translate("Pending") }}</a>
+                <a class="navlink" href="#pending" data-section="pending"><span data-i18n="pending">Pending</span></a>
                 {% endif %}
-                <a class="navlink" href="#contact" data-section="contact">{{ translate("Contact") }}</a>
+                <a class="navlink" href="#contact" data-section="contact"><span data-i18n="contact">Contact</span></a>
                 <div class="language-selector" style="position: relative;">
-                    <button class="cta" id="languageBtn" style="margin: 0;">{{ translate("Change Language") }}</button>
+                    <button class="cta" id="languageBtn" style="margin: 0;"><span data-i18n="change_language">Change Language</span></button>
                     <div id="languageDropdown" class="language-dropdown"
                         style="display: none; position: absolute; top: 100%; right: 0; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 8px; min-width: 220px; z-index: 1001; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                         <div class="lang-option" data-lang="en">English / English (en)</div>
@@ -125,11 +129,11 @@
         <div class="alert-content">
             <div class="alert-text-wrapper">
                 <span class="alert-text" id="alertText"></span>
-                <button class="alert-close" id="alertCloseBtn" onclick="closeAlert()" title="{{ translate('Close') }}"><svg class="ss-icon ss-icon-sm" aria-hidden="true"><use href="#icon-close"></use></svg></button>
+                <button class="alert-close" id="alertCloseBtn" onclick="closeAlert()" data-i18n-title="close" title="Close"><svg class="ss-icon ss-icon-sm" aria-hidden="true"><use href="#icon-close"></use></svg></button>
             </div>
             <div class="alert-buttons" id="alertButtons" style="display: none;">
-                <button class="alert-action-btn reload-btn" onclick="window.location.reload()" title="{{ translate('Reload') }}">{{ translate('Reload Page') }}</button>
-                <button class="alert-action-btn close-btn" onclick="closeAlert()" title="{{ translate('Close') }}">{{ translate('Close this message') }}</button>
+                <button class="alert-action-btn reload-btn" onclick="window.location.reload()" data-i18n-title="reload" title="Reload"><span data-i18n="reload_page">Reload Page</span></button>
+                <button class="alert-action-btn close-btn" onclick="closeAlert()" data-i18n-title="close" title="Close"><span data-i18n="close_this_message">Close this message</span></button>
             </div>
         </div>
     </div>
@@ -137,7 +141,7 @@
 
     <div id="sideChatDrawer" class="chat-drawer">
         <div class="chat-header">
-            <h3>{{ translate("Event Chat") }}</h3>
+            <h3><span data-i18n="event_chat">Event Chat</span></h3>
             <button class="close-chat" onclick="closeEventChat()"><svg class="ss-icon ss-icon-sm" aria-hidden="true"><use href="#icon-close"></use></svg></button>
         </div>
         <iframe id="globalChatIframe" class="chat-iframe"></iframe>
@@ -147,12 +151,12 @@
         <section id="home" class="active">
             <div class="home-layout">
                 <div class="home-hero" id="step-hero">
-                    <h1 class="reveal stagger-1">{{ translate("Hey there! We're glad you're here. Welcome to") }} <span class="brand-highlight">{{ translate("Sahyog Sutra") }}!</span></h1>
-                    <p class="reveal stagger-1">{{ translate("Unite, act, and create change. Join a campaign, volunteer your time, or start a movement — every effort weaves a stronger community.") }}</p>
+                    <h1 class="reveal stagger-1"><span data-i18n="hey_there_we_re_glad_you_re_here_welcome_to">Hey there! We're glad you're here. Welcome to</span> <span class="brand-highlight"><span data-i18n="sahyog_sutra">Sahyog Sutra</span>!</span></h1>
+                    <p class="reveal stagger-1"><span data-i18n="unite_act_and_create_change_join_a_campaign_volunteer_your">Unite, act, and create change. Join a campaign, volunteer your time, or start a movement — every effort weaves a stronger community.</span></p>
 
                     <div class="hero-actions reveal stagger-2" style="margin: 2rem 0; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
-                        <button class="cta" style="margin: 0;" onclick="showSection('campaigns')">{{ translate("Explore Campaigns") }}</button>
-                        <button class="cta secondary" style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);" onclick="hStartTour()"><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg>{{ translate("Quick Tour") }}</button>
+                        <button class="cta" style="margin: 0;" onclick="showSection('campaigns')"><span data-i18n="explore_campaigns">Explore Campaigns</span></button>
+                        <button class="cta secondary" style="margin: 0; background: transparent; border: 2px solid var(--border-color); color: var(--text-muted);" onclick="hStartTour()"><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg><span data-i18n="quick_tour">Quick Tour</span></button>
                     </div>
 
                     <!-- Continuous Multi-Layer 3D Hero Sculpture -->
@@ -175,14 +179,14 @@
                                     <div class="hero-layer-content">
                                         <div class="hero-layer-badge">
                                             <svg class="ss-icon ss-icon-gold" width="16" height="16" aria-hidden="true"><use href="#icon-sparkles"></use></svg>
-                                            <span>{{ translate("Verified Community Network") }}</span>
+                                            <span><span data-i18n="verified_community_network">Verified Community Network</span></span>
                                         </div>
                                         <h3 class="hero-layer-title">
-                                            {{ translate("Community Powered Impact") }}
+                                            <span data-i18n="community_powered_impact">Community Powered Impact</span>
                                         </h3>
                                         <div class="hero-layer-stats">
                                             <svg class="ss-icon ss-icon-gold" width="16" height="16" aria-hidden="true"><use href="#icon-handshake"></use></svg>
-                                            <span class="count-up" data-count-to="{{ active_events_length }}">{{ active_events_length }}</span>+ {{ translate("Active Initiatives") }} • 100% {{ translate("Volunteer Driven") }}
+                                            <span class="count-up" data-count-to="{{ active_events_length }}">{{ active_events_length }}</span>+ <span data-i18n="active_initiatives">Active Initiatives</span> • 100% <span data-i18n="volunteer_driven">Volunteer Driven</span>
                                         </div>
                                     </div>
                                 </div>
@@ -195,7 +199,7 @@
 
                     <!-- ===== LEADERBOARD (lazy-loaded via JS) ===== -->
                     <div class="dash-card reveal stagger-3" style="margin-top: 2rem;" id="leaderboard-card">
-                        <h4><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-trophy"></use></svg>{{ translate("Top Organizers") }}</h4>
+                        <h4><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-trophy"></use></svg><span data-i18n="top_organizers">Top Organizers</span></h4>
                         <ul class="leaderboard-list" id="leaderboard-list">
                             <!-- Skeleton rows shown while fetching -->
                             {% for _ in range(3) %}
@@ -214,22 +218,22 @@
                 </div>
 
                 <div id="how-it-works-section" class="hiw-container reveal" style="margin: 0;">
-                    <h2 style="text-align: center; margin-bottom: 2rem;">{{ translate("How Sahyog Sutra Works") }}</h2>
+                    <h2 style="text-align: center; margin-bottom: 2rem;"><span data-i18n="how_sahyog_sutra_works">How Sahyog Sutra Works</span></h2>
                     <div class="hiw-grid">
                         <div class="hiw-card reveal stagger-1">
                             <div class="hiw-icon"><svg class="ss-icon ss-icon-gold" width="36" height="36" aria-hidden="true"><use href="#icon-megaphone"></use></svg></div>
-                            <h3>{{ translate("1. Create a Campaign") }}</h3>
-                            <p>{{ translate("Submit a community campaign across 10 categories and 100+ event types — from environment drives to hackathons. Add your dates, location, and description — or let AI write it for you. Your event goes live after admin approval.") }}</p>
+                            <h3><span data-i18n="1_create_a_campaign">1. Create a Campaign</span></h3>
+                            <p><span data-i18n="submit_a_community_campaign_across_10_categories_and_100">Submit a community campaign across 10 categories and 100+ event types — from environment drives to hackathons. Add your dates, location, and description — or let AI write it for you. Your event goes live after admin approval.</span></p>
                         </div>
                         <div class="hiw-card reveal stagger-2">
                             <div class="hiw-icon"><svg class="ss-icon ss-icon-gold" width="36" height="36" aria-hidden="true"><use href="#icon-search"></use></svg></div>
-                            <h3>{{ translate("2. Explore & Engage") }}</h3>
-                            <p>{{ translate("Browse campaigns by category, search by keyword, and filter by what matters to you. Like events to show support, share them on WhatsApp, add them to your calendar, and translate them into your preferred language.") }}</p>
+                            <h3><span data-i18n="2_explore_and_engage">2. Explore & Engage</span></h3>
+                            <p><span data-i18n="browse_campaigns_by_category_search_by_keyword_and_filter">Browse campaigns by category, search by keyword, and filter by what matters to you. Like events to show support, share them on WhatsApp, add them to your calendar, and translate them into your preferred language.</span></p>
                         </div>
                         <div class="hiw-card reveal stagger-3">
                             <div class="hiw-icon"><svg class="ss-icon ss-icon-gold" width="36" height="36" aria-hidden="true"><use href="#icon-chat"></use></svg></div>
-                            <h3>{{ translate("3. Connect & Collaborate") }}</h3>
-                            <p>{{ translate("Every campaign has a built-in group chat. Coordinate with organizers and other participants in real time. View organizer profiles, track top contributors on the leaderboard, and be part of the community.") }}</p>
+                            <h3><span data-i18n="3_connect_and_collaborate">3. Connect & Collaborate</span></h3>
+                            <p><span data-i18n="every_campaign_has_a_built_in_group_chat_coordinate_with">Every campaign has a built-in group chat. Coordinate with organizers and other participants in real time. View organizer profiles, track top contributors on the leaderboard, and be part of the community.</span></p>
                         </div>
                     </div>
                 </div>
@@ -238,62 +242,62 @@
                     <div class="account-container">
                         {% if c_user == "None" or not c_user %}
                         <div class="toggle-buttons">
-                            <button id="login-tab-btn" class="active" style="flex: 1;">{{ translate("Login") }}</button>
-                            <button id="signup-tab-btn" style="flex: 1;">{{ translate("Sign Up") }}</button>
+                            <button id="login-tab-btn" class="active" style="flex: 1;"><span data-i18n="login">Login</span></button>
+                            <button id="signup-tab-btn" style="flex: 1;"><span data-i18n="sign_up">Sign Up</span></button>
                         </div>
                         <form class="auth-form active" id="loginpage">
                             <div class="form-group">
-                                <input type="text" name="loginusername" placeholder="{{ translate('Username or Email') }}" required />
+                                <input type="text" name="loginusername" data-i18n-placeholder="username_or_email" placeholder="Username or Email" required />
                             </div>
                             <div class="form-group">
-                                <input type="password" name="loginpassword" id="loginpassword" placeholder="{{ translate('Password') }}" required />
+                                <input type="password" name="loginpassword" id="loginpassword" data-i18n-placeholder="password" placeholder="Password" required />
                                 <span class="toggle-password" onclick="togglePasswordVisibility('loginpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                             </div>
                             <div class="forget-link-container">
-                                <button type="button" id="forget-pass-link" class="forget-link">{{ translate("Forgot Password?") }}</button>
+                                <button type="button" id="forget-pass-link" class="forget-link"><span data-i18n="forgot_password">Forgot Password?</span></button>
                             </div>
-                            <button type="submit" class="submit-btn">{{ translate("Login") }}</button>
+                            <button type="submit" class="submit-btn"><span data-i18n="login">Login</span></button>
                         </form>
                         <form class="auth-form" id="signuppage">
-                            <div class="form-group"><input type="text" name="nameofuser" placeholder="{{ translate('Full Name') }}" maxlength="24" required /></div>
-                            <div class="form-group"><input type="text" name="username" placeholder="{{ translate('Username') }}" maxlength="20" required /></div>
+                            <div class="form-group"><input type="text" name="nameofuser" data-i18n-placeholder="full_name" placeholder="Full Name" maxlength="24" required /></div>
+                            <div class="form-group"><input type="text" name="username" data-i18n-placeholder="username" placeholder="Username" maxlength="20" required /></div>
                             <div class="form-group otp-group full-width">
-                                <input type="email" name="email" id="email" placeholder="{{ translate('Email') }}" required />
-                                <button type="button" id="sendOtpBtn" class="otp-btn">{{ translate("Send OTP") }}</button>
+                                <input type="email" name="email" id="email" data-i18n-placeholder="email" placeholder="Email" required />
+                                <button type="button" id="sendOtpBtn" class="otp-btn"><span data-i18n="send_otp">Send OTP</span></button>
                             </div>
-                            <div class="form-group full-width"><input type="number" name="signupotp" placeholder="{{ translate('Enter OTP') }}" oninput="this.value=this.value.slice(0,4)" required /></div>
+                            <div class="form-group full-width"><input type="number" name="signupotp" data-i18n-placeholder="enter_otp" placeholder="Enter OTP" oninput="this.value=this.value.slice(0,4)" required /></div>
                             <div class="form-group">
-                                <input type="password" name="password" id="signup_password" placeholder="{{ translate('Password') }}" required />
+                                <input type="password" name="password" id="signup_password" data-i18n-placeholder="password" placeholder="Password" required />
                                 <span class="toggle-password" onclick="togglePasswordVisibility('signup_password')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                             </div>
                             <div class="form-group">
-                                <input type="password" name="cpassword" id="signup_cpassword" placeholder="{{ translate('Confirm Password') }}" required />
+                                <input type="password" name="cpassword" id="signup_cpassword" data-i18n-placeholder="confirm_password" placeholder="Confirm Password" required />
                                 <span class="toggle-password" onclick="togglePasswordVisibility('signup_cpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                             </div>
-                            <button type="submit" class="submit-btn">{{ translate("Sign Up") }}</button>
+                            <button type="submit" class="submit-btn"><span data-i18n="sign_up">Sign Up</span></button>
                         </form>
                         <form class="auth-form" id="forgetpasswordpage">
-                            <h3 style="text-align: center;">{{ translate("Reset Password") }}</h3>
+                            <h3 style="text-align: center;"><span data-i18n="reset_password">Reset Password</span></h3>
                             <div class="form-group full-width">
-                                <input type="text" name="forgetemail" id="forgetemail" placeholder="{{ translate('Enter your email or username') }}" required />
+                                <input type="text" name="forgetemail" id="forgetemail" data-i18n-placeholder="enter_your_email_or_username" placeholder="Enter your email or username" required />
                             </div>
-                            <button type="button" id="sendForgetOtpBtn" class="submit-btn" style="margin-bottom: 1rem;">{{ translate("Send OTP") }}</button>
+                            <button type="button" id="sendForgetOtpBtn" class="submit-btn" style="margin-bottom: 1rem;"><span data-i18n="send_otp">Send OTP</span></button>
                             <div id="forget-step-2" style="display:none; width: 100%;">
                                 <div class="form-group full-width">
-                                    <input type="number" name="forgetotp" placeholder="{{ translate('Enter OTP') }}" oninput="this.value=this.value.slice(0,4)" required />
+                                    <input type="number" name="forgetotp" data-i18n-placeholder="enter_otp" placeholder="Enter OTP" oninput="this.value=this.value.slice(0,4)" required />
                                 </div>
                                 <div class="form-group">
-                                    <input type="password" name="newpassword" id="newpassword" placeholder="{{ translate('New Password') }}" required />
+                                    <input type="password" name="newpassword" id="newpassword" data-i18n-placeholder="new_password" placeholder="New Password" required />
                                     <span class="toggle-password" onclick="togglePasswordVisibility('newpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                                 </div>
                                 <div class="form-group">
-                                    <input type="password" name="confirmnewpassword" id="confirmnewpassword" placeholder="{{ translate('Confirm New Password') }}" required />
+                                    <input type="password" name="confirmnewpassword" id="confirmnewpassword" data-i18n-placeholder="confirm_new_password" placeholder="Confirm New Password" required />
                                     <span class="toggle-password" onclick="togglePasswordVisibility('confirmnewpassword')"><svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg></span>
                                 </div>
-                                <button type="submit" class="submit-btn">{{ translate("Reset Password") }}</button>
+                                <button type="submit" class="submit-btn"><span data-i18n="reset_password">Reset Password</span></button>
                             </div>
                             <div class="back-btn-container">
-                                <button type="button" class="read-more-btn" id="backToLoginBtn">{{ translate("Back to Login") }}</button>
+                                <button type="button" class="read-more-btn" id="backToLoginBtn"><span data-i18n="back_to_login">Back to Login</span></button>
                             </div>
                         </form>
                         {% else %}
@@ -306,21 +310,21 @@
                         </div>
                         <div class="profile-card-body">
                             <div class="profile-info-row">
-                                <span class="info-label">{{ translate("Email") }}</span>
+                                <span class="info-label"><span data-i18n="email">Email</span></span>
                                 <span class="info-value">{{ userdetails['email'] }}</span>
                             </div>
                             <div class="profile-info-row">
-                                <span class="info-label">{{ translate("Role") }}</span>
+                                <span class="info-label"><span data-i18n="role">Role</span></span>
                                 <span class="info-value" style="text-transform: capitalize;">{{ userdetails['role'] }}</span>
                             </div>
                             <div class="profile-events-row">
-                                <span>{{ translate("Events created:") }} <strong>{{ userdetails['events'].split(',')|length if userdetails['events'] else 0 }}</strong></span>
-                                <button class="view-events-btn" onclick="window.viewUserCampaigns ? window.viewUserCampaigns('{{ userdetails['username'] }}') : (showSection('campaigns'), loadCampaigns('{{ userdetails['username'] }}'))">{{ translate("View your events") }}</button>
+                                <span><span data-i18n="events_created">Events created:</span> <strong>{{ userdetails['events'].split(',')|length if userdetails['events'] else 0 }}</strong></span>
+                                <button class="view-events-btn" onclick="window.viewUserCampaigns ? window.viewUserCampaigns('{{ userdetails['username'] }}') : (showSection('campaigns'), loadCampaigns('{{ userdetails['username'] }}'))"><span data-i18n="view_your_events">View your events</span></button>
                             </div>
                         </div>
                         <div class="profile-card-footer">
-                            <button onclick="window.location.href='/user/{{ c_user }}'" class="submit-btn">{{ translate("View Profile") }}</button>
-                            <button onclick="window.location.href='/clearsession';" class="delete-btn">{{ translate("Logout") }}</button>
+                            <button onclick="window.location.href='/user/{{ c_user }}'" class="submit-btn"><span data-i18n="view_profile">View Profile</span></button>
+                            <button onclick="window.location.href='/clearsession';" class="delete-btn"><span data-i18n="logout">Logout</span></button>
                         </div>
                         {% endif %}
                     </div>
@@ -329,7 +333,7 @@
 
             {% if isadmin %}
             <div style="margin-top: 3rem;">
-                <h2><svg class="ss-icon ss-icon-inline" aria-hidden="true"><use href="#icon-tools"></use></svg>{{ translate("System Health (Admin)") }}</h2>
+                <h2><svg class="ss-icon ss-icon-inline" aria-hidden="true"><use href="#icon-tools"></use></svg><span data-i18n="system_health_admin">System Health (Admin)</span></h2>
                 <div class="dashboard-grid">
                     <div class="dash-card"><h3>{{ admin_stats['total_users'] }}</h3><p>Total Users</p></div>
                     <div class="dash-card"><h3>{{ admin_stats['total_events'] }}</h3><p>Total Events</p></div>
@@ -343,8 +347,8 @@
         <section id="campaigns">
             <div class="campaign-header">
                 <div>
-                    <h2 id="campaignsTitle">{{ translate("Campaigns") }} ( {{ active_events_length }} )</h2>
-                    <p>{{ translate("Find campaigns to join or create your own.") }}</p>
+                    <h2 id="campaignsTitle"><span data-i18n="campaigns">Campaigns</span> ( {{ active_events_length }} )</h2>
+                    <p><span data-i18n="find_campaigns_to_join_or_create_your_own">Find campaigns to join or create your own.</span></p>
                 </div>
                 <div class="toggle-buttons">
                     <button id="listViewBtn" class="active" onclick="toggleView('list')">List View</button>
@@ -352,7 +356,7 @@
                 </div>
             </div>
             <div id="campaignsLoadingState" style="text-align: center; padding: 3rem;">
-                <p style="color: var(--text-muted); font-size: 1.1rem;">{{ translate("Loading campaigns...") }}</p>
+                <p style="color: var(--text-muted); font-size: 1.1rem;"><span data-i18n="loading_campaigns">Loading campaigns...</span></p>
             </div>
             <div id="campaignsContent" style="display: none;"></div>
             <div id="calendarView" style="display: none;">
@@ -363,28 +367,28 @@
         <section id="pending">
             {% if isadmin %}
             <div id="pendingLoadingState" style="text-align: center; padding: 3rem;">
-                <p style="color: var(--text-muted); font-size: 1.1rem;">{{ translate("Loading pending events...") }}</p>
+                <p style="color: var(--text-muted); font-size: 1.1rem;"><span data-i18n="loading_pending_events">Loading pending events...</span></p>
             </div>
             <div id="pendingContent" style="display: none;"></div>
             {% else %}
             <div style="text-align: center; padding: 3rem;">
-                <p style="color: var(--text-muted); font-size: 1.1rem;">{{ translate("Access denied. Admin privileges required.") }}</p>
+                <p style="color: var(--text-muted); font-size: 1.1rem;"><span data-i18n="access_denied_admin_privileges_required">Access denied. Admin privileges required.</span></p>
             </div>
             {% endif %}
         </section>
 
         <section id="add">
             <div id="addFormLoadingState" style="text-align: center; padding: 3rem;">
-                <p style="color: var(--text-muted); font-size: 1.1rem;">{{ translate("Loading form...") }}</p>
+                <p style="color: var(--text-muted); font-size: 1.1rem;"><span data-i18n="loading_form">Loading form...</span></p>
             </div>
             <div id="addFormContent" style="display: none;"></div>
         </section>
 
         <section id="contact">
             <div class="form-container">
-                <h1>{{ translate("Contact Us") }}</h1>
+                <h1><span data-i18n="contact_us">Contact Us</span></h1>
                 <p class="intro">
-                    {{ translate("Have a question, suggestion, or want to collaborate? We'd love to hear from you. Email us at: ") }} <a href="mailto:dipanshu0919@gmail.com">dipanshu0919@gmail.com</a>
+                    <span data-i18n="have_a_question_suggestion_or_want_to_collaborate_we_d_love">Have a question, suggestion, or want to collaborate? We'd love to hear from you. Email us at:</span> <a href="mailto:dipanshu0919@gmail.com">dipanshu0919@gmail.com</a>
                 </p>
             </div>
         </section>
@@ -398,33 +402,44 @@
             currentUser: "{{ c_user }}",
             userLanguage: "{{ user_language }}",
             activeEventsLength: "{{ active_events_length }}",
-            trans: {
-                declineReason: "{{ translate('A reason is required to decline this event:') }}",
-                declineCancelled: "{{ translate('Decline action cancelled.') }}",
-                areYouSure: "{{ translate('Are you sure?') }}",
-                loginForAI: "{{ translate('To avoid spam, we recommend you to please login before generating AI description.') }}",
-                fillFieldsAI: "{{ translate('Please fill in ALL fields (Name, Location, Category, Dates, Times) before generating.') }}",
-                generating: "{{ translate('Generating the descriptions please wait some seconds...') }}",
-                formal: "{{ translate('Formal') }}",
-                informal: "{{ translate('Informal') }}",
-                promotional: "{{ translate('Promotional') }}",
-                entertaining: "{{ translate('Entertaining') }}",
-                descUpdated: "{{ translate('Description updated!') }}",
-                aiFailed: "{{ translate('Failed to generate descriptions. Please try again.') }}",
-                loadFailed: "{{ translate('Failed to load content. Please try again.') }}",
-                retry: "{{ translate('Retry') }}",
-                processing: "{{ translate('Processing...') }}",
-                errorOccurred: "{{ translate('An error occurred.') }}",
-                enterValidEmail: "{{ translate('Please enter a valid email address.') }}",
-                sending: "{{ translate('Sending...') }}",
-                sendOtp: "{{ translate('Send OTP') }}",
-                fillAllFields: "{{ translate('Please fill in all fields.') }}",
-                passwordMismatch: "{{ translate('Passwords do not match.') }}",
-                changingLangTo: "{{ translate('Please wait changing language to ') }}",
-                langChangedTo: "{{ translate('Language changed to ') }}",
-                reloadMsg: "{{ translate('If not changed please try to reload the page or click the button below to reload!') }}",
-                langChangeError: "{{ translate('Could not change language right now. Please try again.') }}"
-            }
+            trans: (function() {
+                const defs = {
+                    declineReason: ["a_reason_is_required_to_decline_this_event", "A reason is required to decline this event:"],
+                    declineCancelled: ["decline_action_cancelled", "Decline action cancelled."],
+                    areYouSure: ["are_you_sure", "Are you sure?"],
+                    loginForAI: ["to_avoid_spam_we_recommend_you_to_please_login_before", "To avoid spam, we recommend you to please login before generating AI description."],
+                    fillFieldsAI: ["please_fill_in_all_fields_name_location_category_dates", "Please fill in ALL fields (Name, Location, Category, Dates, Times) before generating."],
+                    generating: ["generating_the_descriptions_please_wait_some_seconds", "Generating the descriptions please wait some seconds..."],
+                    formal: ["formal", "Formal"],
+                    informal: ["informal", "Informal"],
+                    promotional: ["promotional", "Promotional"],
+                    entertaining: ["entertaining", "Entertaining"],
+                    descUpdated: ["description_updated", "Description updated!"],
+                    aiFailed: ["failed_to_generate_descriptions_please_try_again", "Failed to generate descriptions. Please try again."],
+                    loadFailed: ["failed_to_load_content_please_try_again", "Failed to load content. Please try again."],
+                    retry: ["retry", "Retry"],
+                    processing: ["processing", "Processing..."],
+                    errorOccurred: ["an_error_occurred", "An error occurred."],
+                    enterValidEmail: ["please_enter_a_valid_email_address", "Please enter a valid email address."],
+                    sending: ["sending", "Sending..."],
+                    sendOtp: ["send_otp", "Send OTP"],
+                    fillAllFields: ["please_fill_in_all_fields", "Please fill in all fields."],
+                    passwordMismatch: ["passwords_do_not_match", "Passwords do not match."],
+                    changingLangTo: ["please_wait_changing_language_to", "Please wait changing language to"],
+                    langChangedTo: ["language_changed_to", "Language changed to"],
+                    reloadMsg: ["if_not_changed_please_try_to_reload_the_page_or_click_the", "If not changed please try to reload the page or click the button below to reload!"],
+                    langChangeError: ["could_not_change_language_right_now_please_try_again", "Could not change language right now. Please try again."]
+                };
+                const obj = {};
+                for (const [k, v] of Object.entries(defs)) {
+                    Object.defineProperty(obj, k, {
+                        get() { return window.SahyogI18n ? window.SahyogI18n.t(v[0], v[1]) : v[1]; },
+                        enumerable: true,
+                        configurable: true
+                    });
+                }
+                return obj;
+            })()
         };
 
         // ===== LAZY LEADERBOARD =====
@@ -470,7 +485,7 @@
                 const quoteKeys = Object.keys(data);
                 const randomQuoteKey = quoteKeys[Math.floor(Math.random() * quoteKeys.length)];
                 const quoteText = data[randomQuoteKey][userLanguage] || data[randomQuoteKey]["en"];
-                quoteEl.innerText = `{{ translate("Active Campaigns:") }} ${SAHYOG_CONFIG.activeEventsLength}\n\n"${quoteText}"`;
+                quoteEl.innerText = `SahyogI18n.t("active_campaigns", "Active Campaigns:") ${SAHYOG_CONFIG.activeEventsLength}\n\n"${quoteText}"`;
             };
             setQuote();
             setInterval(setQuote, 6000);
@@ -482,25 +497,25 @@
         window.ssTour = new SahyogTour({
             highlightClass: 'sst-hl',
             i18n: {
-                finish: '{{ translate("Finish") }}',
-                next: '{{ translate("Next") }} →',
+                finish: SahyogI18n.t("finish", "Finish"),
+                next: 'SahyogI18n.t("next", "Next") →',
             },
             steps: [
                 {
                     targetId: 'step-nav',
-                    title: '{{ translate("1. Navigation Bar") }}',
-                    text: '{{ translate("Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly.") }}',
+                    title: 'SahyogI18n.t("1_navigation_bar", "1. Navigation Bar")',
+                    text: SahyogI18n.t("jump_between_pages_using_these_links_the_language_button", "Jump between pages using these links. The Language button lets you switch the whole site to your preferred language instantly."),
                     legend: [
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-home"></use></svg>', label: '{{ translate("Home") }}', desc: '{{ translate("Hero, leaderboard and account") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-campaign"></use></svg>', label: '{{ translate("Explore Campaigns") }}', desc: '{{ translate("Browse and filter all campaigns") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-plus"></use></svg>', label: '{{ translate("Create Event") }}', desc: '{{ translate("Submit a new campaign") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: '{{ translate("Language") }}', desc: '{{ translate("Change site language instantly") }}' }
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-home"></use></svg>', label: SahyogI18n.t("home", "Home"), desc: SahyogI18n.t("hero_leaderboard_and_account", "Hero, leaderboard and account") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-campaign"></use></svg>', label: SahyogI18n.t("explore_campaigns", "Explore Campaigns"), desc: SahyogI18n.t("browse_and_filter_all_campaigns", "Browse and filter all campaigns") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-plus"></use></svg>', label: SahyogI18n.t("create_event", "Create Event"), desc: SahyogI18n.t("submit_a_new_campaign", "Submit a new campaign") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: SahyogI18n.t("language", "Language"), desc: SahyogI18n.t("change_site_language_instantly", "Change site language instantly") }
                     ]
                 },
                 {
                     targetId: 'login-signup-section',
-                    title: '{{ translate("2. Your Account") }}',
-                    text: '{{ translate("Log in or sign up here. An account lets you like campaigns, track your events, join group chats, and use the AI description generator when creating events.") }}'
+                    title: SahyogI18n.t("2_your_account", "2. Your Account"),
+                    text: SahyogI18n.t("log_in_or_sign_up_here_an_account_lets_you_like_campaigns", "Log in or sign up here. An account lets you like campaigns, track your events, join group chats, and use the AI description generator when creating events.")
                 }
             ]
         });

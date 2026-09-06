@@ -1,6 +1,10 @@
 <!doctype html>
 <html>
 <head>
+    <meta name="ss-lang" content="{{ lang }}">
+    <meta name="ss-static-v" content="20260906-1">
+    <script src="/static/i18n.js?v=20260906-1"></script>
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>User Profile | SahyogSutra</title>
@@ -58,8 +62,8 @@
         <a href="/" class="brand">
             <img src="/static/sahyog_sutra_logo.png" alt="Sahyog Sutra Logo" style="width:44px;height:44px;border-radius:8px;object-fit:cover;box-shadow:0 4px 12px rgba(215,106,30,0.35);">
             <div class="brand-text">
-                <div style="background:linear-gradient(90deg,#f8ebb8,#d76a1e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;">{{ translate("Sahyog Sutra") }}</div>
-                <div>{{ translate("Weaving Communities Together") }}</div>
+                <div style="background:linear-gradient(90deg,#f8ebb8,#d76a1e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;"><span data-i18n="sahyog_sutra">Sahyog Sutra</span></div>
+                <div><span data-i18n="weaving_communities_together">Weaving Communities Together</span></div>
             </div>
         </a>
     </div>
@@ -86,7 +90,7 @@
                     </div>
                     <div class="stat-box">
                         <span class="stat-value">{{ userdetails['role'][0] | upper }}{{ userdetails["role"][1:] }}</span>
-                        <span class="stat-label">{{ translate("Account Role") }}</span>
+                        <span class="stat-label"><span data-i18n="account_role">Account Role</span></span>
                     </div>
                 </div>
 
@@ -94,7 +98,7 @@
                     <div class="detail-row">
                         <span class="detail-label">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="opacity:.6"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg>
-                            {{ translate("Email Address") }}
+                            <span data-i18n="email_address">Email Address</span>
                         </span>
                         <span class="detail-value">{{ userdetails['email'] }}</span>
                     </div>
@@ -102,11 +106,11 @@
                         <div class="detail-row">
                             <span class="detail-label">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="opacity:.6"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/></svg>
-                                {{ translate("Campaigns") }} ( {{ userdetails["events"].split(',')|length }} )
+                                <span data-i18n="campaigns">Campaigns</span> ( {{ userdetails["events"].split(',')|length }} )
                             </span>
                             {% set user_event_username = userdetails['username'] %}
                             <button class="detail-value" onclick="viewyourevents('{{ user_event_username }}')">
-                                {{ translate("Click Here To View Events Created By Them") }}
+                                <span data-i18n="click_here_to_view_events_created_by_them">Click Here To View Events Created By Them</span>
                             </button>
                         </div>
                     {% endif %}
@@ -115,17 +119,17 @@
                 <div style="margin-top: 2rem;">
                     <a href="mailto:{{ userdetails['email'] }}" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg>
-                        {{ translate("Contact User") }}
+                        <span data-i18n="contact_user">Contact User</span>
                     </a>
                     {% if is_own_profile %}
                         <a href="/export_data" class="btn btn-outline" style="margin-left: 10px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></svg>
-                            {{ translate("Download My Data") }}
+                            <span data-i18n="download_my_data">Download My Data</span>
                         </a>
                     {% endif %}
                     <a href="/" class="btn btn-outline" style="margin-left: 10px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/></svg>
-                        {{ translate("Dashboard") }}
+                        <span data-i18n="dashboard">Dashboard</span>
                     </a>
                 </div>
             </div>

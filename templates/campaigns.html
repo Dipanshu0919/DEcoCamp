@@ -120,7 +120,7 @@
 <!-- Tour DOM structure removed to prevent duplicate IDs with index.html -->
 
 <div style="text-align: center; margin-bottom: 1.5rem;">
-    <button class="how-to-btn" onclick="cStartTour()"><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg>{{ translate("How to Use Campaigns") }}</button>
+    <button class="how-to-btn" onclick="cStartTour()"><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-lightbulb"></use></svg><span data-i18n="how_to_use_campaigns">How to Use Campaigns</span></button>
 </div>
 
 <div id="campaigns-meta"
@@ -131,27 +131,27 @@
 {% if viewyourevents %}
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; padding: 1rem 1.25rem; background: var(--card-bg, rgba(255,255,255,0.05)); border-radius: 8px; border: 1px solid var(--border-color);">
     <div>
-        <h3 style="margin: 0; font-size: 1.15rem;"><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-user"></use></svg>{{ translate("Showing events by") }} <strong>@{{ viewuserevent }}</strong></h3>
+        <h3 style="margin: 0; font-size: 1.15rem;"><svg class="ss-icon ss-icon-inline" width="18" height="18" aria-hidden="true"><use href="#icon-user"></use></svg><span data-i18n="showing_events_by">Showing events by</span> <strong>@{{ viewuserevent }}</strong></h3>
     </div>
-    <button class="cta" onclick="window.viewAllCampaigns ? window.viewAllCampaigns() : location.reload();" style="margin: 0;">{{ translate("View All Events") }}</button>
+    <button class="cta" onclick="window.viewAllCampaigns ? window.viewAllCampaigns() : location.reload();" style="margin: 0;"><span data-i18n="view_all_events">View All Events</span></button>
 </div>
 {% endif %}
-<button id="backToAllBtn" class="cta" style="display: none;">{{ translate("Back to All Categories") }}</button>
+<button id="backToAllBtn" class="cta" style="display: none;"><span data-i18n="back_to_all_categories">Back to All Categories</span></button>
 
 {% if not viewyourevents %}
 <div class="search-wrapper" id="step-campaigns-search">
     <input type="text" class="global-search-input"
-        placeholder="{{ translate('Search all events (title, location, description)...') }}"
+        data-i18n-placeholder="search_all_events_title_location_description" placeholder="Search all events (title, location, description)..."
         onkeyup="handleGlobalSearch(this.value)">
 </div>
 
 <div class="filter-container" id="step-campaigns-filters">
     <div class="filter-header-mobile" onclick="toggleMobileFilterMenu()" id="mobileFilterHeader">
-        <span id="mobileFilterText">{{ translate("Filter Categories") }}</span>
+        <span id="mobileFilterText"><span data-i18n="filter_categories">Filter Categories</span></span>
     </div>
     <div class="filter-buttons-wrapper" id="filterButtonsContainer">
         <button class="filter-btn clear-btn active" data-cat="all" onclick="toggleCategory('all', this)">
-            {{ translate("All Categories") }}
+            <span data-i18n="all_categories">All Categories</span>
         </button>
         {% for category_name in allevents.keys() %}
         <button class="filter-btn" data-cat="{{ category_name|replace(' ', '-')|lower }}"
@@ -165,7 +165,7 @@
 
 {% if trending_events and not viewyourevents %}
 <div class="trending-section" id="trending-section-wrapper" style="margin-bottom: 3rem;">
-    <h3><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-flame"></use></svg>{{ translate("Trending Now") }}</h3>
+    <h3><svg class="ss-icon ss-icon-inline ss-icon-gold" width="18" height="18" aria-hidden="true"><use href="#icon-flame"></use></svg><span data-i18n="trending_now">Trending Now</span></h3>
     <div class="campaign-grid">
         {% for e in trending_events %}
         <div class="campaign-card trending-card reveal" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.05);"
@@ -184,9 +184,9 @@
                 <span id="desc-short-trending-{{e.eventid}}">{{ e.description[:100] }}...</span>
                 <span id="desc-full-trending-{{e.eventid}}" style="display:none">{{ e.description }}</span>
                 <button id="read-more-btn-trending-{{e.eventid}}" class="read-more-btn"
-                    onclick="toggleDescription('trending-{{e.eventid}}', 'more')">{{ translate("Read More") }}</button>
+                    onclick="toggleDescription('trending-{{e.eventid}}', 'more')"><span data-i18n="read_more">Read More</span></button>
                 <button id="read-less-btn-trending-{{e.eventid}}" class="read-more-btn" style="display:none"
-                    onclick="toggleDescription('trending-{{e.eventid}}', 'less')">{{ translate("Read Less") }}</button>
+                    onclick="toggleDescription('trending-{{e.eventid}}', 'less')"><span data-i18n="read_less">Read Less</span></button>
                 {% else %}
                 {{ e.description }}
                 {% endif %}
@@ -194,11 +194,11 @@
 
             {% set eventstartdate = e.eventstartdate|datetimeformat %}
             {% set eventeventenddate = e.eventenddate|datetimeformat %}
-            <p><b>{{ translate("From Date and Time:") }}</b> <span class="card-startdate-text">{{ eventstartdate
-                    }}</span> | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> <span
+            <p><b><span data-i18n="from_date_and_time">From Date and Time:</span></b> <span class="card-startdate-text">{{ eventstartdate
+                    }}</span> | {{ e.eventstarttime }}<br><b><span data-i18n="till_date_and_time">Till Date and Time:</span></b> <span
                     class="card-enddate-text">{{ eventeventenddate }}</span> | {{ e.eventendtime }}</p>
 
-            <p><b>{{ translate("Location:") }}</b>
+            <p><b><span data-i18n="location_2">Location:</span></b>
                 <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank"
                     style="color: var(--primary-color); text-decoration: none;">
                     <svg class="ss-icon ss-icon-sm ss-icon-inline" width="14" height="14" aria-hidden="true"><use href="#icon-location"></use></svg><span class="card-location-text">{{ e.location }}</span> ↗
@@ -243,7 +243,7 @@
                     <div class="tool-group">
                         <button
                             onclick="openShareModal('{{e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')"
-                            class="share-btn" title="{{ translate('Share Event') }}">
+                            class="share-btn" data-i18n-title="share_event" title="Share Event">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -252,7 +252,7 @@
                             </svg>
                         </button>
                         <a href="/download_ics/{{ e.eventid }}" class="share-btn"
-                            title="{{ translate('Add to Calendar') }}">
+                            data-i18n-title="add_to_calendar" title="Add to Calendar">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -263,7 +263,7 @@
                         </a>
                         {% if user_language != "en" %}
                         <button class="share-btn translate-btn" onclick="toggleTranslate(this)"
-                            title="{{ translate('Translate Event') }}">
+                            data-i18n-title="translate_event" title="Translate Event">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -279,12 +279,12 @@
 
                 <div class="card-actions-right">
                     <button class="campaign-tag" onclick="openEventModal({{ e.eventid }})"
-                        title="{{ translate('View Event Details') }}">
+                        data-i18n-title="view_event_details" title="View Event Details">
                         <svg class="ss-icon ss-icon-sm" width="15" height="15" aria-hidden="true"><use href="#icon-eye"></use></svg>
                     </button>
-                    <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
+                    <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})"><span data-i18n="chat">Chat</span></button>
                     {% if e.username == c_user or isadmin %}
-                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" title="{{ translate('Delete') }}"><svg class="ss-icon ss-icon-sm" width="14" height="14" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
+                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" data-i18n-title="delete" title="Delete"><svg class="ss-icon ss-icon-sm" width="14" height="14" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
                     {% endif %}
                 </div>
             </div>
@@ -314,32 +314,30 @@
     <div class="controls-container">
         <div class="search-wrapper">
             <input type="search" id="searchInput-{{ category_name|replace(' ', '-') }}"
-                placeholder="{{ translate('Search campaigns in this category...') }}" onkeyup="filterCampaigns(this)" />
+                data-i18n-placeholder="search_campaigns_in_this_category" placeholder="Search campaigns in this category..." onkeyup="filterCampaigns(this)" />
         </div>
         <div class="sort-wrapper">
             <form>
                 <select name="sort" id="sortSelect-{{ category_name|replace(' ', '-') }}"
                     onchange="sendsortreq(this.value)">
-                    <option value="eventenddate" {% if sortby=="eventenddate" %} selected {% endif %}>{{ translate("Sort
-                        by End Date") }}</option>
-                    <option value="eventstartdate" {% if sortby=="eventstartdate" %} selected {% endif %}>{{
-                        translate("Sort by Start Date") }}</option>
-                    <option value="eventname" {% if sortby=="eventname" %} selected {% endif %}>{{ translate("Sort by
-                        Name") }}</option>
-                    <option value="likes" {% if sortby=="likes" %} selected {% endif %}>{{ translate("Sort by Likes") }}
+                    <option value="eventenddate" {% if sortby=="eventenddate" %} selected {% endif %}><span data-i18n="sort_by_end_date">Sort
+                        by End Date</span></option>
+                    <option value="eventstartdate" {% if sortby=="eventstartdate" %} selected {% endif %}><span data-i18n="sort_by_start_date">Sort by Start Date</span></option>
+                    <option value="eventname" {% if sortby=="eventname" %} selected {% endif %}><span data-i18n="sort_by_name">Sort by
+                        Name</span></option>
+                    <option value="likes" {% if sortby=="likes" %} selected {% endif %}><span data-i18n="sort_by_likes">Sort by Likes</span>
                     </option>
-                    <option value="eventid" {% if sortby=="eventid" %} selected {% endif %}>{{ translate("Sort by Event
-                        ID") }}</option>
-                    <option value="location" {% if sortby=="location" %} selected {% endif %}>{{ translate("Sort by
-                        Location") }}</option>
-                    <option value="eventstarttime" {% if sortby=="eventstarttime" %} selected {% endif %}>{{
-                        translate("Sort by Start Time") }}</option>
-                    <option value="eventendtime" {% if sortby=="eventendtime" %} selected {% endif %}>{{ translate("Sort
-                        by End Time") }}</option>
+                    <option value="eventid" {% if sortby=="eventid" %} selected {% endif %}><span data-i18n="sort_by_event_id">Sort by Event
+                        ID</span></option>
+                    <option value="location" {% if sortby=="location" %} selected {% endif %}><span data-i18n="sort_by_location">Sort by
+                        Location</span></option>
+                    <option value="eventstarttime" {% if sortby=="eventstarttime" %} selected {% endif %}><span data-i18n="sort_by_start_time">Sort by Start Time</span></option>
+                    <option value="eventendtime" {% if sortby=="eventendtime" %} selected {% endif %}><span data-i18n="sort_by_end_time">Sort
+                        by End Time</span></option>
                 </select>
             </form>
             <button type="button" class="sort-direction-btn" onclick="toggleSortDirection(this)"
-                title="{{ translate('Reverse Order') }}">
+                data-i18n-title="reverse_order" title="Reverse Order">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="7 10 12 15 17 10"></polyline>
@@ -362,9 +360,9 @@
                 <span id="desc-short-{{e.eventid}}">{{ e.description[:100] }}...</span>
                 <span id="desc-full-{{e.eventid}}" style="display:none">{{ e.description }}</span>
                 <button id="read-more-btn-{{e.eventid}}" class="read-more-btn"
-                    onclick="toggleDescription({{e.eventid}}, 'more')">{{ translate("Read More") }}</button>
+                    onclick="toggleDescription({{e.eventid}}, 'more')"><span data-i18n="read_more">Read More</span></button>
                 <button id="read-less-btn-{{e.eventid}}" class="read-more-btn" style="display:none"
-                    onclick="toggleDescription({{e.eventid}}, 'less')">{{ translate("Read Less") }}</button>
+                    onclick="toggleDescription({{e.eventid}}, 'less')"><span data-i18n="read_less">Read Less</span></button>
                 {% else %}
                 {{ e.description }}
                 {% endif %}
@@ -372,11 +370,11 @@
 
             {% set eventstartdate = e.eventstartdate|datetimeformat %}
             {% set eventeventenddate = e.eventenddate|datetimeformat %}
-            <p><b>{{ translate("From Date and Time:") }}</b> <span class="card-startdate-text">{{ eventstartdate
-                    }}</span> | {{ e.eventstarttime }}<br><b>{{ translate("Till Date and Time:") }}</b> <span
+            <p><b><span data-i18n="from_date_and_time">From Date and Time:</span></b> <span class="card-startdate-text">{{ eventstartdate
+                    }}</span> | {{ e.eventstarttime }}<br><b><span data-i18n="till_date_and_time">Till Date and Time:</span></b> <span
                     class="card-enddate-text">{{ eventeventenddate }}</span> | {{ e.eventendtime }}</p>
 
-            <p><b>{{ translate("Location:") }}</b>
+            <p><b><span data-i18n="location_2">Location:</span></b>
                 <a href="https://www.google.com/maps/search/?api=1&query={{ e.location }}" target="_blank"
                     style="color: var(--primary-color); text-decoration: none;">
                     <svg class="ss-icon ss-icon-sm ss-icon-inline" width="14" height="14" aria-hidden="true"><use href="#icon-location"></use></svg><span class="card-location-text">{{ e.location }}</span> ↗
@@ -421,7 +419,7 @@
                     <div class="tool-group">
                         <button
                             onclick="openShareModal('{{ e.eventname|e}}', '{{e.eventid}}', '{{eventstartdate}}', '{{e.eventstarttime}}', '{{e.location|e}}', '{{e.description|e}}')"
-                            class="share-btn" title="{{ translate('Share Event') }}">
+                            class="share-btn" data-i18n-title="share_event" title="Share Event">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -430,7 +428,7 @@
                             </svg>
                         </button>
                         <a href="/download_ics/{{ e.eventid }}" class="share-btn"
-                            title="{{ translate('Add to Calendar') }}">
+                            data-i18n-title="add_to_calendar" title="Add to Calendar">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -441,7 +439,7 @@
                         </a>
                         {% if user_language != "en" %}
                         <button class="share-btn translate-btn" onclick="toggleTranslate(this)"
-                            title="{{ translate('Translate Event') }}">
+                            data-i18n-title="translate_event" title="Translate Event">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -457,12 +455,12 @@
 
                 <div class="card-actions-right">
                     <button class="campaign-tag" onclick="openEventModal({{ e.eventid }})"
-                        title="{{ translate('View Event Details') }}">
+                        data-i18n-title="view_event_details" title="View Event Details">
                         <svg class="ss-icon ss-icon-sm" width="15" height="15" aria-hidden="true"><use href="#icon-eye"></use></svg>
                     </button>
-                    <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})">{{ translate('Chat') }}</button>
+                    <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})"><span data-i18n="chat">Chat</span></button>
                     {% if e.username == c_user or isadmin %}
-                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" title="{{ translate('Delete') }}"><svg class="ss-icon ss-icon-sm" width="14" height="14" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
+                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" data-i18n-title="delete" title="Delete"><svg class="ss-icon ss-icon-sm" width="14" height="14" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
                     {% endif %}
                 </div>
             </div>
@@ -481,12 +479,12 @@
 {% if viewyourevents and user_event_count == 0 %}
 <div style="text-align: center; padding: 3.5rem 1rem; background: var(--card-bg, rgba(255,255,255,0.03)); border-radius: 12px; border: 1px dashed var(--border-color); margin: 2rem 0;">
     <div style="margin-bottom: 0.5rem;"><svg class="ss-icon ss-icon-xl" width="36" height="36" style="width:36px;height:36px;opacity:0.6;" aria-hidden="true"><use href="#icon-inbox-empty"></use></svg></div>
-    <h3>{{ translate("No Events Found") }}</h3>
-    <p style="color: var(--text-muted); margin-top: 0.5rem;">{{ translate("No campaigns found for") }} @{{ viewuserevent }}.</p>
-    <button class="cta" onclick="window.viewAllCampaigns ? window.viewAllCampaigns() : location.reload();" style="margin-top: 1rem;">{{ translate("View All Events") }}</button>
+    <h3><span data-i18n="no_events_found">No Events Found</span></h3>
+    <p style="color: var(--text-muted); margin-top: 0.5rem;"><span data-i18n="no_campaigns_found_for">No campaigns found for</span> @{{ viewuserevent }}.</p>
+    <button class="cta" onclick="window.viewAllCampaigns ? window.viewAllCampaigns() : location.reload();" style="margin-top: 1rem;"><span data-i18n="view_all_events">View All Events</span></button>
 </div>
 {% elif viewyourevents %}
-<button class="cta" onclick="window.viewAllCampaigns ? window.viewAllCampaigns() : location.reload();" style="width:100%">{{ translate("View All Events") }}</button>
+<button class="cta" onclick="window.viewAllCampaigns ? window.viewAllCampaigns() : location.reload();" style="width:100%"><span data-i18n="view_all_events">View All Events</span></button>
 {% endif %}
 
 <!-- Share Modal -->
@@ -494,7 +492,7 @@
     <div class="share-content">
         <button class="close-share" onclick="closeShareModal()">×</button>
         <div class="share-header">
-            <h3>{{ translate("Share Event") }}</h3>
+            <h3><span data-i18n="share_event">Share Event</span></h3>
             <p id="share-event-name" style="color:var(--primary-color)"></p>
         </div>
         <div class="share-options">
@@ -505,17 +503,17 @@
                     <path
                         d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z" />
                 </svg>
-                {{ translate("Copy Link") }}
+                <span data-i18n="copy_link">Copy Link</span>
             </button>
             <div style="border-top: 1px solid var(--border-color); margin: 5px 0;"></div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: 0;">{{ translate("Share
-                on WhatsApp as:") }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: 0;"><span data-i18n="share_on_whatsapp_as">Share
+                on WhatsApp as:</span></p>
             <button class="share-btn-opt wa-btn" onclick="shareWhatsApp('text')">
                 <svg fill="currentColor" width="18" height="18" viewBox="0 0 16 16">
                     <path
                         d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592z" />
                 </svg>
-                {{ translate("Text Message") }}
+                <span data-i18n="text_message">Text Message</span>
             </button>
             <button class="share-btn-opt img-btn" onclick="shareWhatsApp('image')">
                 <svg fill="currentColor" width="18" height="18" viewBox="0 0 16 16">
@@ -523,7 +521,7 @@
                     <path
                         d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
                 </svg>
-                {{ translate("Image Card") }}
+                <span data-i18n="image_card">Image Card</span>
             </button>
         </div>
     </div>
@@ -573,7 +571,7 @@
             if (locEl) locEl.textContent = rawLocation;
             btn.classList.remove('translate-active');
             btn.innerHTML = GLOBE_SVG;
-            btn.title = '{{ translate("Translate Event") }}';
+            btn.title = SahyogI18n.t("translate_event", "Translate Event");
             return;
         }
 
@@ -597,7 +595,7 @@
 
             btn.classList.add('translate-active');
             btn.innerHTML = GLOBE_SVG;
-            btn.title = '{{ translate("Show Original") }}';
+            btn.title = SahyogI18n.t("show_original", "Show Original");
         } catch (err) {
             console.error('Translation failed:', err);
             btn.innerHTML = GLOBE_SVG;
@@ -629,7 +627,7 @@
     function updateMobileHeaderText() {
         const h = document.getElementById('mobileFilterText');
         if (!h) return;
-        h.innerText = selectedCategories.has('all') ? "{{ translate('Filter Categories') }}" : `Filters (${selectedCategories.size} selected)`;
+        h.innerText = selectedCategories.has('all') ? SahyogI18n.t("filter_categories", "Filter Categories") : `Filters (${selectedCategories.size} selected)`;
     }
 
     function handleGlobalSearch(term) { globalSearchTerm = term.toLowerCase().trim(); applyFilters(); }
@@ -670,13 +668,13 @@
         const link = `${window.location.origin}/event/${currentShareEvent.id}`;
         const text = `Check out this event on EcoCamp: ${currentShareEvent.name}\n${link}`;
         if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(() => { showAlert('{{ translate("Link copied to clipboard!") }}', 'success'); closeShareModal(); }).catch(() => fallbackCopyText(text));
+            navigator.clipboard.writeText(text).then(() => { showAlert(SahyogI18n.t("link_copied_to_clipboard", "Link copied to clipboard!"), 'success'); closeShareModal(); }).catch(() => fallbackCopyText(text));
         } else { fallbackCopyText(text); }
     }
 
     function fallbackCopyText(text) {
         let ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.left = "-9999px"; document.body.appendChild(ta); ta.focus(); ta.select();
-        try { document.execCommand('copy'); showAlert('{{ translate("Link copied to clipboard!") }}', 'success'); } catch (err) { showAlert('{{ translate("Failed to copy link.") }}', 'error'); }
+        try { document.execCommand('copy'); showAlert(SahyogI18n.t("link_copied_to_clipboard", "Link copied to clipboard!"), 'success'); } catch (err) { showAlert(SahyogI18n.t("failed_to_copy_link", "Failed to copy link."), 'error'); }
         document.body.removeChild(ta); closeShareModal();
     }
 
@@ -703,12 +701,12 @@
         const script = document.createElement('script');
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
         script.onload = callback;
-        script.onerror = () => showAlert('{{ translate("Failed to load image generator.") }}', 'error');
+        script.onerror = () => showAlert(SahyogI18n.t("failed_to_load_image_generator", "Failed to load image generator."), 'error');
         document.head.appendChild(script);
     }
 
     function generateImage() {
-        showAlert('{{ translate("Generating Image, please wait...") }}', 'info');
+        showAlert(SahyogI18n.t("generating_image_please_wait", "Generating Image, please wait..."), 'info');
         populateCaptureArea();
         loadHtml2Canvas(() => {
             html2canvas(document.getElementById('capture-area')).then(canvas => {
@@ -718,7 +716,7 @@
                 link.click();
             }).catch(err => {
                 console.error("html2canvas error:", err);
-                showAlert('{{ translate("Failed to generate image.") }}', 'error');
+                showAlert(SahyogI18n.t("failed_to_generate_image", "Failed to generate image."), 'error');
             });
         });
         closeShareModal();
@@ -762,7 +760,7 @@
         iframe.style.cssText = 'width:100%;height:100%;min-height:90vh;border:none;border-radius:12px;background:var(--bg-light);display:block;';
         const closeBtn = document.createElement('button');
         closeBtn.innerHTML = '<svg class="ss-icon" aria-hidden="true" style="width:20px;height:20px;"><use href="#icon-close"></use></svg>';
-        closeBtn.setAttribute('aria-label', '{{ translate("Close") }}');
+        closeBtn.setAttribute('aria-label', SahyogI18n.t("close", "Close"));
         closeBtn.style.cssText = 'position:fixed;top:20px;right:20px;width:40px;height:40px;background:var(--primary-color);border:none;border-radius:50%;color:white;font-size:24px;cursor:pointer;z-index:5001;display:flex;align-items:center;justify-content:center;font-weight:bold;';
         closeBtn.onclick = e => { e.stopPropagation(); modal.remove(); document.body.style.overflow = ''; };
         modal.onclick = e => { if (e.target === modal) { modal.remove(); document.body.style.overflow = ''; } };
@@ -785,48 +783,48 @@
     window.ssCampaignsTour = new SahyogTour({
         highlightClass: 'sst-hl',
         i18n: {
-            finish: '{{ translate("Finish") }}',
-            next: '{{ translate("Next") }} →',
+            finish: SahyogI18n.t("finish", "Finish"),
+            next: 'SahyogI18n.t("next", "Next") →',
         },
         /* stepBuilder resolves elements at tour-start (some are dynamic/conditional) */
         stepBuilder: () => {
             const defs = [
                 {
                     buildId: 'step-campaigns-search',
-                    title: '{{ translate("1. Global Search") }}',
-                    text: '{{ translate("Type any keyword here to instantly search across all campaigns — by name, location, or description. Results update live as you type.") }}'
+                    title: 'SahyogI18n.t("1_global_search", "1. Global Search")',
+                    text: SahyogI18n.t("type_any_keyword_here_to_instantly_search_across_all", "Type any keyword here to instantly search across all campaigns — by name, location, or description. Results update live as you type.")
                 },
                 {
                     buildId: 'step-campaigns-filters',
-                    title: '{{ translate("2. Category Filters") }}',
-                    text: '{{ translate("Tap a category pill to show only campaigns from that group. You can combine multiple filters. On mobile, tap the Filter Categories button to expand them.") }}'
+                    title: SahyogI18n.t("2_category_filters", "2. Category Filters"),
+                    text: SahyogI18n.t("tap_a_category_pill_to_show_only_campaigns_from_that_group", "Tap a category pill to show only campaigns from that group. You can combine multiple filters. On mobile, tap the Filter Categories button to expand them.")
                 },
                 {
                     buildId: null, // first .trending-card
-                    title: '{{ translate("3. Trending Now") }}',
-                    text: '{{ translate("These are the highest-rated and most-liked campaigns right now. They appear at the top so nothing hot gets missed.") }}'
+                    title: SahyogI18n.t("3_trending_now", "3. Trending Now"),
+                    text: SahyogI18n.t("these_are_the_highest_rated_and_most_liked_campaigns_right", "These are the highest-rated and most-liked campaigns right now. They appear at the top so nothing hot gets missed.")
                 },
                 {
                     buildId: null, // .controls-container inside first category section
-                    title: '{{ translate("4. Category Search and Sort") }}',
-                    text: '{{ translate("Each category has its own search bar and sort controls. Use the dropdown to order by date, name, likes, or ID. The arrow button reverses the order.") }}'
+                    title: SahyogI18n.t("4_category_search_and_sort", "4. Category Search and Sort"),
+                    text: SahyogI18n.t("each_category_has_its_own_search_bar_and_sort_controls_use", "Each category has its own search bar and sort controls. Use the dropdown to order by date, name, likes, or ID. The arrow button reverses the order.")
                 },
                 {
                     buildId: null,  // .card-footer of first campaign card
                     preferAbove: true,
                     scrollBlock: 'end',
                     highlightParent: true,
-                    title: '{{ translate("5. Campaign Card Buttons") }}',
-                    text: '{{ translate("Every card has a row of action buttons at the bottom:") }}',
+                    title: SahyogI18n.t("5_campaign_card_buttons", "5. Campaign Card Buttons"),
+                    text: SahyogI18n.t("every_card_has_a_row_of_action_buttons_at_the_bottom", "Every card has a row of action buttons at the bottom:"),
                     legend: [
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-heart"></use></svg>', label: '{{ translate("Like") }}', desc: '{{ translate("Show support — tap again to unlike") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-share"></use></svg>', label: '{{ translate("Share") }}', desc: '{{ translate("Copy link or send via WhatsApp / image") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>', label: '{{ translate("Add to Calendar") }}', desc: '{{ translate("Download .ics file for any calendar app") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: '{{ translate("Translate") }}', desc: '{{ translate("Translate the card into your language") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg>', label: '{{ translate("View Details") }}', desc: '{{ translate("Open full event page in a popup") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-chat"></use></svg>', label: '{{ translate("Chat") }}', desc: '{{ translate("Join the event group chat") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-location"></use></svg>', label: '{{ translate("Location Link") }}', desc: '{{ translate("Tap the address to open Google Maps") }}' },
-                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-trash"></use></svg>', label: '{{ translate("Delete") }}', desc: '{{ translate("Owners/admins can remove a campaign") }}' }
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-heart"></use></svg>', label: SahyogI18n.t("like", "Like"), desc: SahyogI18n.t("show_support_tap_again_to_unlike", "Show support — tap again to unlike") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-share"></use></svg>', label: SahyogI18n.t("share", "Share"), desc: SahyogI18n.t("copy_link_or_send_via_whatsapp_image", "Copy link or send via WhatsApp / image") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-calendar"></use></svg>', label: SahyogI18n.t("add_to_calendar", "Add to Calendar"), desc: SahyogI18n.t("download_ics_file_for_any_calendar_app", "Download .ics file for any calendar app") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-globe"></use></svg>', label: SahyogI18n.t("translate", "Translate"), desc: SahyogI18n.t("translate_the_card_into_your_language", "Translate the card into your language") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-eye"></use></svg>', label: SahyogI18n.t("view_details", "View Details"), desc: SahyogI18n.t("open_full_event_page_in_a_popup", "Open full event page in a popup") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-chat"></use></svg>', label: SahyogI18n.t("chat", "Chat"), desc: SahyogI18n.t("join_the_event_group_chat", "Join the event group chat") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-location"></use></svg>', label: SahyogI18n.t("location_link", "Location Link"), desc: SahyogI18n.t("tap_the_address_to_open_google_maps", "Tap the address to open Google Maps") },
+                        { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-trash"></use></svg>', label: SahyogI18n.t("delete", "Delete"), desc: SahyogI18n.t("owners_admins_can_remove_a_campaign", "Owners/admins can remove a campaign") }
                     ]
                 }
             ];
@@ -875,9 +873,9 @@
             const count = meta.dataset.totalCount;
             const viewUser = meta.dataset.viewUser;
             if (viewUser) {
-                titleEl.textContent = `{{ translate("Campaigns") }} ( ${count} ) - ${viewUser}`;
+                titleEl.textContent = `SahyogI18n.t("campaigns", "Campaigns") ( ${count} ) - ${viewUser}`;
             } else {
-                titleEl.textContent = `{{ translate("Campaigns") }} ( ${count} )`;
+                titleEl.textContent = `SahyogI18n.t("campaigns", "Campaigns") ( ${count} )`;
             }
         }
         if (meta && window.SAHYOG_CONFIG) {
