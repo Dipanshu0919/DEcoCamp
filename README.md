@@ -16,8 +16,8 @@ SahyogSutra brings people together by allowing users to create, discover, and pa
 
 ### 🖥️ Live Preview
 
-<a href="https://app.sahyogsutra.run.place">
-  <img src="https://image.thum.io/get/width/1280/wait/3000/fullpage/https://app.sahyogsutra.run.place/?preview=true" width="100%" alt="SahyogSutra Preview" />
+<a href="https://sahyogsutra.run.place">
+  <img src="https://image.thum.io/get/maxAge/12/width/1280/http://sahyogsutra.run.place?preview=True" width="100%" alt="SahyogSutra Preview" />
 </a>
 
 </div>

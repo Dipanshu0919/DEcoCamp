@@ -213,8 +213,13 @@ async def show_campaigns(
 
     sortby = request.session.get("sortby", "eventstartdate")
 
-    def bound_translate(text: str, save_file: bool = True) -> str:
-        return sync_translate_text(text.strip(), lang=user_lang)
+    if user_lang == "en":
+        bound_translate = lambda text, *args, **kwargs: text
+    else:
+        _page_dict = get_ui_translation_dict(user_lang)
+        def bound_translate(text: str, *args, **kwargs) -> str:
+            clean = text.strip()
+            return _page_dict.get(clean, text)
 
     response = templates.TemplateResponse(request, "campaigns.html", {
         "allevents": allevents,
@@ -249,8 +254,13 @@ async def event_detail_page(
     is_admin = (user.get("role") == "admin") if user else False
     user_lang = request.session.get("lang", "en")
 
-    def bound_translate(text: str, save_file: bool = True) -> str:
-        return sync_translate_text(text.strip(), lang=user_lang)
+    if user_lang == "en":
+        bound_translate = lambda text, *args, **kwargs: text
+    else:
+        _page_dict = get_ui_translation_dict(user_lang)
+        def bound_translate(text: str, *args, **kwargs) -> str:
+            clean = text.strip()
+            return _page_dict.get(clean, text)
 
     return templates.TemplateResponse(request, "viewevent.html", {
         "isadmin": is_admin,
@@ -276,8 +286,13 @@ async def show_add_form(request: Request):
     fi = ["eventname", "email", "starttime", "endtime", "eventstartdate", "enddate", "location", "category", "description"]
     fv = {x: request.session.get(f"draft_{x}", request.session.get(x, "")) for x in fi}
 
-    def bound_translate(text: str, save_file: bool = True) -> str:
-        return sync_translate_text(text.strip(), lang=user_lang)
+    if user_lang == "en":
+        bound_translate = lambda text, *args, **kwargs: text
+    else:
+        _page_dict = get_ui_translation_dict(user_lang)
+        def bound_translate(text: str, *args, **kwargs) -> str:
+            clean = text.strip()
+            return _page_dict.get(clean, text)
 
     return templates.TemplateResponse(request, "addevent.html", {
         "fvalues": fv,
@@ -508,8 +523,13 @@ async def handle_user_profile(
     is_own_profile = (auth_user and auth_user["username"] == target_user["username"])
     user_lang = request.session.get("lang", "en")
 
-    def bound_translate(text: str, save_file: bool = True) -> str:
-        return sync_translate_text(text.strip(), lang=user_lang)
+    if user_lang == "en":
+        bound_translate = lambda text, *args, **kwargs: text
+    else:
+        _page_dict = get_ui_translation_dict(user_lang)
+        def bound_translate(text: str, *args, **kwargs) -> str:
+            clean = text.strip()
+            return _page_dict.get(clean, text)
 
     return templates.TemplateResponse(request, "userprofile.html", {
         "userdetails": dict(target_user),
