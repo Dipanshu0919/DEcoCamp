@@ -210,7 +210,7 @@
           <div class="cat-chips-container" id="catChips">
             {% for category, events in categories.items() %}
             <button type="button" class="cat-chip-btn" data-category="{{ category | safe }}">
-              {{ translate(category) }}
+              <span data-i18n-raw="{{ category }}">{{ translate(category) }}</span>
             </button>
             {% endfor %}
           </div>
@@ -224,8 +224,8 @@
 
           <div id="selectedDisplay"
             style="margin-top:10px; color:#22c55e; font-size:0.9rem; font-weight:600; min-height:1.2em;">
-            {% if fvalues['category'] %}<svg class="ss-icon ss-icon-inline" width="16" height="16" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> <span data-i18n="selected">Selected</span>: {{ translate(fvalues['category'],
-            save_file=False) }}{% endif %}
+            {% if fvalues['category'] %}<svg class="ss-icon ss-icon-inline" width="16" height="16" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> <span data-i18n="selected">Selected</span>: <span data-i18n-raw="{{ fvalues['category'] }}">{{ translate(fvalues['category'],
+            save_file=False) }}</span>{% endif %}
           </div>
         </div>
 
@@ -352,7 +352,7 @@
 
     // Add '!eventsToRender' to safely catch undefined arrays
     if (!eventsToRender || eventsToRender.length === 0) {
-      panel.innerHTML = '<div style="padding:10px; color:#94a3b8; font-size:0.8rem; text-align:center;">No matching events found.</div>';
+      panel.innerHTML = `<div style="padding:10px; color:#94a3b8; font-size:0.8rem; text-align:center;"><span data-i18n="no_matching_events_found">${(window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t("no_matching_events_found", "No matching events found.") : "No matching events found."}</span></div>`;
       panel.classList.add('visible');
       return;
     }
@@ -360,9 +360,12 @@
     eventsToRender.forEach(item => {
       const evName = typeof item === 'string' ? item : item.name;
       const evCat = typeof item === 'string' ? activeCategory : item.category; // If string, implied from activeCategory
+      const evNameTrans = (window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t(evName, evName) : evName;
+      const evCatTrans = (window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t(evCat, evCat) : evCat;
 
       const el = document.createElement('div');
       el.className = 'event-radio-label';
+      el.setAttribute('data-evname', evName);
       if (selectedEvent === evName) el.classList.add('selected');
 
       // HTML for the list item
@@ -370,12 +373,12 @@
 <div style="width:14px; height:14px; border:2px solid currentColor; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
 <div style="width:6px; height:6px; background:currentColor; border-radius:50%; opacity:${selectedEvent === evName ? 1 : 0}"></div>
 </div>
-<span>${evName}</span>
+<span data-i18n-raw="${evName}">${evNameTrans}</span>
 `;
 
       // If searching, show which category it belongs to
       if (isSearchMode) {
-        innerHTML += `<span class="event-cat-tag">${evCat}</span>`;
+        innerHTML += `<span class="event-cat-tag" data-i18n-raw="${evCat}">${evCatTrans}</span>`;
       }
 
       el.innerHTML = innerHTML;
@@ -398,7 +401,8 @@
   function selectEvent(evName, categoryName) {
     selectedEvent = evName;
     hiddenInput.value = evName;
-    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> ${SahyogI18n.t("selected", "Selected")}: ${evName}`;
+    const evNameTrans = (window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t(evName, evName) : evName;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> ${(window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t("selected", "Selected") : "Selected"}: <span data-i18n-raw="${evName}">${evNameTrans}</span>`;
 
     // Persist category to localStorage
     try {
@@ -412,8 +416,7 @@
     allItems.forEach(item => {
       item.classList.remove('selected');
       item.querySelector('div > div').style.opacity = '0';
-      // Check text content matches (rough check, or we could store data attributes)
-      if (item.textContent.includes(evName)) { // Simple check
+      if (item.getAttribute('data-evname') === evName) {
         item.classList.add('selected');
         item.querySelector('div > div').style.opacity = '1';
       }
@@ -453,8 +456,13 @@
       return;
     }
 
-    // Perform Search
-    const matches = allEvents.filter(ev => ev.name.toLowerCase().includes(term));
+    // Perform Search (matches English name or translated name in active language)
+    const matches = allEvents.filter(ev => {
+      const nameMatch = ev.name.toLowerCase().includes(term);
+      const transName = (window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t(ev.name, '') : '';
+      const transMatch = transName && transName.toLowerCase().includes(term);
+      return nameMatch || transMatch;
+    });
     renderList(matches, true); // true = show category tags
   });
 
@@ -494,7 +502,8 @@
       updateChipsVisuals();
       renderList(categoriesData[cat], false);
     }
-    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> ${SahyogI18n.t("selected", "Selected")}: ${selectedEvent}`;
+    const evNameTrans = (window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t(selectedEvent, selectedEvent) : selectedEvent;
+    selectedDisplay.innerHTML = `<svg class="ss-icon ss-icon-inline" aria-hidden="true" style="color:#22c55e;"><use href="#icon-check"></use></svg> ${(window.SahyogI18n && window.SahyogI18n.t) ? window.SahyogI18n.t("selected", "Selected") : "Selected"}: <span data-i18n-raw="${selectedEvent}">${evNameTrans}</span>`;
   }
 
 }) ();

@@ -71,6 +71,10 @@ async def lifespan(app: FastAPI):
     # 1. Initialize strictly bounded DB pool with 1 eager connection
     init_db_pool(eager_count=1)
 
+    # 1.5. Pre-load UI translations into bounded memory (takes ~2.5ms, provides instant O(1) lookups)
+    from app.services.translation_service import load_translations
+    load_translations()
+
     # 2. Initialize schema & migrate legacy data
     conn = acquire_connection()
     db = AsyncDB(conn)

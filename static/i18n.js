@@ -46,31 +46,42 @@
 
   var isApplying = false;
 
+  function toSlug(s) {
+    if (!s || typeof s !== 'string') return '';
+    return s.trim().toLowerCase().replace(/&amp;/g, 'and').replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  }
+
   function applyToElement(el, d) {
     if (!el || !d || el.nodeType !== 1) return;
     var key, val;
 
     key = el.getAttribute('data-i18n');
     if (key) {
-      val = d[key];
+      val = d[key] || d[toSlug(key)];
+      if (val && el.textContent !== val) el.textContent = val;
+    }
+
+    key = el.getAttribute('data-i18n-raw');
+    if (key) {
+      val = d[toSlug(key)] || d[key];
       if (val && el.textContent !== val) el.textContent = val;
     }
 
     key = el.getAttribute('data-i18n-placeholder');
     if (key) {
-      val = d[key];
+      val = d[key] || d[toSlug(key)];
       if (val && el.getAttribute('placeholder') !== val) el.setAttribute('placeholder', val);
     }
 
     key = el.getAttribute('data-i18n-title');
     if (key) {
-      val = d[key];
+      val = d[key] || d[toSlug(key)];
       if (val && el.getAttribute('title') !== val) el.setAttribute('title', val);
     }
 
     key = el.getAttribute('data-i18n-aria-label');
     if (key) {
-      val = d[key];
+      val = d[key] || d[toSlug(key)];
       if (val && el.getAttribute('aria-label') !== val) el.setAttribute('aria-label', val);
     }
   }
@@ -79,7 +90,7 @@
     if (!root || !d || isApplying) return;
     isApplying = true;
     try {
-      var els = root.querySelectorAll('[data-i18n],[data-i18n-placeholder],[data-i18n-title],[data-i18n-aria-label]');
+      var els = root.querySelectorAll('[data-i18n],[data-i18n-raw],[data-i18n-placeholder],[data-i18n-title],[data-i18n-aria-label]');
       for (var i = 0; i < els.length; i++) applyToElement(els[i], d);
       if (root !== document && root.nodeType === 1) applyToElement(root, d);
     } finally {
@@ -95,8 +106,11 @@
       applyToRoot(root || document, window.SS_I18N.data);
     },
     t: function (key, fallback) {
-      if (window.SS_I18N && window.SS_I18N.data) {
+      if (window.SS_I18N && window.SS_I18N.data && key) {
         var val = window.SS_I18N.data[key];
+        if (!val) {
+          val = window.SS_I18N.data[toSlug(key)];
+        }
         if (val) return val;
       }
       return fallback !== undefined ? fallback : key;

@@ -165,7 +165,7 @@
         {% for category_name in allevents.keys() %}
         <button class="filter-btn" data-cat="{{ category_name|replace(' ', '-')|lower }}"
             onclick="toggleCategory('{{ category_name|replace(' ', '-')|lower }}', this)">
-            {{ translate(category_name) }}
+            <span data-i18n-raw="{{ category_name }}">{{ translate(category_name) }}</span>
         </button>
         {% endfor %}
     </div>
@@ -318,7 +318,7 @@
 {% if viewevents %}
 <div class="campaign-category-wrapper category-section step-campaigns-cat"
     id="cat-{{ category_name|replace(' ', '-')|lower }}" data-category-id="{{ category_name|replace(' ', '-')|lower }}">
-    <h3>{{ translate(category_name) }} ( {{ viewevents|length }} )</h3>
+    <h3><span data-i18n-raw="{{ category_name }}">{{ translate(category_name) }}</span> ( {{ viewevents|length }} )</h3>
 
     <div class="controls-container">
         <div class="search-wrapper">
@@ -478,8 +478,7 @@
     </div>
 
     {% if not viewyourevents and viewevents|length > 4 %}
-    <button class="cta view-all-btn" data-category-id="{{ category_name|replace(' ', '-')|lower }}">{{ translate("View
-        All") }}</button>
+    <button class="cta view-all-btn" data-category-id="{{ category_name|replace(' ', '-')|lower }}"><span data-i18n="view_all">View All</span></button>
     {% endif %}
 </div>
 {% endif %}
