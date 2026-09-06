@@ -185,10 +185,10 @@
             data-location="{{ e.location|e }}" data-startdate="{{ e.eventstartdate|datetimeformat }}"
             data-enddate="{{ e.eventenddate|datetimeformat }}">
             <div
-                style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">
+                style="position: absolute; top: 1rem; right: 1rem; background: #f59e0b; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; z-index: 2;">
                 TOP RATED</div>
 
-            <span class="campaign-id">#{{ e.eventid }}</span>
+            <span class="campaign-id" style="display: none;">#{{ e.eventid }}</span>
             <h4 class="card-title-text">{{ e.eventname }}</h4>
 
             <p id="event-desc-wrapper-trending-{{e.eventid}}">
@@ -292,7 +292,7 @@
                     </button>
                     <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})"><span data-i18n="chat">Chat</span></button>
                     {% if e.username == c_user or isadmin %}
-                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" data-i18n-title="delete" title="Delete"><svg class="ss-icon ss-icon-sm" width="13" height="13" aria-hidden="true"><use href="#icon-trash"></use></svg><span data-i18n="delete">Delete</span></button>
+                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" data-i18n-title="delete" title="Delete" aria-label="Delete"><svg class="ss-icon" width="14" height="14" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
                     {% endif %}
                 </div>
             </div>
@@ -464,7 +464,7 @@
                     </button>
                     <button class="campaign-tag" onclick="openeventchat({{ e.eventid }})"><span data-i18n="chat">Chat</span></button>
                     {% if e.username == c_user or isadmin %}
-                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" data-i18n-title="delete" title="Delete"><svg class="ss-icon ss-icon-sm" width="13" height="13" aria-hidden="true"><use href="#icon-trash"></use></svg><span data-i18n="delete">Delete</span></button>
+                    <button onclick="asktodelete({{ e.eventid }})" class="delete-btn" data-i18n-title="delete" title="Delete" aria-label="Delete"><svg class="ss-icon" width="14" height="14" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
                     {% endif %}
                 </div>
             </div>
