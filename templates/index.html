@@ -3,8 +3,11 @@
 
 <head>
     <meta name="ss-lang" content="{{ lang }}">
-    <meta name="ss-static-v" content="20260906-1">
-    <script src="/static/i18n.js?v=20260906-1"></script>
+    <meta name="ss-static-v" content="20260906-2">
+    {% if lang and lang != "en" %}
+    <script src="/static/i18n/{{ lang }}.js?v=20260906-2"></script>
+    {% endif %}
+    <script src="/static/i18n.js?v=20260906-2"></script>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -485,7 +488,7 @@
                 const quoteKeys = Object.keys(data);
                 const randomQuoteKey = quoteKeys[Math.floor(Math.random() * quoteKeys.length)];
                 const quoteText = data[randomQuoteKey][userLanguage] || data[randomQuoteKey]["en"];
-                quoteEl.innerText = `SahyogI18n.t("active_campaigns", "Active Campaigns:") ${SAHYOG_CONFIG.activeEventsLength}\n\n"${quoteText}"`;
+                quoteEl.innerText = `${SahyogI18n.t("active_campaigns", "Active Campaigns:")} ${SAHYOG_CONFIG.activeEventsLength}\n\n"${quoteText}"`;
             };
             setQuote();
             setInterval(setQuote, 6000);
@@ -497,10 +500,10 @@
         window.ssTour = new SahyogTour({
             highlightClass: 'sst-hl',
             i18n: {
-                finish: SahyogI18n.t("finish", "Finish"),
-                next: SahyogI18n.t("next", "Next") + ' →',
+                finish: () => SahyogI18n.t("finish", "Finish"),
+                next: () => SahyogI18n.t("next", "Next") + ' →',
             },
-            steps: [
+            stepBuilder: () => [
                 {
                     targetId: 'step-nav',
                     title: SahyogI18n.t("1_navigation_bar", "1. Navigation Bar"),
@@ -517,7 +520,12 @@
                     title: SahyogI18n.t("2_your_account", "2. Your Account"),
                     text: SahyogI18n.t("log_in_or_sign_up_here_an_account_lets_you_like_campaigns", "Log in or sign up here. An account lets you like campaigns, track your events, join group chats, and use the AI description generator when creating events.")
                 }
-            ]
+            ].map(s => ({
+                el: document.getElementById(s.targetId),
+                title: s.title,
+                text: s.text,
+                legend: s.legend || null
+            })).filter(s => s.el)
         });
 
         function hStartTour() { ssTour.start(); }

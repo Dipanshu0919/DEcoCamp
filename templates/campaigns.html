@@ -783,8 +783,8 @@
     window.ssCampaignsTour = new SahyogTour({
         highlightClass: 'sst-hl',
         i18n: {
-            finish: SahyogI18n.t("finish", "Finish"),
-            next: SahyogI18n.t("next", "Next") + ' →',
+            finish: () => SahyogI18n.t("finish", "Finish"),
+            next: () => SahyogI18n.t("next", "Next") + ' →',
         },
         /* stepBuilder resolves elements at tour-start (some are dynamic/conditional) */
         stepBuilder: () => {

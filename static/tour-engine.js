@@ -76,15 +76,15 @@ if (!window.SahyogTour) {
      *     highlightParent, highlightParentSel }
      */
     _resolveSteps() {
-      if (this._cfg.stepBuilder) {
-        // Campaigns uses a custom builder that resolves DOM elements at start-time
+      if (typeof this._cfg.stepBuilder === 'function') {
         this._steps = this._cfg.stepBuilder();
       } else {
-        this._steps = (this._cfg.steps || [])
+        const rawSteps = typeof this._cfg.steps === 'function' ? this._cfg.steps() : (this._cfg.steps || []);
+        this._steps = rawSteps
           .map(s => ({
-            el: document.getElementById(s.targetId),
-            title: s.title,
-            text: s.text,
+            el: s.el || document.getElementById(s.targetId),
+            title: typeof s.title === 'function' ? s.title() : s.title,
+            text: typeof s.text === 'function' ? s.text() : s.text,
             legend: s.legend || null,
             preferAbove: s.preferAbove || false,
             scrollBlock: s.scrollBlock || 'center',
@@ -222,9 +222,13 @@ if (!window.SahyogTour) {
 
       // Navigation button states
       this._el('sstPrev').style.visibility = i === 0 ? 'hidden' : 'visible';
-      this._el('sstNext').textContent = i === this._steps.length - 1
-        ? (this._cfg.i18n && this._cfg.i18n.finish || 'Finish')
-        : (this._cfg.i18n && this._cfg.i18n.next || 'Next →');
+      const isLast = (i === this._steps.length - 1);
+      const finishFallback = (window.SahyogI18n ? window.SahyogI18n.t('finish', 'Finish') : 'Finish');
+      const nextFallback = (window.SahyogI18n ? window.SahyogI18n.t('next', 'Next') : 'Next') + ' →';
+
+      this._el('sstNext').textContent = isLast
+        ? (typeof this._cfg.i18n?.finish === 'function' ? this._cfg.i18n.finish() : (this._cfg.i18n?.finish && this._cfg.i18n.finish !== 'Finish' ? this._cfg.i18n.finish : finishFallback))
+        : (typeof this._cfg.i18n?.next === 'function' ? this._cfg.i18n.next() : (this._cfg.i18n?.next && !this._cfg.i18n.next.startsWith('Next') ? this._cfg.i18n.next : nextFallback));
 
       this._buildDots();
 

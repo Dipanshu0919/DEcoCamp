@@ -512,10 +512,10 @@
   window.ssAddTour = new SahyogTour({
     highlightClass: 'sst-hl',
     i18n: {
-      finish: SahyogI18n.t("finish", "Finish"),
-      next: SahyogI18n.t("next", "Next") + ' →',
+      finish: () => SahyogI18n.t("finish", "Finish"),
+      next: () => SahyogI18n.t("next", "Next") + ' →',
     },
-    steps: [
+    stepBuilder: () => [
       {
         targetId: 'step-name-loc',
         title: SahyogI18n.t("1_campaign_name_and_location", "1. Campaign Name and Location"),
@@ -547,7 +547,12 @@
           { icon: '<svg class="ss-icon" aria-hidden="true"><use href="#icon-info"></use></svg>', label: SahyogI18n.t("info_icons", "Info icons"), desc: SahyogI18n.t("hover_for_field_specific_tips", "Hover for field-specific tips") }
         ]
       }
-    ]
+    ].map(s => ({
+      el: document.getElementById(s.targetId),
+      title: s.title,
+      text: s.text,
+      legend: s.legend || null
+    })).filter(s => s.el)
   });
 
   /* Global wrappers used by onclick attributes in the page body */
