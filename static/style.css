@@ -96,16 +96,16 @@ p { color: var(--text-muted); margin-bottom: 1rem; word-break: break-word; overf
 .sutra-divider::before, .sutra-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); }
 .sutra-divider span { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent-gold-light); white-space: nowrap; }
 #ndhome { font-size: 1.2rem; font-style: italic; padding: 2rem; border-left: 3px solid var(--primary-color); background: var(--bg-light); border-radius: var(--radius); text-align: center; }
-.account-container { display: flex; flex-direction: column; padding: 0; background: var(--bg-light); border-radius: var(--radius); width: 100%; max-width: 500px; margin: 0 auto; border: 1px solid var(--border-color); overflow: hidden; }
-.profile-card-header { background: linear-gradient(135deg, rgba(215,106,30,0.18), rgba(240,200,75,0.06)); border-bottom: 1px solid var(--border-color); padding: 1.4rem 1.75rem; display: flex; align-items: center; gap: 1rem; }
+.account-container { display: flex; flex-direction: column; padding: 0; background: var(--bg-light); border-radius: var(--radius); width: 100%; max-width: 500px; margin: 0 auto; border: 1px solid var(--border-color); overflow: hidden; text-align: left; }
+.profile-card-header { background: linear-gradient(135deg, rgba(215,106,30,0.18), rgba(240,200,75,0.06)); border-bottom: 1px solid var(--border-color); padding: 1.4rem 1.75rem; display: flex; align-items: center; gap: 1rem; text-align: left; }
 .profile-avatar { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--primary-color); object-fit: cover; }
-.profile-card-header-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow: hidden; }
+.profile-card-header-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow: hidden; text-align: left; }
 .profile-card-header-text h3 { font-size: 1.05rem; font-weight: 700; margin: 0; color: var(--text-color); }
 .profile-card-header-text span { font-size: 0.8rem; color: var(--primary-color); font-weight: 600; }
-.profile-card-body { padding: 1.25rem 1.75rem; display: flex; flex-direction: column; gap: 0.65rem; }
-.profile-info-row { display: flex; align-items: center; gap: 0.65rem; font-size: 0.875rem; min-width: 0; }
-.profile-info-row .info-label { color: var(--text-muted); font-weight: 600; min-width: 60px; flex-shrink: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
-.profile-info-row .info-value { color: var(--text-color); font-weight: 500; word-break: break-all; overflow-wrap: anywhere; min-width: 0; }
+.profile-card-body { padding: 1.25rem 1.75rem; display: flex; flex-direction: column; gap: 0.65rem; text-align: left; }
+.profile-info-row { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.875rem; min-width: 0; text-align: left; }
+.profile-info-row .info-label { color: var(--text-muted); font-weight: 600; min-width: 60px; flex-shrink: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 2px; text-align: left; }
+.profile-info-row .info-value { color: var(--text-color); font-weight: 500; word-break: break-all; overflow-wrap: anywhere; min-width: 0; flex: 1; text-align: left; }
 .profile-events-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; background: rgba(215,106,30,0.07); border: 1px solid rgba(215,106,30,0.2); border-radius: 8px; padding: 0.75rem 1rem; margin-top: 0.1rem; }
 .profile-events-row > span { font-size: 0.85rem; color: var(--text-muted); }
 .profile-events-row > span strong { color: var(--text-color); }
