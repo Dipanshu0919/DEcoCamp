@@ -159,9 +159,10 @@ input::placeholder, textarea::placeholder, select::placeholder { color: #b0b8c9 
 .campaign-tag { display: inline-flex; align-items: center; justify-content: center; gap: 4px; background: rgba(215, 106, 30, 0.12); color: var(--primary-color); padding: 5px 10px; border-radius: 14px; font-size: .78rem; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(215, 106, 30, 0.25); white-space: nowrap; flex-shrink: 0; }
 .campaign-tag:hover { background: rgba(215, 106, 30, 0.22); }
 .campaign-id { color: var(--text-muted); font-size: .75rem; font-weight: bold; position: absolute; top: 1rem; right: 1rem; }
-.delete-btn { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); padding: 5px 9px; font-size: .8rem; border-radius: 6px; cursor: pointer; margin-top: 0; transition: all .2s ease; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
-.delete-btn:hover { background: #ef4444; color: #ffffff; border-color: #ef4444; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(239, 68, 68, 0.35); }
-.delete-btn svg, .delete-btn .ss-icon { width: 14px; height: 14px; display: block; flex-shrink: 0; }
+.delete-btn { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.28); padding: 5px 10px; font-size: .78rem; font-weight: 700; text-transform: uppercase; border-radius: 14px; cursor: pointer; margin-top: 0; transition: all .2s ease; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 28px; box-sizing: border-box; }
+.delete-btn:hover { background: #ef4444; color: #ffffff; border-color: #ef4444; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35); }
+.delete-btn:hover svg, .delete-btn:hover .ss-icon { color: #ffffff !important; fill: #ffffff !important; }
+.delete-btn svg, .delete-btn .ss-icon { width: 13px; height: 13px; display: block; flex-shrink: 0; color: inherit; fill: currentColor; }
 main { width: 100%; max-width: 100vw; overflow-x: clip; box-sizing: border-box; position: relative; z-index: 1; }
 .form-container { max-width: 100%; width: 100%; margin: 0 auto; background: var(--bg-light); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--border-color); box-sizing: border-box; }
 .form-container h1 { text-align: center; color: var(--text-color); }
@@ -221,10 +222,10 @@ main { width: 100%; max-width: 100vw; overflow-x: clip; box-sizing: border-box; 
 .lang-option:hover { background: rgba(215, 106, 30, 0.12); color: var(--primary-color); }
 .lang-option:first-child { border-radius: 8px 8px 0 0; }
 .lang-option:last-child { border-radius: 0 0 8px 8px; }
-.like-btn { background: transparent; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease; border-radius: 6px; line-height: 1; flex-shrink: 0; }
-.like-btn svg { fill: none; stroke: #9ca3af; stroke-width: 2; transition: all 0.2s ease; width: 20px; height: 20px; min-width: 20px; min-height: 20px; display: block; flex-shrink: 0; overflow: visible; }
+.like-btn, .like-btn.ripple-host { background: transparent; border: none; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease; border-radius: 6px; line-height: 1; flex-shrink: 0; overflow: visible !important; }
+.like-btn svg { fill: none; stroke: #9ca3af; stroke-width: 2; transition: all 0.2s ease; width: 20px; height: 20px; min-width: 20px; min-height: 20px; display: block; flex-shrink: 0; overflow: visible !important; }
 .like-btn:hover svg { stroke: #ef4444; transform: scale(1.18); }
-.like-btn.liked svg { fill: #ef4444; stroke: #ef4444; }
+.like-btn.liked svg { fill: #ef4444 !important; stroke: #ef4444 !important; }
 .like-count { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); min-width: 18px; text-align: center; line-height: 1; }
 .like-count+.campaign-tag { margin-left: 12px; }
 .share-btn { background: transparent; border: none; padding: 6px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; border-radius: 6px; color: #9ca3af; cursor: pointer; text-decoration: none; }

@@ -19,7 +19,7 @@
         if (prefersReducedMotion) return;
 
         document.addEventListener('pointerdown', function (e) {
-            const host = e.target.closest('.cta, .submit-btn, .reset-btn, .action-btn, .filter-btn, .navlink, .pressable, .lang-option, .view-events-btn, .campaign-tag, .like-btn, .share-btn');
+            const host = e.target.closest('.cta, .submit-btn, .reset-btn, .action-btn, .filter-btn, .navlink, .pressable, .lang-option, .view-events-btn, .campaign-tag, .share-btn');
             if (!host) return;
 
             if (getComputedStyle(host).position === 'static') {
