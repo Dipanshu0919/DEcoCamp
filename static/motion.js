@@ -187,31 +187,58 @@
         document.querySelectorAll('.count-up').forEach(el => counterObserver.observe(el));
     }
 
-    // 6. Hero Ambient Particles Generator
+    // 6. Full-Page & Hero Ambient Floating Particles Generator
     function initHeroParticles() {
-        const container = document.querySelector('.hero-particles-field');
-        if (!container || prefersReducedMotion) return;
-        if (container.children.length > 0) return;
+        if (prefersReducedMotion) return;
 
-        const count = 18;
-        const fragment = document.createDocumentFragment();
-        for (let i = 0; i < count; i++) {
-            const p = document.createElement('div');
-            p.className = 'hero-particle';
-            const size = Math.floor(Math.random() * 4) + 3;
-            const left = Math.random() * 100;
-            const top = Math.random() * 100;
-            const delay = (Math.random() * 8).toFixed(2);
-            const duration = (Math.random() * 5 + 6).toFixed(2);
-            p.style.width = `${size}px`;
-            p.style.height = `${size}px`;
-            p.style.left = `${left}%`;
-            p.style.top = `${top}%`;
-            p.style.animationDelay = `${delay}s`;
-            p.style.animationDuration = `${duration}s`;
-            fragment.appendChild(p);
-        }
-        container.appendChild(fragment);
+        const containers = document.querySelectorAll('.ambient-particles-field, .hero-particles-field');
+        containers.forEach(container => {
+            if (!container || container.children.length > 0) return;
+
+            const isFullPage = container.classList.contains('ambient-particles-field');
+            const isMobile = window.innerWidth < 768;
+            const count = isFullPage ? (isMobile ? 28 : 52) : 16;
+            const fragment = document.createDocumentFragment();
+            const animTypes = ['float-a', 'float-b', 'float-c'];
+
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = isFullPage ? 'ambient-particle' : 'hero-particle';
+
+                // Size variation: mostly 2-4px, occasionally 5-6px
+                const rand = Math.random();
+                const size = rand > 0.88 ? Math.floor(Math.random() * 2) + 5 : (rand > 0.4 ? Math.floor(Math.random() * 2) + 3 : 2);
+
+                const left = (Math.random() * 100).toFixed(2);
+                const top = (Math.random() * 100).toFixed(2);
+                const delay = (Math.random() * 10).toFixed(2);
+                const duration = (Math.random() * 6 + 7).toFixed(2);
+
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.left = `${left}%`;
+                p.style.top = `${top}%`;
+                p.style.animationDelay = `${delay}s`;
+                p.style.animationDuration = `${duration}s`;
+
+                if (isFullPage) {
+                    const animClass = animTypes[i % animTypes.length];
+                    p.classList.add(animClass);
+
+                    // Color palette diversity: warm gold, glowing ember, soft diamond
+                    if (rand > 0.65) {
+                        p.style.background = 'radial-gradient(circle, #ffffff 0%, #fde68a 50%, #f59e0b 100%)';
+                        p.style.boxShadow = '0 0 7px rgba(253, 230, 138, 0.8), 0 0 14px rgba(245, 158, 11, 0.45)';
+                    } else if (rand < 0.25) {
+                        p.style.background = 'radial-gradient(circle, #ffffff 0%, #fb923c 60%, #ea580c 100%)';
+                        p.style.boxShadow = '0 0 7px rgba(251, 146, 60, 0.8), 0 0 14px rgba(234, 88, 12, 0.45)';
+                    }
+                }
+
+                fragment.appendChild(p);
+            }
+            container.appendChild(fragment);
+        });
     }
 
     // 7. Scroll Parallax

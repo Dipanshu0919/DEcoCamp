@@ -3,22 +3,22 @@
 
 <head>
     <meta name="ss-lang" content="{{ lang }}">
-    <meta name="ss-static-v" content="20260906-7">
+    <meta name="ss-static-v" content="20260906-8">
     {% if lang and lang != "en" %}
-    <script src="/static/i18n/{{ lang }}.js?v=20260906-7"></script>
+    <script src="/static/i18n/{{ lang }}.js?v=20260906-8"></script>
     {% endif %}
-    <script src="/static/i18n.js?v=20260906-7"></script>
+    <script src="/static/i18n.js?v=20260906-8"></script>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% if eventdetails %}{{ eventdetails.eventname }} — Sahyog Sutra{% else %}Event Not Found — Sahyog Sutra{%
     endif %}</title>
-  <script src="/static/socket.io.min.js?v=20260906-7"></script>
+  <script src="/static/socket.io.min.js?v=20260906-8"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=20260905-4">
-  <link rel="stylesheet" href="/static/tour-engine.css?v=20260905-4">
+  <link rel="stylesheet" href="/static/style.css?v=20260906-8">
+  <link rel="stylesheet" href="/static/tour-engine.css?v=20260906-8">
   <link rel="icon" type="image/png" href="/static/sahyog_sutra_logo.png">
-  <script defer src="/static/motion.js?v=20260905-4"></script>
+  <script defer src="/static/motion.js?v=20260906-8"></script>
   <style>
     *,
     *::before,
@@ -330,7 +330,14 @@
       </div>
     </div>
   </div>
-  <!-- ====== END TOUR DOM ====== -->
+  <!-- Full-Screen Ambient Background Effects (Glow Spheres, Moving Grid, Light Beam & Floating Particles) -->
+  <div class="ambient-glow-bg" aria-hidden="true">
+    <div class="ambient-sphere sphere-1"></div>
+    <div class="ambient-sphere sphere-2"></div>
+    <div class="ambient-grid-perspective"></div>
+    <div class="ambient-light-beam"></div>
+    <div class="ambient-particles-field"></div>
+  </div>
 
   <!-- Navbar -->
   <header class="navbar">
@@ -697,7 +704,7 @@
   <script>
     if (window.SahyogI18n) window.SahyogI18n.apply();
   </script>
-  <script src="/static/tour-engine.js?v=20260906-7"></script>
+  <script src="/static/tour-engine.js?v=20260906-8"></script>
   <script>
     const socket = (typeof io === 'function') ? io() : null;
     {% if eventdetails %}
