@@ -27,7 +27,7 @@
     .navlink:hover { color: var(--text-color); background: rgba(255,255,255,0.05); }
     main { margin-top: 100px; padding: 0 1rem; padding-bottom: 4rem; min-height: 80vh; }
     .container { max-width: 800px; margin: 0 auto; }
-    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all .2s var(--ease); cursor: pointer; border: none; font-size: 0.95rem; font-family: 'Inter', sans-serif; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all .2s var(--ease); cursor: pointer; border: none; font-size: 0.95rem; font-family: 'Inter', sans-serif; text-align: center; }
     .btn-primary { background: var(--primary-color); color: white; }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(224,123,42,0.4); }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-color); }
@@ -38,24 +38,47 @@
     .profile-content { padding: 0 2rem 2rem; position: relative; text-align: center; }
     .profile-avatar-img { width: 120px; height: 120px; border-radius: 50%; border: 6px solid var(--bg-light); margin: -60px auto 1.5rem; display: block; background: #fff; object-fit: cover; box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 0 2px var(--border-color); transition: transform .3s var(--ease), box-shadow .3s; }
     .profile-avatar-img:hover { transform: scale(1.05); box-shadow: 0 14px 30px rgba(0,0,0,0.5), 0 0 0 3px rgba(224,123,42,0.5); }
-    .profile-name { font-size: 2rem; margin-bottom: 0.25rem; color: var(--text-color); font-weight: 800; }
-    .profile-username { color: var(--primary-color); font-size: 1.1rem; margin-bottom: 2rem; font-weight: 500; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .profile-name { font-size: 2rem; margin-bottom: 0.25rem; color: var(--text-color); font-weight: 800; word-break: break-word; }
+    .profile-username { color: var(--primary-color); font-size: 1.1rem; margin-bottom: 2rem; font-weight: 500; word-break: break-all; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 1rem; margin-bottom: 2rem; }
     .stat-box { background: var(--bg-dark); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border-color); transition: border-color .2s, transform .2s var(--ease), box-shadow .2s; }
     .stat-box:hover { border-color: rgba(224,123,42,0.45); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
     .stat-value { font-size: 1.5rem; font-weight: 700; display: block; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--text-color), var(--accent-gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .stat-label { color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
     /* Detail card wrapper */
     .detail-card { background: var(--bg-dark); border-radius: var(--radius); border: 1px solid var(--border-color); overflow: hidden; text-align: left; padding: 0; }
-    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.95rem; transition: background .2s; }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.95rem; transition: background .2s; gap: 1rem; }
     .detail-row:last-child { border-bottom: none; }
     .detail-row:hover { background: rgba(255,255,255,0.03); }
-    .detail-label { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .detail-value { color: var(--text-color); }
-    button.detail-value { background: rgba(224,123,42,0.1); border: 1px solid rgba(224,123,42,0.25); color: var(--primary-color); cursor: pointer; padding: 6px 14px; border-radius: 20px; font-family: inherit; font-size: 0.875rem; font-weight: 600; transition: background .2s, border-color .2s, color .2s; }
+    .detail-label { font-weight: 600; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .campaign-badge { white-space: nowrap; font-weight: 700; color: var(--accent-gold-light); }
+    .detail-value { color: var(--text-color); word-break: break-all; overflow-wrap: anywhere; }
+    button.detail-value { background: rgba(224,123,42,0.1); border: 1px solid rgba(224,123,42,0.25); color: var(--primary-color); cursor: pointer; padding: 6px 14px; border-radius: 20px; font-family: inherit; font-size: 0.875rem; font-weight: 600; transition: background .2s, border-color .2s, color .2s; word-break: normal; }
     button.detail-value:hover { background: rgba(224,123,42,0.2); border-color: rgba(224,123,42,0.5); color: var(--primary-hover); }
+    .profile-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; margin-top: 2rem; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 600px) { .profile-name { font-size: 1.5rem; } .nav-inner { justify-content: center; } .nav-links-container { display: none; } .profile-content { padding: 0 1rem 1.5rem; } }
+    @media (max-width: 640px) {
+        main { margin-top: 85px; padding: 0 0.75rem 3rem; }
+        .profile-content { padding: 0 1rem 1.5rem; }
+        .profile-avatar-img { width: 100px; height: 100px; margin: -50px auto 1rem; }
+        .profile-name { font-size: 1.5rem; }
+        .profile-username { margin-bottom: 1.25rem; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+        .stat-box { padding: 1rem 0.5rem; text-align: center; }
+        .stat-value { font-size: 1.35rem; }
+        .stat-label { font-size: 0.75rem; }
+        .detail-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 0.85rem 1rem; }
+        .detail-label { width: 100%; }
+        .detail-value { width: 100%; text-align: left; }
+        button.detail-value { width: 100%; text-align: center; margin-top: 0.25rem; padding: 8px 12px; }
+        .profile-actions { flex-direction: column; width: 100%; gap: 10px; }
+        .profile-actions .btn { width: 100%; }
+        .nav-inner { justify-content: center; }
+        .nav-links-container { display: none; }
+    }
+    @media (max-width: 360px) {
+        .stats-grid { grid-template-columns: 1fr; }
+    }
 </style>
 </head>
 <body>
@@ -108,8 +131,9 @@
                     {% if userdetails["events"] and userdetails["events"].split(',')|length > 0 %}
                         <div class="detail-row">
                             <span class="detail-label">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="opacity:.6"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/></svg>
-                                <span data-i18n="campaigns">Campaigns</span> ( {{ userdetails["events"].split(',')|length }} )
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="opacity:.6;flex-shrink:0;"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/></svg>
+                                <span data-i18n="campaigns">Campaigns</span>
+                                <span class="campaign-badge">({{ userdetails["events"].split(',')|length }})</span>
                             </span>
                             {% set user_event_username = userdetails['username'] %}
                             <button class="detail-value" onclick="viewyourevents('{{ user_event_username }}')">
@@ -119,18 +143,18 @@
                     {% endif %}
                 </div>
 
-                <div style="margin-top: 2rem;">
+                <div class="profile-actions">
                     <a href="mailto:{{ userdetails['email'] }}" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg>
                         <span data-i18n="contact_user">Contact User</span>
                     </a>
                     {% if is_own_profile %}
-                        <a href="/export_data" class="btn btn-outline" style="margin-left: 10px;">
+                        <a href="/export_data" class="btn btn-outline">
                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></svg>
                             <span data-i18n="download_my_data">Download My Data</span>
                         </a>
                     {% endif %}
-                    <a href="/" class="btn btn-outline" style="margin-left: 10px;">
+                    <a href="/" class="btn btn-outline">
                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16"><path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/></svg>
                         <span data-i18n="dashboard">Dashboard</span>
                     </a>
