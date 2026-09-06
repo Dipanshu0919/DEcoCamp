@@ -101,3 +101,12 @@
    ════════════════════════════════════════════════════ */
 
 .sst-hl { position: relative !important; z-index: 8992 !important;        /* must sit above #sstOverlay (8990) */ border-radius: 12px !important; transition: box-shadow 0.3s ease; }
+
+.sst-ancestor-hl {
+  position: relative !important;
+  z-index: 8991 !important;
+  perspective: none !important;
+  transform: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}

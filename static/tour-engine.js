@@ -100,6 +100,8 @@ if (!window.SahyogTour) {
     _clearHL() {
       document.querySelectorAll('.' + this._cfg.highlightClass)
         .forEach(el => el.classList.remove(this._cfg.highlightClass));
+      document.querySelectorAll('.sst-ancestor-hl')
+        .forEach(el => el.classList.remove('sst-ancestor-hl'));
     }
 
     /* ── Progress dots ────────────────────────────────────────── */
@@ -191,6 +193,13 @@ if (!window.SahyogTour) {
       if (step.highlightParent) {
         const parent = step.el.closest(step.highlightParentSel || '.campaign-card');
         if (parent) parent.classList.add(this._cfg.highlightClass);
+      }
+
+      // Lift all ancestors that create stacking contexts (perspective, transform, contain)
+      let anc = step.el.parentElement;
+      while (anc && anc !== document.body && anc !== document.documentElement) {
+        anc.classList.add('sst-ancestor-hl');
+        anc = anc.parentElement;
       }
 
       // Use 'instant' so getBoundingClientRect() reads the post-scroll position —
