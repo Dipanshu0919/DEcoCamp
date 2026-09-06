@@ -123,16 +123,7 @@ async def home_page(
     template_name = session.get("template", "index.html")
     lang_to_use = user_lang or "en"
 
-    # Minimal translate for remaining dynamic content (category names etc.)
-    # Static UI now handled client-side via data-i18n + /static/i18n/<lang>.js
-    if lang_to_use == "en":
-        bound_translate = lambda text, *args, **kwargs: text
-    else:
-        page_dict = get_ui_translation_dict(lang_to_use)
-        def bound_translate(text: str, *args, **kwargs) -> str:
-            if not text or not isinstance(text, str):
-                return text or ""
-            return page_dict.get(text.strip(), text)
+    bound_translate = lambda text, *args, **kwargs: (text or "")
 
     return templates.TemplateResponse(request, template_name, {
         "active_events_length": active_events_length,

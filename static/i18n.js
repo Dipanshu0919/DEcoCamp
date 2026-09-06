@@ -106,37 +106,6 @@
   /* English = zero bundle download, zero DOM translation */
   if (lang === 'en' || SUPPORTED.indexOf(lang) === -1) return;
 
-  /* Setup MutationObserver for dynamically added nodes (with loop guard) */
-  if (typeof MutationObserver !== 'undefined') {
-    var observer = new MutationObserver(function (mutations) {
-      if (isApplying || !window.SS_I18N) return;
-      var d = window.SS_I18N.data;
-      for (var i = 0; i < mutations.length; i++) {
-        var m = mutations[i];
-        for (var j = 0; j < m.addedNodes.length; j++) {
-          var node = m.addedNodes[j];
-          if (node.nodeType === 1) {
-            // Ignore internal overlay / animation nodes
-            if (node.id === 'sstOverlay' || node.id === 'sstTooltip' || node.classList.contains('hero-particle')) continue;
-            applyToRoot(node, d);
-          }
-        }
-      }
-    });
-
-    var startObserver = function () {
-      if (document.body) {
-        observer.observe(document.body, { childList: true, subtree: true });
-      }
-    };
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startObserver);
-    } else {
-      startObserver();
-    }
-  }
-
   /* If bundle was already loaded via head <script>, apply as soon as DOM is ready */
   if (window.SS_I18N && window.SS_I18N.data) {
     if (document.readyState === 'loading') {

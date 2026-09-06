@@ -223,6 +223,7 @@ async function loadContent(type, url, loadingId, contentId, retryFn) {
         const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error(`Failed to load ${type}`);
         content.innerHTML = await response.text();
+        if (window.SahyogI18n) window.SahyogI18n.apply(content);
         rerunScripts(content);
         if (type === 'campaigns') {
             const meta = content.querySelector('#campaigns-meta');
