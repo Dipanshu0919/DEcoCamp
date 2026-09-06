@@ -127,7 +127,7 @@ window.SS_I18N = (function () {
   "hey_there_we_re_glad_you_re_here_welcome_to": "सुनो! हम खुश हैं कि तुम यहां हो। आपका स्वागत है",
   "home": "घर",
   "hover_for_field_specific_tips": "फ़ील्ड-विशिष्ट युक्तियों के लिए होवर करें",
-  "how_sahyog_sutra_works": "How Sahyog Sutra Works",
+  "how_sahyog_sutra_works": "सहयोग सूत्र कैसे काम करता है",
   "how_to_use_campaigns": "अभियानों का उपयोग कैसे करें",
   "how_to_use_this_form": "इस फॉर्म का उपयोग कैसे करें",
   "id": "पहचान",
